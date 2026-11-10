@@ -16,7 +16,7 @@ a checked trail shows without judging it: unsettled runs, attempts per plan, rep
 prints the digest a trail is cited at, and `verify` says whether a checked trail ever had a cited
 head: one rewritten and re-chained still passes `check`, but no longer has it. `graph`
 writes graph/nodes.parquet and graph/edges.parquet (typed; `--csv` writes text tables instead), the
-probe as a named graph; `merge` writes one pair for several probes and resolves each citation of one probe by another (see docs/DESIGN.md).
+probe as a named graph; `merge` writes one pair for several probes and resolves each citation of one probe by another (see docs/GRAPH.md).
 """
 
 import csv

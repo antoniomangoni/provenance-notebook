@@ -16,18 +16,21 @@ Capture around a live agent and the reviewer's timeline view are this week's wor
 One directory per task, `steps/step-N.json`, each file written once. A step is a task, a plan,
 a run, an observation, a review or a note.
 
-Three properties make it more than a log:
+Four properties make it more than a log:
 
-- **Tamper-evident.** Each step holds the hash of the one before it, and a trail is cited at
-  the hash of its last step. A trail that was rewritten and re-chained still checks, but no
-  longer has the head it was cited at.
+- **Expectations come before results.** A plan commits to a measure and a threshold before its
+  run, so a reader sees whether a result was predicted or explained afterwards.
 - **Outcomes are recomputed.** The checker derives each outcome from the measures, and reads
-  the measures again from the metrics file the run wrote. An agent cannot grade its own run.
-- **No values by default.** Parameters, inputs and outputs are kept as digests, so a trail can
-  be shared without the data or secrets behind it.
+  the measures again from the metrics file the run wrote. An agent does not grade its own run.
+- **What failed stays.** A run is recorded before it executes, so a crash or an abandoned
+  attempt cannot drop out, and `trail.py facts` shows a plan that was re-run until it held.
+- **A citation is stable.** Each step holds the hash of the one before it, and a trail is cited
+  at the hash of its last step. A trail that was rewritten and re-chained still checks, but no
+  longer has the head it was cited at.
 
-[docs/DESIGN.md](docs/DESIGN.md) is the full specification, and
-[docs/HACKATHON.md](docs/HACKATHON.md) maps it to the brief.
+[docs/HACKATHON.md](docs/HACKATHON.md) is the pitch and maps the design to the brief.
+[docs/DESIGN.md](docs/DESIGN.md) specifies the steps and rules, and
+[docs/GRAPH.md](docs/GRAPH.md) the export of trails as a graph.
 
 ## Try it
 
