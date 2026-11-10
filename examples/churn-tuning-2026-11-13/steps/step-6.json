@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "churn-tuning-2026-11-13",
+  "at": "2026-11-13T10:06:00Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "python fit.py --model gbm --class-weight balanced --seed 23",
+  "command": {
+    "shown": "python fit.py --model gbm --class-weight balanced --seed 23",
+    "digest": "sha256:6dd5ad72bc97ba566a1183574f0899a8efea3fe4a6aa6cfad01308a4bb122c7a"
+  },
+  "code": {
+    "ref": "commit:notebook@5d2e8b0"
+  },
+  "environment": "sha256:84321598744d84dbee2318e634c74c9aae39a1c253f1c4bd17ebf9ef2f807b11",
+  "parameters": [
+    {
+      "name": "seed",
+      "digest": "sha256:535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790",
+      "value": "23"
+    },
+    {
+      "name": "model",
+      "digest": "sha256:b372b97ba85b3559f432635394dd191227368999728f8c593c51379bde9350ea",
+      "value": "gbm"
+    },
+    {
+      "name": "class_weight",
+      "digest": "sha256:c0905088ba5b80677849d4824f21b8b075ab49c6a7f58b5b84815ccd69f3b0a5",
+      "value": "balanced"
+    }
+  ],
+  "inputs": [
+    {
+      "ref": "file:data/telco.csv",
+      "digest": "sha256:5e250ea200a6eb4eb96685d6672e68f64df89c04ff02910d2d5f12e4985d1b31"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:1e4195f1b0c0ff9bb096fe768001772ec7e5e5bf4a7bf33209ef4b210945bb9d"
+}

@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "churn-tuning-2026-11-13",
+  "at": "2026-11-13T10:07:00Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "AUC 0.81, target met",
+  "exit_code": 0,
+  "duration_ms": 9720,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:73a5f4b2598375ec6b96efba8c894ade9aa6f5c6a1559420bae141c2eafbbad0"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:73a5f4b2598375ec6b96efba8c894ade9aa6f5c6a1559420bae141c2eafbbad0"
+  },
+  "measures": [
+    {
+      "name": "auc",
+      "value": 0.81
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "runs",
+      "held": true
+    },
+    {
+      "expectation": "auc-target",
+      "measured": 0.81,
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-6",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:27f771b652ff1ddc2515564f9a7cbed418158cca171d84fd4a64a1cbaa342a4d"
+}

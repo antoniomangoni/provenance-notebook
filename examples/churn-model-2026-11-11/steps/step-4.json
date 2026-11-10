@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "churn-model-2026-11-11",
+  "at": "2026-11-11T10:04:00Z",
+  "kind": "plan",
+  "by": "agent:pi/glm-5.2",
+  "hook": "pi:propose_plan",
+  "summary": "Reweight classes: only 7% of rows churn",
+  "reasoning": "The positive rate is 0.07, so an unweighted fit mostly predicts no churn. Weighting classes tests whether the gap is imbalance rather than missing signal.",
+  "expectations": [
+    {
+      "name": "runs",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "auc-floor",
+      "measure": "auc",
+      "comparison": "ge",
+      "threshold": 0.75
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-1",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-3",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:66a28f9c938008c9b9d57fc9d8f7b05817e8cf2e81a934dd4715bda4728e35ef"
+}

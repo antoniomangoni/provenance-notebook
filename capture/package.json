@@ -1,0 +1,10 @@
+{
+  "name": "provenance-notebook-capture",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pi extension that writes a provenance trail as an agent works",
+  "type": "module",
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.1"
+  }
+}

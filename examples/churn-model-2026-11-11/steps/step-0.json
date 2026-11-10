@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-0",
+  "seq": 0,
+  "trail": "churn-model-2026-11-11",
+  "at": "2026-11-11T10:00:00Z",
+  "kind": "task",
+  "by": "human:antonio",
+  "summary": "Predict 90-day churn from the public telco dataset",
+  "question": "Can 90-day churn be predicted from the first month of usage with AUC of at least 0.75?",
+  "project": "churn",
+  "agent": {
+    "name": "pi",
+    "version": "0.84.1",
+    "model": "glm-5.2",
+    "thinking": "off"
+  },
+  "declared_measures": [
+    "auc",
+    "positive_rate"
+  ],
+  "public_parameters": [
+    "seed",
+    "model",
+    "class_weight"
+  ]
+}

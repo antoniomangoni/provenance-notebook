@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-1",
+  "seq": 1,
+  "trail": "churn-model-2026-11-11",
+  "at": "2026-11-11T10:01:00Z",
+  "kind": "plan",
+  "by": "agent:pi/glm-5.2",
+  "hook": "pi:propose_plan",
+  "summary": "Baseline: logistic regression on raw features",
+  "reasoning": "Start with the simplest model so later gains are measured against it.",
+  "expectations": [
+    {
+      "name": "runs",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "auc-floor",
+      "measure": "auc",
+      "comparison": "ge",
+      "threshold": 0.75
+    }
+  ],
+  "prev": "sha256:dbbfe754764afea2057c1a42fe238fafb9b0a028979434e935ce87025ab12caf"
+}

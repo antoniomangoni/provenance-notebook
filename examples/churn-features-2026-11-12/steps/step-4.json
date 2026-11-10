@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "churn-features-2026-11-12",
+  "at": "2026-11-12T10:04:00Z",
+  "kind": "note",
+  "by": "human:antonio",
+  "summary": "Tenure bands add nothing over class weights",
+  "text": "AUC fell from churn's 0.78 to 0.77, so the reweighted model stays the best one.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:f1a04cba027cd5b8cfd9a47ee1f08d2f247d33a8f88075acd1a5b4badf9f9ab5"
+}

@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "churn-model-2026-11-11",
+  "at": "2026-11-11T10:07:00Z",
+  "kind": "review",
+  "by": "human:antonio",
+  "summary": "Accept the change of approach at step 4",
+  "verdict": "confirms",
+  "text": "The imbalance reading is right: step 3 measured a 7% positive rate.",
+  "links": [
+    {
+      "relation": "reviews",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:e82ccdccb21c815f672a041be562c6498587da090b9db55329f13fdb5b936550"
+}

@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "churn-model-2026-11-11",
+  "at": "2026-11-11T10:06:00Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "AUC 0.78, floor met",
+  "exit_code": 0,
+  "duration_ms": 4310,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:858c5ad62d232757f4a3ccd4440de7aeb62155c473d1ca92f5922b2830add23d"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:858c5ad62d232757f4a3ccd4440de7aeb62155c473d1ca92f5922b2830add23d"
+  },
+  "measures": [
+    {
+      "name": "auc",
+      "value": 0.78
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "runs",
+      "held": true
+    },
+    {
+      "expectation": "auc-floor",
+      "measured": 0.78,
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-5",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:f738a151457f472c57caebc3ea6e7979c88af02b23f92d401e1a618dd16f791f"
+}

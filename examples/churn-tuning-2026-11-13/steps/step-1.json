@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-1",
+  "seq": 1,
+  "trail": "churn-tuning-2026-11-13",
+  "at": "2026-11-13T10:01:00Z",
+  "kind": "plan",
+  "by": "agent:pi/glm-5.2",
+  "hook": "pi:propose_plan",
+  "summary": "Gradient boosting with balanced class weights",
+  "reasoning": "Class weights fixed the imbalance for logistic regression; boosting should add the non-linear lift to 0.80.",
+  "expectations": [
+    {
+      "name": "runs",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "auc-target",
+      "measure": "auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "prev": "sha256:5eca356b41714f85e9565806520156274e472398792668cb59f33c9023519857"
+}

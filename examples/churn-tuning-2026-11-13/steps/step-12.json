@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "churn-tuning-2026-11-13",
+  "at": "2026-11-13T10:12:00Z",
+  "kind": "review",
+  "by": "human:antonio",
+  "summary": "The 0.80 target held on one seed of three",
+  "verdict": "disputes",
+  "text": "Seeds 7 and 11 contradicted the plan; seed 23 met it and step-8 only repeated step-6. Report AUC 0.76 to 0.81 across seeds, not 0.81.",
+  "links": [
+    {
+      "relation": "reviews",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:7141d73acdd8eba7af8301c2b25d3fb853aa14cb352565dcabc0689f15bd53e3"
+}

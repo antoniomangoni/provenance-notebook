@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-0",
+  "seq": 0,
+  "trail": "churn-features-2026-11-12",
+  "at": "2026-11-12T10:00:00Z",
+  "kind": "task",
+  "by": "human:antonio",
+  "summary": "Test tenure bands on the reweighted churn model",
+  "question": "Do tenure-band features lift the reweighted churn model to an AUC of at least 0.80?",
+  "project": "retention",
+  "agent": {
+    "name": "pi",
+    "version": "0.84.1",
+    "model": "glm-5.2",
+    "thinking": "off"
+  },
+  "declared_measures": [
+    "auc"
+  ],
+  "public_parameters": [
+    "seed",
+    "class_weight",
+    "features"
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "churn/probe:churn-model-2026-11-11@sha256:d562d2cab2b56a092bd9308d480c59e058eca9f07052cc309574405187ebc35f",
+      "status": "confirmed"
+    }
+  ]
+}

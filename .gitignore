@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+node_modules/
+# Derived from the step files by `trail.py graph` and `merge`.
+graph/
+# A trail's HMAC key is kept outside the trail and outside git.
+*.key

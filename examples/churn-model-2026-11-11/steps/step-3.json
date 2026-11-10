@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "churn-model-2026-11-11",
+  "at": "2026-11-11T10:03:00Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "AUC 0.58, below the 0.75 floor",
+  "exit_code": 0,
+  "duration_ms": 4120,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:a80f8095ae7e084bb872f8c8d50967ca2bcbe0b70711a2f7b91206633ffa41be"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:a80f8095ae7e084bb872f8c8d50967ca2bcbe0b70711a2f7b91206633ffa41be"
+  },
+  "measures": [
+    {
+      "name": "auc",
+      "value": 0.58
+    },
+    {
+      "name": "positive_rate",
+      "value": 0.07
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "runs",
+      "held": true
+    },
+    {
+      "expectation": "auc-floor",
+      "measured": 0.58,
+      "held": false
+    }
+  ],
+  "outcome": "contradicted",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-2",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:1f5b449b328b16e97f45d99424dd105d80d1db9669d4233c2ff372179848dcb8"
+}

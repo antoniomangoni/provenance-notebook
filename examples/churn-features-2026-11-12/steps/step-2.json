@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "id": "step-2",
+  "seq": 2,
+  "trail": "churn-features-2026-11-12",
+  "at": "2026-11-12T10:02:00Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "python features.py --class-weight balanced --features tenure_band --seed 7",
+  "command": {
+    "shown": "python features.py --class-weight balanced --features tenure_band --seed 7",
+    "digest": "sha256:3e5028cb5d422113f87b31414d2c827001612314f86e9a10ced8c054fe509ca8"
+  },
+  "code": {
+    "ref": "commit:retention@9b1e4d7"
+  },
+  "environment": "sha256:84321598744d84dbee2318e634c74c9aae39a1c253f1c4bd17ebf9ef2f807b11",
+  "parameters": [
+    {
+      "name": "seed",
+      "digest": "sha256:7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "value": "7"
+    },
+    {
+      "name": "class_weight",
+      "digest": "sha256:c0905088ba5b80677849d4824f21b8b075ab49c6a7f58b5b84815ccd69f3b0a5",
+      "value": "balanced"
+    },
+    {
+      "name": "features",
+      "digest": "sha256:e33662c33d0738570cf7ece380cbe19a3b02b3e3bb4a4b33a128b825992567d0",
+      "value": "tenure_band"
+    }
+  ],
+  "inputs": [
+    {
+      "ref": "file:inputs/telco.csv",
+      "digest": "sha256:5e250ea200a6eb4eb96685d6672e68f64df89c04ff02910d2d5f12e4985d1b31"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:ec9472aa1a681a6833c22b2457672ab9fc58b941955ee742f2ec5d4382df787e"
+}

@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-1",
+  "seq": 1,
+  "trail": "churn-features-2026-11-12",
+  "at": "2026-11-12T10:01:00Z",
+  "kind": "plan",
+  "by": "agent:pi/glm-5.2",
+  "hook": "pi:propose_plan",
+  "summary": "Add tenure bands to the reweighted model",
+  "reasoning": "Churn's reweighted model met its floor at 0.78. Tenure is the usual strongest churn signal, so banding it should add the lift to 0.80.",
+  "expectations": [
+    {
+      "name": "runs",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "auc-target",
+      "measure": "auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "triggered_by",
+      "target": "churn/probe:churn-model-2026-11-11@sha256:d562d2cab2b56a092bd9308d480c59e058eca9f07052cc309574405187ebc35f#step-6",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:3073fd385924cf922d3237a0903f33820a25c87a09afe3731a9e1ded6d518d96"
+}
