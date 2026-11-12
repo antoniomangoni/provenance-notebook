@@ -7,3 +7,4 @@ node_modules/
 graph/
 # A trail's HMAC key is kept outside the trail and outside git.
 *.key
+.env
