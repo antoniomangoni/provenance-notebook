@@ -76,8 +76,11 @@ These are fixed. A slice that needs one changed stops and asks.
 
 ### Only a person can do these
 
-- Get a model key working in Pi (Berget first, a second provider as fallback) and run the smoke
-  test. It needs nothing that is not already in the repository, so it comes first.
+- Run the smoke test. It needs nothing that is not already in the repository, so it comes
+  first. Pi's model file on the development machine holds Berget and Anthropic entries from
+  September: confirm the keys with `capture/node_modules/.bin/pi --list-models`, then try
+  GLM-5.2 on Berget, then Haiku 4.5 on Anthropic. Run with `--thinking off` and note whether
+  reasoning text still appears.
 - Run the live task on Saturday and decide which defects are worth fixing.
 - Ask the organisers the [open questions](#open-questions-for-the-organisers) on Friday.
 - Find one person who has not seen the task and record them answering the step question.
@@ -88,8 +91,8 @@ These are fixed. A slice that needs one changed stops and asks.
 
 | When | If | Then |
 | --- | --- | --- |
-| Fri 13, evening | the real model does not call the tools in order | switch model or provider before Saturday |
-| Sat 14, 14:00 | no live trail has a replacement plan | switch model or provider |
+| Fri 13, evening | the Berget model does not call the tools in order | use a Claude model through Pi's Anthropic entry from Saturday. Capture does not change |
+| Sat 14, 14:00 | no live trail has a replacement plan | switch model the same way |
 | Sat 14, 20:00 | still none | revise `demo/prompt.md` and run again, keeping every attempt |
 | Sun 15, 18:00 | code diffs in the view or parameter parsing are unfinished | cut them |
 | Mon 16, 20:00 | the repository cannot be public | attach the view and the video to the submission |
@@ -133,13 +136,38 @@ a mistake, and a test can show it without a model. Conditions:
 
 The churn examples remain the test fixtures.
 
+## The agent host
+
+Capture runs inside the Pi coding agent, pinned at 0.84.1. An adapter needs five things from a
+host, and the probe checked each on Pi
+([the table](docs/DESIGN.md#capture-host-checked-at-pi-0841)):
+
+- a hook that is awaited before a command runs and can stop it, failing closed;
+- a tool the adapter defines and can refuse from;
+- the command's exit code;
+- a way to add a line to the result the model reads;
+- an unattended mode, with a scripted provider so that tests need no key.
+
+Pi also reaches Berget's models and Anthropic's with one configuration file, so the model can
+change while capture stays the same. Considered and not taken this week:
+
+| Alternative | Why not |
+| --- | --- |
+| Claude Code hooks, with an MCP server for `propose_plan` | It is the agent more researchers use, but none of the five is probed there, its tests would need a mock API, and it cannot use the Berget credit |
+| An MCP server alone, for any agent | The agent's own shell goes around it, so a run would be recorded only when the agent chose to |
+| A loop of our own | We would own retries, malformed calls and outages, and it is a weaker answer to "a wrapper around an AI-assisted task" |
+| Pi 0.87.1 | It adds nothing capture needs, and the extension interface changed |
+
+Spec 2 keeps step construction apart from the Pi hooks, so a second adapter is new wiring.
+
 ## Cut line
 
 In scope: one task type, one agent, one runner.
 
 Cut for the week, and named in the pitch: the redactor, keyed digests for hidden values, the
-read-only mount around the trail, the token budget and the ledger shown to the agent. The agent
-learns step ids from a receipt line on each command's result instead.
+read-only mount around the trail and the ledger shown to the agent. The agent learns step ids
+from a receipt line on each command's result instead. A ceiling on runs and tokens and a wall
+clock on the launcher stay in, because one looping run can spend a fifth of the credit.
 
 If time runs short, cut in this order:
 
@@ -156,8 +184,19 @@ the capture host, which stays an open question with the host named as the trust 
 
 ## Risks
 
-- **The live model may not call tools reliably.** The smoke test is first for that reason, and
-  a second provider key is the fallback.
+- **The live model may not call tools reliably.** The smoke test is first for that reason. In
+  September, on another task under the same Pi version, GLM-5.2 on Berget failed 37 of 99 runs
+  and Qwen3.8-27B 13 of 23, mostly in tool loops, and Haiku 4.5 on Anthropic ran 6 of 6. The
+  rates do not carry over to this task; the failure modes do. Anthropic is the fallback.
+- **A loop is expensive.** Berget bills cached input at the full rate, so cost grows with the
+  square of the calls: one looping run cost EUR 10.76, against EUR 50 of credit. Capture stops
+  at a ceiling on runs and tokens, and the launcher at a wall clock.
+- **Berget may fail or slow down.** September saw 500 and 503 outages that Pi's retry did not
+  survive, and throughput that varied about three times by hour. A failed attempt is kept and
+  run again later, or on the fallback.
+- **Thinking may not switch off on Berget.** Only `chat_template_kwargs` reached the model
+  there. If the smoke test shows reasoning with `--thinking off`, a person ports the September
+  hook as `capture/thinking.ts`, loaded with a second `-e`.
 - **The agent may never replace a plan.** The demo task makes the contradiction certain; whether
   the agent then records a replacement depends on the protocol text and the receipts. The
   scripted test covers the mechanics, Saturday's gates the behaviour.
@@ -174,7 +213,8 @@ the capture host, which stays an open question with the host named as the trust 
    the first commit says so. The write-up discloses it either way.
 2. Must the repository be public, and under which licence?
 3. What are the judging criteria, and is there a length limit for the video and the write-up?
-4. Which Berget models support tool calling?
+4. Which Berget model do they recommend for tool calling? GLM-5.2 and Qwen3.8-27B called tools
+   in September.
 
 ## Decisions
 
@@ -189,3 +229,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 12 Nov | The reader study is replaced by `why`, a reader check by a model, and one cold reader in the video. Human readers are a stretch |
 | 12 Nov | The demo task is a re-analysis of an inherited script, so its failure does not depend on the model |
 | 12 Nov | Every live attempt is committed |
+| 12 Nov | Pi stays the host, after weighing Claude Code hooks, an MCP server alone, a loop of our own and Pi 0.87.1. The model is the larger risk, so the budget stop returns to capture and Anthropic is the named fallback |

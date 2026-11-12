@@ -58,6 +58,9 @@ names may be shown. The task's own script writes its numbers to `out/metrics.jso
 started with one command. After that the researcher writes nothing, apart from any review.
 
 The step format does not depend on the agent. One adapter is built, for the Pi coding agent.
+Another agent needs an adapter of its own, and can have one if it offers a hook that is awaited
+before a command runs and can stop it, a tool the adapter defines, the command's exit code, and
+a way to add a line to the result the model reads.
 
 ### What it does not prove
 

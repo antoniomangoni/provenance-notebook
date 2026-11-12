@@ -18,7 +18,7 @@ Goals:
 
 Non-goals:
 
-- The redactor, keyed digests, the read-only mount, the token budget and the ledger.
+- The redactor, keyed digests, the read-only mount and the ledger shown to the agent.
 - Any agent other than Pi 0.84.1. Resuming a trail. Citing another probe.
 - Any change to `step.schema.json`, `trail.py`, `capture/canonical.ts` or `capture/probe.ts`.
   The probe stays as it is: a person uses it for the real-model smoke test.
@@ -34,6 +34,13 @@ Capture reads three environment variables and fails at load when one is missing 
 | `NOTEBOOK_TASK` | path of the task file |
 | `NOTEBOOK_TRAIL` | the trail's directory. Its name is the trail's name and fits the schema's pattern. It must not hold a `steps/` directory yet |
 | `NOTEBOOK_STORE` | the directory metrics files are copied to, named by digest |
+
+Two more are optional, and a value that is not a positive integer fails at load:
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `NOTEBOOK_MAX_RUNS` | 40 | the most run steps one trail may hold |
+| `NOTEBOOK_MAX_TOKENS` | 2000000 | the most tokens the session may use |
 
 The task file holds `summary`, `question`, `project`, `declared_measures`, `public_parameters`,
 `inputs` (paths relative to the workspace) and `by` (`human:NAME`). The workspace is Pi's
@@ -119,6 +126,23 @@ The text the model sees for each command ends with one line, on success and on f
 These ids are how the agent names an observation in `triggered_by`. A receipt holds measures
 and thresholds, never a parameter's value.
 
+### Budget
+
+A model can loop, and a provider that bills cached input at the full rate makes a loop's cost
+grow with the square of its calls. Capture therefore stops a run at two ceilings:
+
+- **Runs.** The number of run steps written.
+- **Tokens.** The sum, over every `turn_end`, of the usage's `input`, `output`, `cacheRead` and
+  `cacheWrite`. A turn that reports no usage adds nothing.
+
+Once either is reached, the next tool call of any kind is blocked with `terminate`, and nothing
+runs. Capture writes one runner `note` about the task step, naming the ceiling, its limit and
+the count, and the reason the model sees says the same. No run step is written for the blocked
+call.
+
+Pi validates a tool call's arguments before `tool_call`, so a model that only sends malformed
+calls never reaches this stop. The launcher's wall clock covers that case.
+
 ### Guards and protocol
 
 `write` and `edit` are blocked when the resolved real path is inside the trail or the store.
@@ -139,14 +163,24 @@ plan with `supersedes` and `triggered_by`. The launcher appends it to the system
 3. Runs Pi there with `-p --mode json --no-context-files`, `capture.ts`, the protocol appended,
    the session directory at `ROOT/NAME/session`, the options passed through, and the text of
    `DEMO_DIR/prompt.md` as the message. Standard output goes to `ROOT/NAME/events.jsonl`.
-4. Bundles the snapshot branch to `ROOT/NAME/code.bundle`, runs `trail.py check` with the store
-   at `ROOT/store`, and prints the result and the workspace's path. The workspace is kept.
+   Pi runs under `timeout`, for `NOTEBOOK_WALL` seconds or 1,800. When the time runs out the
+   launcher says so and goes on.
+4. Whatever Pi's exit status, bundles the snapshot branch to `ROOT/NAME/code.bundle`, runs
+   `trail.py check` with the store at `ROOT/store`, and prints the result and the workspace's
+   path. The workspace is kept. The launcher's own exit status is the check's.
 
 ## Technical decisions and stack
 
 - TypeScript, run by Pi's loader and by Node.js 24 with no build step. Pi stays pinned at
   0.84.1. No new dependency.
 - Digests and canonical JSON come from `capture/canonical.ts`.
+- Steps are built by functions that take plain data and know nothing of Pi. The Pi hooks only
+  gather that data and call them. An adapter for another agent is then new wiring, and
+  `capture/README.md` lists what such a host must offer: a hook awaited before a command runs
+  that can stop it, a tool the adapter defines and can refuse from, the command's exit code, a
+  way to add a line to the result the model reads, and an unattended mode.
+- Capture never reads which provider or model is in use, beyond naming it in step 0. Changing
+  model is a launcher option.
 - The scripted provider moves to `capture/scripted.ts`, loaded with a second `-e` and
   `--provider script`. It replays the turns in the JSON file `NOTEBOOK_SCRIPT` names.
 - The table "Capture host, checked at Pi 0.84.1" in `docs/DESIGN.md` lists what the probe
@@ -165,7 +199,7 @@ The extension sits in `capture/`, the launcher in `scripts/`, tests in `tests/`.
 | `capture/capture.ts` | new |
 | `capture/scripted.ts` | new: the scripted provider |
 | `capture/protocol.md` | new |
-| `capture/README.md` | new: what capture records, how to run it, and its limits |
+| `capture/README.md` | new: what capture records, how to run it, its limits, and what a host must offer |
 | `scripts/live.sh` | new |
 | `tests/test_capture.py` | new |
 | `tests/fixtures/capture-demo/` | new: `task.json`, `prompt.md`, and a `workspace/` whose `fit.py` writes the metrics its flags name, with the standard library only |
@@ -193,6 +227,12 @@ scenario asserts that `trail.check(steps, store)` is empty.
    and equals the third; the bundle holds them; the workspace's `HEAD` and status are unchanged.
 9. **Guards.** `write` and `edit` to the trail are blocked.
 10. **Malformed metrics.** A nested object gives no measures and a runner note.
+11. **The run ceiling.** With `NOTEBOOK_MAX_RUNS=1`, the second command is blocked and never
+    executes, one runner note names the ceiling, and the session ends.
+12. **The token ceiling.** With `NOTEBOOK_MAX_TOKENS` below the scripted usage of two turns, the
+    same holds.
+13. **The wall clock.** With `NOTEBOOK_WALL=3` and a command that sleeps for 20 seconds, the
+    launcher still writes the bundle and checks the trail, and the run is unsettled.
 
 ## Sequence
 
@@ -202,7 +242,8 @@ scenario asserts that `trail.check(steps, store)` is empty.
 3. Runs: snapshot, parameters, inputs, with tests 2 and 8.
 4. Observations, fresh metrics, checks and receipts, with tests 1, 3, 4, 7 and 10.
 5. Guards, `protocol.md`, `capture/README.md`, the bundle and the final check, with test 9.
-6. The self-audit.
+6. The budget and the wall clock, with tests 11 to 13.
+7. The self-audit.
 
 ## Commands and code style
 
@@ -234,6 +275,7 @@ The work is rejected if any of these holds:
 - a run step can be written after its command started, or a command can run unrecorded;
 - an observation takes measures from a file its command did not write;
 - a replacement plan cannot be made from the ids a model is shown;
+- a command can run after a ceiling was reached, or the launcher can wait past its wall clock;
 - `step.schema.json`, `trail.py`, `canonical.ts` or `probe.ts` changed;
 - the tests need a model key or the network.
 
