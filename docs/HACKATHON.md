@@ -30,7 +30,7 @@ The step format in [DESIGN.md](DESIGN.md) is what gets captured, and `trail.py` 
 | what was actually run | a `run` step, written before the command executes: the command, a snapshot commit of the code, the environment and input digests, the parameters |
 | failure and contradiction | an `observation` step: measures read from the metrics file the run wrote and checked against the plan's expectations. A run that never finished stays in the trail, unsettled |
 | plan changed in response | a new `plan` that `supersedes` the old one and is `triggered_by` the observation that contradicted it |
-| a timeline to walk back through | the numbered step files, and a single-page view generated from them |
+| a timeline to walk back through | the numbered step files, a single-page view generated from them, and `trail.py why`, which answers the question below for any step |
 
 The worked example stages the brief's question. In `examples/churn-model-2026-11-11`, step 4 is
 a change of approach, and its links say why: the observation that triggered it (step 3, AUC 0.58
@@ -69,10 +69,17 @@ is the agent's own statement, which is why its links are marked `suggested`.
 
 ## How it will be evaluated
 
-The brief's criterion is a measurement, so the entry reports one: readers who were not present
-answer a fixed set of questions, once from the generated view and once from what a reviewer has
-today, the agent's raw session transcript and the git log. Correct answers and minutes are
-recorded for both. [PLAN.md](../PLAN.md#reader-study) has the protocol.
+The brief's criterion can be checked, so the entry checks it three ways.
+[PLAN.md](../PLAN.md#evidence) has the questions and the protocol.
+
+- `trail.py why TRAIL STEP` prints the answer to the brief's question from the links alone, and
+  a test pins it on the worked example.
+- A model that has not seen the task answers four fixed questions, once from the generated view
+  and once from what a reviewer has today, the agent's raw session transcript and the git log.
+  The answers are graded against a key taken from the step files.
+- A person who did not see the task answers the brief's question from the view, in the video.
+
+Every live attempt at the task is committed, and the write-up says how many there were.
 
 ## What exists, and what the week is for
 
@@ -82,13 +89,15 @@ worked example trails, and the graph export in [GRAPH.md](GRAPH.md).
 Built during the week:
 
 1. **The reviewer view.** One self-contained page that leads with the decision path and answers
-   the step-4 question on one screen. It is what a judge reads.
+   the step-4 question on one screen, and `trail.py why`, which answers it in text. It is what a
+   judge reads.
 2. **Capture.** A Pi extension that writes steps as the work happens: plans enter only through a
    `propose_plan` tool, runs are written before they execute, and measures are read from the
    metrics file the run wrote.
-3. **A live task.** One small, real research task run end to end, with a genuine failure and
-   change of approach, and the tamper demonstration on its trail.
-4. **The reader study** above.
+3. **A live task.** A re-analysis of an inherited script with a known pitfall, run end to end:
+   the agent reproduces the headline number, finds that it does not hold on held-out data, and
+   changes approach. The tamper demonstration runs on its trail.
+4. **The evidence** above.
 
 One task type, one agent, one runner. Left out of the week, and said so: redaction and keyed
 digests for hidden values, the read-only sandbox around the trail, multi-trail merge in the demo,

@@ -1,162 +1,191 @@
-# Plan for the hackathon week, 10–17 November 2026
+# Roadmap to submission, 13–17 November 2026
 
 The entry answers Task 2 of the AI for Meta-Science Hackathon: a provenance-preserving lab
 notebook for AI-assisted work. [docs/HACKATHON.md](docs/HACKATHON.md) is the pitch and maps the
 brief to the design, and [docs/DESIGN.md](docs/DESIGN.md) is the specification. This file is the
-schedule.
+roadmap: what is built, in which order, by whom, and how each piece is known to be done.
 
-Submission closes **Tuesday 17 November, 18:00 CET**.
+Submission closes **Tuesday 17 November, 18:00 CET**. The entry is submitted by 15:00. The
+submission includes a video or a demo.
 
 ## What the brief is judged on
 
 A reviewer who was not present opens the log and answers "why did they change approach at
-step 4?" without asking the researcher. Two things follow, and they order the week:
+step 4?" without asking the researcher. Two things follow:
 
-- the reviewer's view is the product, so it is built first and improved all week;
-- the criterion is a measurement, so the entry measures it with a [reader study](#reader-study).
+- the reviewer's view is the product, and it is what the video shows;
+- the criterion can be checked, so the entry checks it ([Evidence](#evidence)).
 
-## Milestones
+## State on 12 November
 
-A milestone is done when its check passes, not when its code is written.
+The step schema, the checker, `facts`, `head`, `verify`, three example trails and the graph
+export exist, with 15 passing tests. `capture/probe.ts` proved the capture assumptions against
+Pi 0.84.1. Not started: the view, capture, the demo task, the real-model test.
 
-| When | Milestone | Done when | State |
-| --- | --- | --- | --- |
-| Tue 10 | **M0 Repository.** The design under version control, with tests | `uv run pytest` passes | done |
-| Tue 10, kick-off | The [kick-off questions](#kick-off-questions) | Answers recorded under [Decisions](#decisions); this plan adjusted if the deliverable differs | open |
-| Wed 11 | **M1 View.** `trail.py view DIR` writes one self-contained HTML page | On the churn example, one screen answers the step-4 question: the reasoning, the observation that triggered the change with its numbers against thresholds, the plan it supersedes and the review | |
-| Wed 11 | Demo task chosen; real model smoke-tested | [The task](#the-demo-task) meets its conditions; the model calls `propose_plan` through the spike extension | |
-| Thu 12 – Fri 13 | **M2 Capture.** `capture/capture.ts` writes real steps as Pi works | An offline run on the scripted provider passes `trail.py check --store`, with a test for each item under [what capture does](#m2-what-capture-does) | |
-| Sat 14 | **M3 Live task.** One real task through Pi with a real model | The trail holds a contradicted observation and a superseding plan; a human review is appended; `check --store` passes; the view and `facts` read cleanly despite exploratory commands | |
-| Sun 15 | **M4 Evidence.** The reader study and the tamper demonstration | Three or more readers, answers and minutes recorded for view and baseline. Editing a past step fails `check`; re-chaining it passes `check` and fails `verify` | |
-| Mon 16 | **M5 Write-up.** The study's table, a figure of the timeline, the pitch | The live trail and its view are committed, and a stranger sees the demo from one link | |
-| Tue 17 | Buffer, then submit by 18:00 | Submitted | |
+## Slices
 
-### M1: the view
+A slice is done when its check passes, not when its code is written. Slices 1 to 3 share no
+files and are built at the same time.
 
-Built from the existing `load`, `check`, `facts` and `heads`. No server and no external assets,
-so the page can be committed and opened from a link.
+| When | Slice | Built by | Done when | State |
+| --- | --- | --- | --- | --- |
+| Thu 12 | **R0 Roadmap.** This file, [AGENTS.md](AGENTS.md), CI, specs 1 to 3 | a session | `uv run pytest` passes; each spec has every section of the [meta-spec](docs/meta-spec.md) | done |
+| Fri 13 | **Smoke test.** A real model drives `capture/probe.ts` | a person | The model calls `propose_plan`, then `bash`, and `trail.py check` passes on what the probe wrote | |
+| Fri 13 | **1 Reviewer view.** [Spec](docs/specs/01-reviewer-view.md): `why`, `view`, two new facts, `review` and `note` | an agent | Tests assert that `why` and the page give step 4's trigger, 0.58 against 0.75, the plan it replaced and its review; the page loads nothing external | |
+| Fri 13 | **2 Capture.** [Spec](docs/specs/02-capture.md): `capture/capture.ts` and `scripts/live.sh` | an agent | A scripted run passes `check --store`; a later `ls` is not settled with earlier numbers; a replacement plan is accepted with an id taken from a receipt | |
+| Fri 13 | **3 Demo task.** [Spec](docs/specs/03-demo-task.md): `demo/` | an agent | A test shows the inherited analysis missing the floor and a corrected one meeting it, each in under a minute | |
+| Sat 14 | **Live run.** The demo task through Pi with a real model, on merged slices 1 to 3 | a person; defects go to agents | A trail under `live/` holds a contradicted observation and a replacement plan, passes `check --store`, and `why` answers for the replacement | |
+| Sun 15 | **4 Evidence.** Spec written from the live trail: the reader check, the tamper sequence, fixes to the view | an agent and a person | The reader check prints its table; editing a past step fails `check`; re-chaining it passes `check` and fails `verify` | |
+| Mon 16 | **Submission.** `README.md` as the landing page, the write-up, the video, the published view, licence and visibility | a person and an agent | A stranger sees the live trail's view from one link; the video is under three minutes | |
+| Tue 17 | Buffer; submit by 15:00 | a person | Submitted | |
 
-- It leads with the decision path: each change of approach as one sentence, with its step.
-- A change-of-approach card shows the old plan, the observation that contradicted it with
-  measured values against thresholds, the new plan's reasoning and any review.
-- Runs that wrote no metrics are collapsed into a count ("12 exploratory commands"), and open on
-  request.
-- Consecutive runs show the code that changed between them, from their snapshot commits.
-- The facts and the head digest sit beside the timeline.
+### How a slice is built
 
-### M2: what capture does
+1. A spec in `docs/specs/`, written to [docs/meta-spec.md](docs/meta-spec.md), is merged to
+   `main` before any code.
+2. One agent works one spec on one branch, `spec/NN-name`, and edits only the spec's target
+   files. [AGENTS.md](AGENTS.md) has the rules every agent follows.
+3. A deviation is written into the spec first, in the same pull request.
+4. The branch merges by pull request once CI is green and the spec's rejection criteria have
+   been read against the diff.
 
-`capture/probe.ts` is the spike that proved each assumption against Pi 0.84.1. `capture.ts`
-replaces its stubs. Each item has a test on the scripted provider.
+### Interfaces the slices share
 
-- **Task.** Step 0 comes from `demo/task.json` (question, project, declared measures, public
-  parameters) at `session_start`, with the agent's identity from the session.
-- **Plans.** `propose_plan` takes a summary, reasoning, expectations and optional `supersedes`
-  and `triggered_by`. It runs sequentially, refuses an undeclared measure, and refuses a
-  replacement plan that names no observation. A `bash` call with no open plan is blocked.
-- **Runs.** Written before the command executes: the command and its digest, the code, the
-  environment digest, the parameters parsed from `--name value` flags, and digests of the
-  declared input files.
-- **Code snapshots.** Before each run the working tree is committed to a side ref, and the run
-  cites that commit. An agent edits files between runs without committing, and a digest of a
-  dirty diff would leave "which code produced which result" unreadable.
-- **Observations.** `bash` runs through a wrapper that keeps the exit code, duration and output
-  size. The measures are read from `out/metrics.json`, which is copied to the content-addressed
-  store, and checks and outcome are computed by the same rules as the checker.
-- **Fresh metrics only.** A metrics file counts only if this run wrote it. Without that rule an
-  `ls` after an experiment would be settled with the experiment's numbers.
-- **Guards.** `write` and `edit` are blocked on the trail's real path.
+These are fixed. A slice that needs one changed stops and asks.
 
-Two changes to `trail.py` go with it:
+- **The step format.** `step.schema.json` and the rules in `trail.check`. No slice changes them.
+- **The task file.** `task.json` holds `summary`, `question`, `project`, `declared_measures`,
+  `public_parameters`, `inputs` (file paths relative to the workspace) and `by` (`human:NAME`).
+  Capture writes step 0 from it.
+- **The metrics file.** A run reports its numbers by writing `out/metrics.json` in the
+  workspace: one object of measure names to numbers.
+- **A demo directory.** `task.json`, `prompt.md` and `workspace/`, the files the agent starts
+  from. `workspace/` is a `uv` project with its own lock file.
+- **The launcher.** `scripts/live.sh DEMO_DIR NAME [pi options]` copies the workspace to a new
+  git repository outside this one, runs Pi there with capture loaded, and leaves:
 
-- `facts` counts a plan's attempts only among runs that wrote metrics, so exploratory commands
-  do not read as "14 runs".
-- `facts` reports a moved goalpost: a superseding plan whose threshold on the same measure is
-  easier than the one the triggering observation missed.
+  | Path | Contents |
+  | --- | --- |
+  | `live/NAME/steps/step-N.json` | the trail, named `NAME` |
+  | `live/store/` | metrics files by digest, shared by all live trails |
+  | `live/NAME/code.bundle` | a git bundle of the code snapshots, one branch |
+  | `live/NAME/session/` and `live/NAME/events.jsonl` | Pi's own transcript: what a reviewer has today |
 
-Also added: `review TRAIL STEP --verdict … --text …` and `note`, the only way a human step
-enters. Both chain from the current head.
+- **Code for the view.** `trail.py view DIR --code REPO` reads snapshot commits from a git
+  repository, which `git clone live/NAME/code.bundle` produces.
 
-### The demo task
+### Only a person can do these
 
-A small re-analysis of a public dataset with a known pitfall (leakage, class imbalance or a
-confound), not generic model tuning: the audience should recognise it as research. Conditions:
+- Get a model key working in Pi (Berget first, a second provider as fallback) and run the smoke
+  test. It needs nothing that is not already in the repository, so it comes first.
+- Run the live task on Saturday and decide which defects are worth fixing.
+- Ask the organisers the [open questions](#open-questions-for-the-organisers) on Friday.
+- Find one person who has not seen the task and record them answering the step question.
+- Record the video, choose the licence and make the view reachable from one link.
+- Merge pull requests.
 
-- the floor is fixed in `task.json` before the run;
-- the naive first approach honestly falls short of it, so the failure is real;
+## Gates
+
+| When | If | Then |
+| --- | --- | --- |
+| Fri 13, evening | the real model does not call the tools in order | switch model or provider before Saturday |
+| Sat 14, 14:00 | no live trail has a replacement plan | switch model or provider |
+| Sat 14, 20:00 | still none | revise `demo/prompt.md` and run again, keeping every attempt |
+| Sun 15, 18:00 | code diffs in the view or parameter parsing are unfinished | cut them |
+| Mon 16, 20:00 | the repository cannot be public | attach the view and the video to the submission |
+
+## Evidence
+
+The brief's criterion is checked in three ways, in this order of priority.
+
+1. **`trail.py why TRAIL STEP`** prints the answer to the brief's question from the links alone:
+   the plan that was replaced, the observation that contradicted it with the measured value
+   against the threshold, the new plan's reasoning and any review. A test pins it on the churn
+   example. It works for any step, so it works on a live trail whose change is not at step 4.
+2. **A reader check.** A model that has not seen the task answers four questions, once from the
+   view's text and once from what a reviewer has today, Pi's transcript and the git log. The
+   answers are graded against a key of step ids and numbers taken from the step files. The
+   script, the questions, the key and the table are committed.
+   1. Why did the approach change, and at which step?
+   2. Which code and parameters produced the final result?
+   3. How many attempts did the final plan take before it held?
+   4. What was tried and abandoned?
+3. **One cold reader.** A person who did not see the task answers question 1 from the view, and
+   the video shows it.
+
+Stretch: three human readers, asked by link. Each reads one presentation only, so no answer is
+learned from the other. Report the table as measured, with the number of readers.
+
+The questions are fixed before the live run. Every live attempt is committed under `live/`, and
+the write-up says how many there were: an entry about forking paths shows its own.
+
+## The demo task
+
+A re-analysis of an inherited script that has a known pitfall, on a public dataset. The agent
+reproduces the script's headline number, then tests it on data held out before anything was
+fitted. The failure belongs to the inherited analysis, so it does not depend on the model making
+a mistake, and a test can show it without a model. Conditions:
+
+- the floor is fixed in `task.json` before any run, as the headline number less a stated margin;
+- the inherited analysis misses it by a clear distance, and a corrected analysis is consistent;
 - one run takes under a minute, and the whole task fits the compute credit;
 - every parameter is public, so the reviewer reads values, not digests.
 
-The churn examples remain the rehearsal and the test fixtures.
-
-### Reader study
-
-- **Readers.** Three to five people who did not see the task run.
-- **Material.** The live trail, presented two ways: the generated view, and the baseline a
-  reviewer has today, Pi's raw session transcript plus the git log.
-- **Questions**, fixed before the live run, each with an answer key taken from the step files:
-  1. Why did the approach change, and at which step?
-  2. Which code and parameters produced the final result?
-  3. How many attempts did the final plan take before it held?
-  4. What was tried and abandoned?
-- **Design.** Each reader answers from one presentation first, then the other; alternate which
-  comes first. Stop a reader at ten minutes per presentation.
-- **Recorded.** Per reader and presentation: correct answers out of four, and minutes.
-- **Reported.** The table as measured, with the number of readers, and what readers said was
-  missing. No claim beyond what three to five readers can support.
-
-### Kick-off questions
-
-1. What is submitted, and where: a repository, a write-up, a video? Is there a template or a
-   length limit?
-2. What are the judging criteria?
-3. Is work done before 10 November allowed? The schema, checker and examples predate it, and
-   the first commit says so.
-4. Team size, and whether a solo entry is accepted.
-5. Must the repository be public, and under which licence?
-6. What the Berget AI credit covers, and which models support tool calling.
+The churn examples remain the test fixtures.
 
 ## Cut line
 
 In scope: one task type, one agent, one runner.
 
-Already cut for the week, and named in the pitch: the redactor, keyed digests for hidden values,
-the read-only mount around the trail, the token budget and the ledger shown to the agent.
+Cut for the week, and named in the pitch: the redactor, keyed digests for hidden values, the
+read-only mount around the trail, the token budget and the ledger shown to the agent. The agent
+learns step ids from a receipt line on each command's result instead.
 
-If time still runs short, cut in this order:
+If time runs short, cut in this order:
 
 1. code diffs in the view (keep the snapshot commits);
 2. parameter parsing beyond `--name value`;
-3. the second presentation order in the reader study.
+3. the human readers beyond the one in the video;
+4. the moved-goalposts fact.
 
-Never cut: the view, runs written before they execute, measures read from a fresh metrics file,
-the live trail, and at least three readers.
+Never cut: the view, `why`, runs written before they execute, measures read from a fresh
+metrics file, a live trail, the video.
 
 Out of scope: multi-trail merge in the demo, PROV-O export, the Almanaque port, and signing by
 the capture host, which stays an open question with the host named as the trust root.
 
 ## Risks
 
-- **The submission format is unknown.** The site gives only the deadline. M5 assumes a
-  repository and a short write-up.
-- **The live model may not call tools reliably.** That is why the smoke test is on Wednesday.
-  Keep a second provider key as a fallback.
-- **The demo task may not fail by itself.** The conditions above exist for this; test the naive
-  approach by hand on Wednesday before committing to the task.
-- **Readers are hard to find on a Sunday.** Ask at kick-off and line them up by Thursday.
+- **The live model may not call tools reliably.** The smoke test is first for that reason, and
+  a second provider key is the fallback.
+- **The agent may never replace a plan.** The demo task makes the contradiction certain; whether
+  the agent then records a replacement depends on the protocol text and the receipts. The
+  scripted test covers the mechanics, Saturday's gates the behaviour.
+- **The pitfall may not bite on the chosen data.** Spec 3 chooses the dataset by measurement and
+  has a second pitfall to fall back on.
+- **Three agents may collide.** Target files are disjoint by spec, and the shared documents
+  (`README.md`, this file, `docs/HACKATHON.md`) are edited only in the submission slice.
+- **The trail is not protected from the agent's shell.** `write` and `edit` are blocked on the
+  trail's path, `bash` is not. The pitch says so.
 
-## Working rules
+## Open questions for the organisers
 
-- Commit to `main`. Run `uv run pytest` and `uv run ruff check` before each commit.
-- A step-format change updates `step.schema.json`, `trail.py`, `capture/` and the design
-  together, and regenerates `examples/`.
-- The committed examples are fixtures: change them only through `trail.py examples examples`.
+1. Is work done before 10 November allowed? The schema, checker and examples predate it, and
+   the first commit says so. The write-up discloses it either way.
+2. Must the repository be public, and under which licence?
+3. What are the judging criteria, and is there a length limit for the video and the write-up?
+4. Which Berget models support tool calling?
 
 ## Decisions
 
 | Date | Decision |
 | --- | --- |
 | 10 Nov | A repository of its own, apart from Almanaque. The entry has to stand alone, and Almanaque stays a downstream consumer |
-| 10 Nov | Local git only until the submission rules are known. Remote, visibility and licence are decided after kick-off |
 | 10 Nov | Pi 0.84.1 is the one agent, pinned in `capture/package.json` |
-| 10 Nov | The view comes before capture, and the entry reports a reader study. Privacy features and the sandbox are cut for the week |
+| 10 Nov | The view comes before capture. Privacy features and the sandbox are cut for the week |
+| 10 Nov | From kick-off: the submission includes a video or a demo |
+| 12 Nov | Built from specs by agents, one branch and pull request per spec, on a private GitHub remote. Visibility and licence are decided by Monday |
+| 12 Nov | Slices 1 to 3 are built in parallel; the view's code lives in `view.py` so that `trail.py` has one owner |
+| 12 Nov | The reader study is replaced by `why`, a reader check by a model, and one cold reader in the video. Human readers are a stretch |
+| 12 Nov | The demo task is a re-analysis of an inherited script, so its failure does not depend on the model |
+| 12 Nov | Every live attempt is committed |
