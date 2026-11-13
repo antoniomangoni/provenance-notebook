@@ -299,6 +299,11 @@ def facts(steps: list[dict]) -> list[str]:
     these is an error; they are what a reviewer asks about, and only the steps can say why."""
     runs = {step["id"]: step for step in steps if step["kind"] == "run"}
     settlement = {observed(step): step for step in steps if step["kind"] == "observation"}
+    by_id = {step["id"]: step for step in steps}
+    # An attempt is a run that measured something, or one that never settled and might have. A command
+    # whose observation names no metrics file is exploration: listing files or reading data is not a
+    # try at the plan's expectations, so it neither counts as an attempt nor as a repeat.
+    attempts = {rid for rid in runs if rid not in settlement or settlement[rid].get("measures_source")}
 
     def call(run):
         return digest(canonical({"command": run["command"]["digest"], "code": run["code"], "environment": run.get("environment"),
@@ -308,27 +313,46 @@ def facts(steps: list[dict]) -> list[str]:
         kept = settlement[rid]
         return digest(canonical({"exit_code": kept["exit_code"], "outputs": sorted(o["digest"] for o in kept.get("outputs", []))}))
 
+    def commands(rids):
+        return f"{len(rids)} command{'s' * (len(rids) != 1)}"
+
+    def failures(rids):
+        failed = sum(settlement[rid]["outcome"] == "failed" for rid in rids if rid in settlement)
+        return f", {failed} failed" if failed else ""
+
     found = []
     for plan in (step for step in steps if step["kind"] == "plan"):
-        attempts = [rid for rid, run in runs.items()
-                    if any(link["relation"] == "implements" and link["target"] == plan["id"] for link in run["links"])]
-        if not attempts:
+        implementing = [rid for rid, run in runs.items()
+                        if any(link["relation"] == "implements" and link["target"] == plan["id"] for link in run["links"])]
+        if not implementing:
             found.append(f"{plan['id']}: never run")
             continue
-        outcomes = [settlement[rid]["outcome"] if rid in settlement else "unsettled" for rid in attempts]
-        distinct = len({result(rid) for rid in attempts if rid in settlement})
-        found.append(f"{plan['id']}: {len(attempts)} run{'s' * (len(attempts) > 1)}, {distinct} distinct result"
-                     f"{'s' * (distinct != 1)}: " + ", ".join(f"{rid} {o}" for rid, o in zip(attempts, outcomes)))
-        # Re-running a plan until it holds is the garden of forking paths; the trail shows the
-        # attempts that came before, which a write-up of the last one would leave out.
-        if "as_expected" in outcomes and "contradicted" in outcomes[:outcomes.index("as_expected")]:
-            first = outcomes.index("as_expected")
-            found.append(f"{plan['id']}: first held on attempt {first + 1} of {len(attempts)}, "
-                         f"after {outcomes[:first].count('contradicted')} contradicted")
+        if all(expectation["comparison"] in EXIT for expectation in plan["expectations"]):
+            found.append(f"{plan['id']}: exploration, {commands(implementing)}{failures(implementing)}")
+            continue
+        tried = [rid for rid in implementing if rid in attempts]
+        if not tried:
+            found.append(f"{plan['id']}: no measured run")
+        else:
+            outcomes = [settlement[rid]["outcome"] if rid in settlement else "unsettled" for rid in tried]
+            distinct = len({result(rid) for rid in tried if rid in settlement})
+            found.append(f"{plan['id']}: {len(tried)} run{'s' * (len(tried) > 1)}, {distinct} distinct result"
+                         f"{'s' * (distinct != 1)}: " + ", ".join(f"{rid} {o}" for rid, o in zip(tried, outcomes)))
+            # Re-running a plan until it holds is the garden of forking paths; the trail shows the
+            # attempts that came before, which a write-up of the last one would leave out.
+            if "as_expected" in outcomes and "contradicted" in outcomes[:outcomes.index("as_expected")]:
+                first = outcomes.index("as_expected")
+                found.append(f"{plan['id']}: first held on attempt {first + 1} of {len(tried)}, "
+                             f"after {outcomes[:first].count('contradicted')} contradicted")
+        if explored := [rid for rid in implementing if rid not in attempts]:
+            found.append(f"{plan['id']}: {commands(explored)} wrote no metrics{failures(explored)}")
+        found += eased(plan, by_id)
     calls, results = {}, {}
     for rid, run in runs.items():
         if rid not in settlement:
             found.append(f"{rid}: never settled; it has no observation")
+        if rid not in attempts:
+            continue
         if call(run) in calls:
             found.append(f"{rid}: repeats {calls[call(run)]}, with the same command, code, environment, parameters and inputs")
         calls.setdefault(call(run), rid)
@@ -336,6 +360,34 @@ def facts(steps: list[dict]) -> list[str]:
             earlier = results.setdefault(result(rid), rid)
             if earlier != rid and call(runs[earlier]) != call(run):
                 found.append(f"{rid}: a different run from {earlier}, with the same outputs")
+    return found
+
+
+def eased(plan: dict, by_id: dict[str, dict]) -> list[str]:
+    """A plan that replaced one whose expectation its trigger missed, and asks less of the same measure.
+    Lowering the bar after missing it is a change a reviewer should see stated, whatever its reason."""
+    found = []
+    triggers = [by_id[link["target"]] for link in plan.get("links", []) if link["relation"] == "triggered_by" and link["target"] in by_id]
+    for link in plan.get("links", []):
+        old = by_id.get(link["target"]) if link["relation"] == "supersedes" else None
+        if old is None or old["kind"] != "plan":
+            continue
+        for trigger in triggers:
+            run = by_id[observed(trigger)]
+            if not any(lk["relation"] == "implements" and lk["target"] == old["id"] for lk in run["links"]):
+                continue
+            missed = {check["expectation"] for check in trigger.get("checks", []) if not check["held"]}
+            for before in old["expectations"]:
+                if before["comparison"] in EXIT or before["name"] not in missed:
+                    continue
+                for after in plan["expectations"]:
+                    if (after["measure"], after["comparison"]) != (before["measure"], before["comparison"]):
+                        continue
+                    lower, higher = after["threshold"] < before["threshold"], after["threshold"] > before["threshold"]
+                    if (lower and before["comparison"] in ("ge", "gt")) or (higher and before["comparison"] in ("le", "lt")):
+                        sign = COMPARISONS[before["comparison"]]
+                        found.append(f"{plan['id']}: eases {before['measure']} from {sign} {format(before['threshold'], 'g')} "
+                                     f"to {sign} {format(after['threshold'], 'g')} after {trigger['id']} missed it")
     return found
 
 

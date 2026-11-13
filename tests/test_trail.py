@@ -129,3 +129,73 @@ def test_head_and_verify_from_the_command_line(tmp_path):
     assert cli("check", tmp_path).returncode == 0
     rewritten = cli("verify", tmp_path, cited)
     assert rewritten.returncode == 1 and "never had the head" in rewritten.stdout
+
+
+def grow(steps: list[dict], *new: dict) -> list[dict]:
+    """Appends steps after the last, chained and dated with it, as capture would write them."""
+    for step in new:
+        last = steps[-1]
+        steps.append({"version": 2, "id": f"step-{len(steps)}", "seq": len(steps), "trail": steps[0]["trail"], "at": last["at"],
+                      **step, "prev": trail.digest(trail.canonical(last))})
+    return steps
+
+
+def explore(steps: list[dict], plan: str, command: str, exit_code: int = 0, outcome: str = "inconclusive", checked: bool = True) -> list[dict]:
+    """A command and its observation, which names no metrics file: it measured nothing. Its one check is
+    the plan's `runs` expectation, left out when the plan has none."""
+    ran = trail.run(plan, command, [], "commit:notebook@3f9c2a1")
+    settled = {"kind": "observation", "by": trail.RUNNER, "summary": f"exit {exit_code}", "exit_code": exit_code,
+               "checks": [{"expectation": "runs", "held": exit_code == 0}] * checked, "outcome": "failed" if exit_code else outcome,
+               "links": [{"relation": "observes", "target": f"step-{len(steps)}", "status": "confirmed"},
+                         {"relation": "tests", "target": plan, "status": "confirmed"}]}
+    if exit_code:
+        settled["error"] = {"class": "exit"}
+    return grow(steps, ran, settled)
+
+
+LOOK = {"kind": "plan", "by": trail.AGENT, "summary": "Look at the data first", "reasoning": "List the files and count the rows.",
+        "expectations": [{"name": "runs", "measure": "exit", "comparison": "exit_ok"}]}
+
+
+def test_exploratory_commands_are_counted_apart_from_attempts(churn):
+    explore(churn, "step-4", "ls data")
+    explore(churn, "step-4", "head data/missing.csv", exit_code=1)
+    assert trail.check(churn) == []
+    found = trail.facts(churn)
+    assert "step-4: 1 run, 1 distinct result: step-5 as_expected" in found
+    assert "step-4: 2 commands wrote no metrics, 1 failed" in found
+
+
+def test_an_exploration_plan_gets_one_line_and_no_attempts(churn):
+    grow(churn, LOOK)
+    explore(churn, "step-8", "ls data", outcome="as_expected")
+    explore(churn, "step-8", "wc -l data/missing.csv", exit_code=1)
+    assert trail.check(churn) == []
+    found = [fact for fact in trail.facts(churn) if fact.startswith("step-8:")]
+    assert found == ["step-8: exploration, 2 commands, 1 failed"]
+
+
+def test_a_plan_with_only_exploratory_runs_has_no_measured_run(churn):
+    grow(churn, {**LOOK, "expectations": [{"name": "auc-floor", "measure": "auc", "comparison": "ge", "threshold": 0.75}]})
+    explore(churn, "step-8", "ls data", checked=False)
+    assert trail.check(churn) == []
+    found = [fact for fact in trail.facts(churn) if fact.startswith("step-8:")]
+    assert found == ["step-8: no measured run", "step-8: 1 command wrote no metrics"]
+
+
+def test_repeats_consider_attempts_only(churn):
+    explore(churn, "step-4", "ls data")
+    explore(churn, "step-4", "ls data")
+    assert trail.check(churn) == []
+    assert not any("repeats" in fact for fact in trail.facts(churn))
+
+
+def test_an_eased_threshold_is_stated(churn):
+    churn[4]["expectations"][1]["threshold"] = 0.7
+    rechain(churn, 5)
+    assert trail.check(churn, EXAMPLES / "store") == []
+    assert "step-4: eases auc from >= 0.75 to >= 0.7 after step-3 missed it" in trail.facts(churn)
+
+
+def test_the_unchanged_churn_trail_eases_nothing(churn):
+    assert not any("eases" in fact for fact in trail.facts(churn))
