@@ -7,6 +7,7 @@
     python trail.py examples DIR
     python trail.py graph TRAIL_DIR [--csv]
     python trail.py merge OUT_DIR TRAIL_DIR... [--csv]
+    python trail.py why TRAIL_DIR [STEP]
 
 A trail is a directory of step files, steps/step-N.json, each written once. The JSON Schema
 checks one file; this checks what spans files: order, the digest chain, which kinds carry
@@ -65,6 +66,7 @@ KIND = re.compile(rf"(?:{NAME}/)?({NAME}):")
 # Kinds named across projects: an actor or a URL is the same node wherever it is cited.
 GLOBAL = {"url", "agent", "runner", "human"}
 EXIT = ("exit_ok", "exit_fail")
+COMPARISONS = {"lt": "<", "le": "<=", "eq": "==", "ge": ">=", "gt": ">"}
 
 
 def a(word: str) -> str:
@@ -637,13 +639,19 @@ def write_graph(directory: Path, nodes: list[dict], edges: list[dict], suffix: s
     print(f"{len(nodes)} nodes, {len(edges)} edges in {directory}")
 
 
+def option(args: list[str], name: str) -> str | None:
+    """Takes `name VALUE` out of the arguments and returns VALUE, or None when it is absent."""
+    if name not in args:
+        return None
+    value = args[args.index(name) + 1]
+    del args[args.index(name):args.index(name) + 2]
+    return value
+
+
 if __name__ == "__main__":
     suffix = ".csv" if "--csv" in sys.argv else ".parquet"
     args = [arg for arg in sys.argv[1:] if arg != "--csv"]
-    store = None
-    if "--store" in args:
-        store = Path(args[args.index("--store") + 1])
-        del args[args.index("--store"):args.index("--store") + 2]
+    store = Path(kept) if (kept := option(args, "--store")) else None
     command, directory = args[0], Path(args[1])
     if command == "examples":
         store = directory / "store"
@@ -674,6 +682,14 @@ if __name__ == "__main__":
             found = verify(steps, args[2])
             problems += found
             print("\n".join(found) or f"had that head after step-{heads(steps)[args[2]]} of {len(steps) - 1}")
+        if command == "why" and not found:
+            import view
+
+            try:
+                print("\n".join(view.why(steps, args[2] if len(args) > 2 else None)))
+            except LookupError as error:
+                print(error.args[0])
+                problems.append(error.args[0])
     if command == "merge" and not problems:
         nodes, edges, problems = merge(loaded)
         print("\n".join(problems)) if problems else write_graph(directory, nodes, edges, suffix)
