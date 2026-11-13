@@ -1,0 +1,9 @@
+{
+  "summary": "Fit a churn model that meets the floor",
+  "question": "Does a fit on the telco sample reach an AUC of at least 0.75?",
+  "project": "capture-demo",
+  "declared_measures": ["auc", "positive_rate"],
+  "public_parameters": ["seed", "model", "auc"],
+  "inputs": ["data/telco.csv", "data/absent.csv"],
+  "by": "human:tester"
+}

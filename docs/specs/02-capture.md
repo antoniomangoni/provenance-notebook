@@ -163,11 +163,17 @@ plan with `supersedes` and `triggered_by`. The launcher appends it to the system
 3. Runs Pi there with `-p --mode json --no-context-files`, `capture.ts`, the protocol appended,
    the session directory at `ROOT/NAME/session`, the options passed through, and the text of
    `DEMO_DIR/prompt.md` as the message. Standard output goes to `ROOT/NAME/events.jsonl`.
+   Standard input is closed, because Pi in print mode waits for it to end. Pi runs in the
+   workspace, so the launcher makes absolute an extension passed with `-e` and the script
+   `NOTEBOOK_SCRIPT` names when they are given relative to where it was called.
    Pi runs under `timeout`, for `NOTEBOOK_WALL` seconds or 1,800. When the time runs out the
    launcher says so and goes on.
 4. Whatever Pi's exit status, bundles the snapshot branch to `ROOT/NAME/code.bundle`, runs
    `trail.py check` with the store at `ROOT/store`, and prints the result and the workspace's
-   path. The workspace is kept. The launcher's own exit status is the check's.
+   path. The workspace is kept. The launcher's own exit status is the check's, except that a
+   trail with no step 0 fails: the checker finds no problem in a trail of no steps, and that
+   trail means capture never started. With no run there is no snapshot branch, and the launcher
+   says so and writes no bundle.
 
 ## Technical decisions and stack
 
@@ -202,13 +208,17 @@ The extension sits in `capture/`, the launcher in `scripts/`, tests in `tests/`.
 | `capture/README.md` | new: what capture records, how to run it, its limits, and what a host must offer |
 | `scripts/live.sh` | new |
 | `tests/test_capture.py` | new |
-| `tests/fixtures/capture-demo/` | new: `task.json`, `prompt.md`, and a `workspace/` whose `fit.py` writes the metrics its flags name, with the standard library only |
+| `tests/fixtures/capture-demo/` | new: `task.json`, `prompt.md`, `change.json` (the scripted turns of scenario 1), and a `workspace/` whose `fit.py` writes the metrics its flags name, with the standard library only |
+| `docs/specs/02-capture.md` | this spec, where Pi or the checker behaved otherwise than it assumed |
 
 ## Testing and conformance
 
 `tests/test_capture.py` runs the launcher with the scripted provider and `NOTEBOOK_LIVE` set to
 a temporary directory, and skips without Node.js or `capture/node_modules/.bin/pi`. Every
-scenario asserts that `trail.check(steps, store)` is empty.
+scenario asserts that `trail.check(steps, store)` is empty. The tests set `PI_CODING_AGENT_DIR`
+to an empty directory and name the model, `--model scripted-1`: where Pi's settings name a
+default model, `--provider script` alone does not override it, and the session would go to that
+model. Each scenario asserts that step 0 names the scripted model.
 
 1. **A change of approach.** An exploration plan and an `ls`; a plan with a floor; a run that
    misses it; a plan that supersedes it, citing the observation's id; a run that meets it. The
@@ -252,7 +262,7 @@ uv sync && npm ci --prefix capture
 uv run pytest tests/test_capture.py
 uv run ruff check
 NOTEBOOK_LIVE=/tmp/live NOTEBOOK_SCRIPT=tests/fixtures/capture-demo/change.json \
-  scripts/live.sh tests/fixtures/capture-demo demo-run -e capture/scripted.ts --provider script
+  scripts/live.sh tests/fixtures/capture-demo demo-run -e capture/scripted.ts --provider script --model scripted-1
 ```
 
 TypeScript uses tabs and ES modules, as `canonical.ts` does. `live.sh` is `bash` with
