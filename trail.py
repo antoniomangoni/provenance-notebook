@@ -21,6 +21,8 @@ prints the digest a trail is cited at, and `verify` says whether a checked trail
 head: one rewritten and re-chained still passes `check`, but no longer has it. `graph`
 writes graph/nodes.parquet and graph/edges.parquet (typed; `--csv` writes text tables instead), the
 probe as a named graph; `merge` writes one pair for several probes and resolves each citation of one probe by another (see docs/GRAPH.md).
+`why` and `view` are what a reviewer reads (view.py); `review` and `note` append a person's step,
+written only when the trail checks with it.
 """
 
 import csv
@@ -769,6 +771,7 @@ if __name__ == "__main__":
             import view
 
             written = Path(out) if out else path / "view.html"
+            written.parent.mkdir(parents=True, exist_ok=True)
             written.write_text(view.page(steps, Path(code) if code else None), encoding="utf-8")
             print(f"wrote {written}")
         if command in ("review", "note") and not found:

@@ -9,6 +9,7 @@ A trail is one defined task: `steps/step-N.json`, one file per step, each writte
 steps, whose step 4 is a change of approach; retention's five, which build on churn's result; and
 tuning's thirteen, which re-run one plan until it holds ([Facts](#facts)). `check --store DIR` reads
 each observation's metrics file again, and `trail.py facts DIR` lists what a checked trail shows.
+`trail.py why` and `trail.py view` are what a reviewer reads ([Why, and the reviewer's view](#why-and-the-reviewers-view)).
 `trail.py graph DIR` exports a checked trail as
 `graph/nodes.parquet` and `graph/edges.parquet` ([Graph](GRAPH.md#graph)), and `trail.py merge OUT DIR...`
 exports several as one graph ([Many probes](GRAPH.md#many-probes)); `--csv` writes text tables instead.
@@ -62,17 +63,51 @@ review that confirmed it.
 
 `trail.py facts DIR` reports what a checked trail shows without judging it, for a reviewer to ask about:
 
-- each plan's runs, how many distinct results they produced and each outcome;
-- a plan that first held only after earlier runs contradicted it, which is how re-running until a
+- each plan's attempts, how many distinct results they produced and each outcome. An attempt is a
+  measured run, whose observation names a metrics file, or an unsettled run. A plan with runs but no
+  attempt gets `no measured run`;
+- a plan's exploratory commands, runs whose observation names no metrics file, counted apart as
+  `12 commands wrote no metrics`, with how many failed;
+- an exploration plan, one whose every expectation is only about the exit code, as one line with its
+  number of commands and failures, and no attempts;
+- a plan that first held only after earlier attempts contradicted it, which is how re-running until a
   result appears (the garden of forking paths) looks in a trail;
-- a run that repeats an earlier one: the same command, code, environment, parameters and inputs;
-- a different run that wrote the same outputs as an earlier one;
-- an unsettled run.
+- an attempt that repeats an earlier one: the same command, code, environment, parameters and inputs;
+- a different attempt that wrote the same outputs as an earlier one;
+- an unsettled run;
+- an eased threshold: a plan that replaces another after its own trigger missed one of the old plan's
+  expectations, and expects less of the same measure with the same comparison, as
+  `step-4: eases auc from >= 0.75 to >= 0.7 after step-3 missed it`.
 
-None is an error, and none says why: a repeat can be a deliberate reproduction. Only steps carry
-reasons. The tuning example has each fact once: five runs of one plan, holding first on the third,
-step 8 repeating step 6, step 10 stopped by the budget before it settled, and a review that disputes
-reporting the one seed that held.
+None is an error, and none says why: a repeat can be a deliberate reproduction, and an eased threshold
+can be the right call. Only steps carry reasons. The tuning example has each of the first kinds once:
+five runs of one plan, holding first on the third, step 8 repeating step 6, step 10 stopped by the
+budget before it settled, and a review that disputes reporting the one seed that held.
+
+## Why, and the reviewer's view
+
+`trail.py why DIR STEP` answers "why did they change approach at STEP?" from the links alone. A change of
+approach is a plan that supersedes an earlier plan. Its answer names the replaced plan, the trigger with
+each expectation it missed (`auc 0.58, expected >= 0.75 (auc-floor)`, or the exit code of a failed run),
+the new plan and its reasoning, whole and unchanged, and each review or note on any of these. A trigger
+in another probe is shown as its citation, without numbers. Without `STEP`, `why` prints one sentence
+per change of approach; for a step that is not one, it says what kind of step it is and which change it
+took part in.
+
+`trail.py view DIR` writes `view.html` (or `--out FILE`): the task and head, the decision path with one
+sentence per change of approach, a card for each change, a timeline of plans with their runs, and the
+facts. Exploratory commands are folded into one closed section per plan. With `--code REPO`, consecutive
+measured runs at different commits show `git diff` between them, cut at 400 lines; without the
+repository, the two references.
+
+Both use fixed templates and infer nothing: a cause appears only when a link carries it. The page is one
+file with inline CSS and no script, every string from a step is escaped, and a trail always renders to the
+same bytes. It is not written for a trail that fails `check`.
+
+`trail.py review DIR STEP --verdict confirms|disputes --text TEXT --by NAME` and `trail.py note DIR STEP
+--text TEXT --by NAME` append a person's step, linked to `STEP`. Its `at` is now, or the last step's when
+that is later. The trail is checked with the new step before it is written, and nothing is written if it
+fails.
 
 ## The head
 
