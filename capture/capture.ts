@@ -49,6 +49,17 @@ export function readTask(text: string): Task {
 			throw new Error(`the task file needs ${field}, a list of strings`);
 	// An input is cited as file:PATH, which has no room for a space, an @ or a #.
 	if (task.inputs.some((path: string) => !/^[^\s@#]+$/.test(path))) throw new Error("the task file's inputs are paths without spaces, @ or #");
+	// Step 0 is written from these, so what the step schema would refuse is refused here, before
+	// a session is spent on a trail that could not pass the checker.
+	const fits: [string, boolean][] = [
+		["summary of at most 200 characters", Array.from(task.summary).length <= 200],
+		["question of at most 2,000 characters", Array.from(task.question).length <= 2000],
+		["project of lower-case letters, digits, _ and -", /^[a-z][a-z0-9_-]{0,99}$/.test(task.project)],
+		["by as human:NAME or runner:NAME", /^(human|runner):[A-Za-z0-9._/@-]{1,100}$/.test(task.by)],
+		["declared_measures, at least one, of letters, digits, _ . and -", task.declared_measures.length > 0 && task.declared_measures.every((name: string) => MEASURE.test(name))],
+		["public_parameters of letters, digits, _ . and -", task.public_parameters.every((name: string) => MEASURE.test(name))],
+	];
+	for (const [rule, ok] of fits) if (!ok) throw new Error(`the task file needs ${rule}`);
 	return task;
 }
 

@@ -73,6 +73,9 @@ real model's key.
 - **The trail is not protected from the agent's shell.** `write` and `edit` to the trail and the store
   are blocked by resolved path. A `bash` command can still reach them. A changed step breaks the chain
   and fails `check`; a deleted last step does not.
+- **Freshness is the file's modification time.** On a file system that keeps times to the second, a
+  command that rewrites the metrics within the same second as the one before is not seen as fresh, and
+  its observation is inconclusive.
 - **Only `bash` commands are runs.** What the agent reads with Pi's other tools is not recorded. What
   it edits shows in the next run's snapshot.
 - **Parameters** are recorded for `--name value` and `--name=value` only, when the task lists the name

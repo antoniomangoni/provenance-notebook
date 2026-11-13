@@ -342,3 +342,16 @@ def test_the_protocol_is_under_200_words_and_names_what_the_agent_must_use():
     assert len(protocol.split()) < 200
     for word in ("propose_plan", "exit_ok", "out/metrics.json", "[notebook]", "supersedes", "triggered_by"):
         assert word in protocol
+
+
+def test_a_task_file_the_schema_would_refuse_stops_capture_at_load(tmp_path):
+    demo = tmp_path / "demo"
+    shutil.copytree(FIXTURE, demo)
+    task = json.loads((demo / "task.json").read_text())
+    (demo / "task.json").write_text(json.dumps({**task, "by": "antonio"}))
+    done = subprocess.run([str(ROOT / "scripts" / "live.sh"), str(demo), "bad-task", "-e", "capture/scripted.ts", "--provider", "script",
+                           "--model", "scripted-1"], cwd=ROOT, check=False, capture_output=True, text=True, timeout=120,
+                          env={**os.environ, "NOTEBOOK_LIVE": str(tmp_path / "live"), "NOTEBOOK_SCRIPT": str(FIXTURE / "change.json"),
+                               "TMPDIR": str(tmp_path), "PI_CODING_AGENT_DIR": str(tmp_path / "pi"), "PI_OFFLINE": "1"})
+    assert done.returncode == 1 and "the task file needs by as human:NAME" in done.stderr
+    assert not (tmp_path / "live" / "bad-task" / "steps").exists()
