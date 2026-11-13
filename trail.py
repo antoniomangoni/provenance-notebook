@@ -8,6 +8,7 @@
     python trail.py graph TRAIL_DIR [--csv]
     python trail.py merge OUT_DIR TRAIL_DIR... [--csv]
     python trail.py why TRAIL_DIR [STEP]
+    python trail.py view TRAIL_DIR [--store STORE_DIR] [--code REPO] [--out FILE]
     python trail.py review TRAIL_DIR STEP --verdict confirms|disputes --text TEXT --by NAME
     python trail.py note TRAIL_DIR STEP --text TEXT --by NAME
 
@@ -764,6 +765,12 @@ if __name__ == "__main__":
             except LookupError as error:
                 print(error.args[0])
                 problems.append(error.args[0])
+        if command == "view" and not found:
+            import view
+
+            written = Path(out) if out else path / "view.html"
+            written.write_text(view.page(steps, Path(code) if code else None), encoding="utf-8")
+            print(f"wrote {written}")
         if command in ("review", "note") and not found:
             # The new step is checked with the whole trail before anything is written, so a review of a
             # step the trail lacks, or one the schema refuses, leaves the trail as it was.
