@@ -141,3 +141,49 @@ def test_a_trail_that_fails_check_writes_no_page(churn, tmp_path):
     write(tmp_path, churn)
     assert cli("view", tmp_path).returncode == 1
     assert not (tmp_path / "view.html").exists()
+
+
+def git(repo: Path, *args: str) -> str:
+    return subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@example.invalid", *args],
+                          check=True, capture_output=True, text=True).stdout.strip()
+
+
+def test_code_shows_the_diff_between_consecutive_measured_runs(churn, tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-q")
+    (repo / "fit.py").write_text("weights = None\n")
+    git(repo, "add", "fit.py")
+    git(repo, "commit", "-qm", "baseline")
+    before = git(repo, "rev-parse", "HEAD")
+    (repo / "fit.py").write_text("weights = 'balanced'\n")
+    git(repo, "commit", "-qam", "reweight")
+    after = git(repo, "rev-parse", "HEAD")
+    churn[2]["code"]["ref"] = f"commit:notebook@{before}"
+    churn[5]["code"]["ref"] = f"commit:notebook@{after}"
+    rechain(churn, 3)
+    assert trail.check(churn) == []
+    page = view.page(churn, repo)
+    shown = page[page.index('id="step-5"'):]
+    assert html.escape("+weights = 'balanced'") in shown and html.escape("-weights = None") in shown
+    assert str(repo) not in page
+    without = view.page(churn)
+    assert f"Code changed from <code>commit:notebook@{before}</code> to <code>commit:notebook@{after}</code>" in without
+    assert view.page(churn, tmp_path / "missing") == without
+
+
+def test_a_long_diff_is_cut_with_the_count_left_out(churn, tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-q")
+    (repo / "big.txt").write_text("")
+    git(repo, "add", "big.txt")
+    git(repo, "commit", "-qm", "empty")
+    before = git(repo, "rev-parse", "HEAD")
+    (repo / "big.txt").write_text("".join(f"line {n}\n" for n in range(500)))
+    git(repo, "commit", "-qam", "big")
+    churn[2]["code"]["ref"] = f"commit:{before}"
+    churn[5]["code"]["ref"] = f"commit:{git(repo, 'rev-parse', 'HEAD')}"
+    rechain(churn, 3)
+    page = view.page(churn, repo)
+    assert "+line 390" in page and "+line 499" not in page and "more lines left out" in page
