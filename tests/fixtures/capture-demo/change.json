@@ -1,0 +1,15 @@
+[
+  [["propose_plan", {"summary": "Look at the data first", "reasoning": "See which files the task starts from.",
+     "expectations": [{"name": "runs", "measure": "exit", "comparison": "exit_ok"}]}]],
+  [["bash", {"command": "ls data"}]],
+  [["propose_plan", {"summary": "Baseline: logistic regression on raw features", "reasoning": "Start with the simplest model so later gains are measured against it.",
+     "expectations": [{"name": "runs", "measure": "exit", "comparison": "exit_ok"},
+                      {"name": "AUC floor", "measure": "auc", "comparison": "ge", "threshold": 0.75}]}]],
+  [["bash", {"command": "python3 fit.py --model logistic --seed 7 --auc 0.58 --positive-rate 0.07"}]],
+  [["propose_plan", {"summary": "Reweight classes: only 7% of rows churn", "reasoning": "The positive rate is 0.07, so an unweighted fit mostly predicts no churn.",
+     "expectations": [{"name": "runs", "measure": "exit", "comparison": "exit_ok"},
+                      {"name": "AUC floor", "measure": "auc", "comparison": "ge", "threshold": 0.75}],
+     "supersedes": "step-4", "triggered_by": "step-6"}]],
+  [["bash", {"command": "sed -i 's/^WEIGHTS = None/WEIGHTS = \"balanced\"/' fit.py && python3 fit.py --model=logistic --seed 7 --auc 0.78"}]],
+  []
+]
