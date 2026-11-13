@@ -3,6 +3,7 @@ the same bytes each time. Changed trails are copies of the examples, re-chained 
 
 import html
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -187,3 +188,116 @@ def test_a_long_diff_is_cut_with_the_count_left_out(churn, tmp_path):
     rechain(churn, 3)
     page = view.page(churn, repo)
     assert "+line 390" in page and "+line 499" not in page and "more lines left out" in page
+
+
+def grow(steps: list[dict], *new: dict) -> list[dict]:
+    """Appends steps after the last, chained and dated with it."""
+    for step in new:
+        last = steps[-1]
+        steps.append({"version": 2, "id": f"step-{len(steps)}", "seq": len(steps), "trail": steps[0]["trail"], "at": last["at"],
+                      **step, "prev": trail.digest(trail.canonical(last))})
+    return steps
+
+
+def replaced_after(churn: list[dict], expectations: list[dict], observation: dict) -> list[dict]:
+    """The task, a plan with these expectations, its run, this observation of it, and a plan that replaces
+    the first, triggered by the observation."""
+    steps = churn[:1]
+    grow(steps, {"kind": "plan", "by": trail.AGENT, "summary": "First plan", "reasoning": "Try it.", "expectations": expectations},
+         trail.run("step-1", "python fit.py", [], "commit:notebook@3f9c2a1"),
+         {"kind": "observation", "by": trail.RUNNER, "summary": "Settled", **observation,
+          "links": [{"relation": "observes", "target": "step-2", "status": "confirmed"}]},
+         {"kind": "plan", "by": trail.AGENT, "summary": "Second plan", "reasoning": "Try something else.",
+          "expectations": [{"name": "runs", "measure": "exit", "comparison": "exit_ok"}],
+          "links": [{"relation": "supersedes", "target": "step-1", "status": "suggested"},
+                    {"relation": "triggered_by", "target": "step-3", "status": "suggested"}]})
+    assert trail.check(steps) == []
+    return steps
+
+
+REFUSES = {"name": "refuses", "measure": "exit", "comparison": "exit_fail"}
+FLOOR = {"name": "auc-floor", "measure": "auc", "comparison": "ge", "threshold": 0.75}
+
+
+@pytest.mark.parametrize("exit_check_first", [True, False])
+def test_every_missed_expectation_is_named_whatever_the_order_of_the_checks(churn, exit_check_first):
+    source = {"ref": "file:out/metrics.json", "digest": trail.digest(trail.metrics({"auc": 0.5}))}
+    checks = [{"expectation": "refuses", "held": False}, {"expectation": "auc-floor", "measured": 0.5, "held": False}]
+    steps = replaced_after(churn, [REFUSES, FLOOR], {
+        "exit_code": 0, "outputs": [source], "measures_source": source, "measures": [{"name": "auc", "value": 0.5}],
+        "checks": checks if exit_check_first else checks[::-1], "outcome": "contradicted"})
+    answer = view.why(steps, "step-4")
+    assert "  exit code 0, expected exit_fail (refuses)" in answer and "  auc 0.5, expected >= 0.75 (auc-floor)" in answer
+    (line,) = view.why(steps)
+    assert "exited with code 0" in line and "measured auc 0.5, expected >= 0.75" in line
+    shown = card(view.page(steps), "step-4")
+    assert "exit code 0, expected exit_fail (refuses)" in shown and html.escape("auc 0.5, expected >= 0.75 (auc-floor)") in shown
+
+
+def test_a_failed_trigger_shows_its_exit_code_once(churn):
+    steps = replaced_after(churn, [{"name": "runs", "measure": "exit", "comparison": "exit_ok"}, FLOOR], {
+        "exit_code": 2, "error": {"class": "exit"}, "checks": [{"expectation": "runs", "held": False}], "outcome": "failed"})
+    assert [line for line in view.why(steps, "step-4") if "exit code" in line] == ["  exit code 2"]
+    assert view.why(steps) == ["At step-4 the plan changed: step-3 exited with code 2."]
+
+
+def two_commits(tmp_path: Path, churn: list[dict]) -> Path:
+    """A repository with two commits, cited in full by churn's two measured runs."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-q")
+    (repo / "fit.py").write_text("weights = None\nseed = 7\n")
+    git(repo, "add", "fit.py")
+    git(repo, "commit", "-qm", "baseline")
+    churn[2]["code"]["ref"] = f"commit:notebook@{git(repo, 'rev-parse', 'HEAD')}"
+    (repo / "fit.py").write_text("weights = 'balanced'\nseed = 7\n")
+    git(repo, "commit", "-qam", "reweight")
+    churn[5]["code"]["ref"] = f"commit:notebook@{git(repo, 'rev-parse', 'HEAD')}"
+    rechain(churn, 3)
+    return repo
+
+
+def test_the_diff_does_not_depend_on_the_git_configuration(churn, tmp_path, monkeypatch):
+    repo = two_commits(tmp_path, churn)
+    plain = view.page(churn, repo)
+    assert html.escape("--- a/fit.py") in plain and " seed = 7" in plain
+    settings = {"diff.noprefix": "true", "diff.context": "0", "diff.algorithm": "patience", "core.abbrev": "40", "color.ui": "always"}
+    monkeypatch.setenv("GIT_CONFIG_COUNT", str(len(settings)))
+    for at, (key, value) in enumerate(settings.items()):
+        monkeypatch.setenv(f"GIT_CONFIG_KEY_{at}", key)
+        monkeypatch.setenv(f"GIT_CONFIG_VALUE_{at}", value)
+    assert view.page(churn, repo) == plain
+    home = tmp_path / "home"
+    home.mkdir()
+    (home / ".gitconfig").write_text("[diff]\n\tnoprefix = true\n\tcontext = 0\n")
+    monkeypatch.delenv("GIT_CONFIG_COUNT")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(home / ".gitconfig"))
+    assert view.page(churn, repo) == plain
+
+
+def ids(page: str) -> list[str]:
+    return re.findall(r' id="([^"]+)"', page)
+
+
+@pytest.mark.parametrize("name", [CHURN, FEATURES, TUNING])
+def test_each_id_is_on_the_page_once_and_every_link_has_its_target(name):
+    page = view.page(trail.load(EXAMPLES / name))
+    assert sorted(ids(page)) == sorted(set(ids(page)))
+    assert set(re.findall(r'href="#([^"]+)"', page)) <= set(ids(page))
+
+
+def test_a_review_shown_in_a_card_and_the_timeline_has_one_id(churn):
+    page = view.page(churn)
+    assert page.count("The imbalance reading is right") == 2
+    assert ids(page).count("step-7") == 1 and 'id="step-7"' not in card(page, "step-4")
+
+
+def test_long_unbroken_text_wraps_inside_the_page(churn, tmp_path):
+    """A commit hash, a digest or a citation of another probe has no space to break at. The page lets any
+    text wrap, and marks references as code, so none of them widens the page; `pre` alone scrolls."""
+    rules = dict(re.findall(r"^([a-z0-9,.\-]+)\{([^}]*)\}", view.CSS, re.MULTILINE))
+    assert "overflow-wrap:anywhere" in rules["body"] and "overflow-x:auto" in rules["pre"]
+    page = view.page(churn, two_commits(tmp_path, churn))
+    summary = page[page.index("<summary>"):page.index("</summary>")]
+    assert summary.count("<code>commit:notebook@") == 2

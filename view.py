@@ -5,6 +5,7 @@ agent's text is shown whole and unchanged, so the view can state no cause that a
 """
 
 import html
+import os
 import subprocess
 from pathlib import Path
 
@@ -31,16 +32,17 @@ def missed(observation: dict, by_id: dict) -> list[dict]:
     and each expectation whose check did not hold."""
     plan = implemented(by_id[trail.observed(observation)], by_id)
     expectations = {e["name"]: e for e in plan["expectations"]} if plan else {}
-    found = [{"exit_code": observation["exit_code"]}] if observation["outcome"] == "failed" else []
+    failed = observation["outcome"] == "failed"
+    found = [{"exit_code": observation["exit_code"]}] if failed else []
     for check in observation.get("checks", []):
         expectation = expectations.get(check["expectation"])
         if check["held"] or expectation is None:
             continue
-        if expectation["comparison"] in trail.EXIT:
-            if not found:
-                found.append({"exit_code": observation["exit_code"], **expectation})
-            continue
-        found.append({**expectation, "measured": check["measured"]})
+        if expectation["comparison"] not in trail.EXIT:
+            found.append({**expectation, "measured": check["measured"]})
+        # A failed run's exit code is already shown, so its exit expectation would only say it twice.
+        elif not failed:
+            found.append({"exit_code": observation["exit_code"], **expectation})
     return found
 
 
@@ -155,7 +157,7 @@ CSS = """
 --code:#252522;--ok:#9ad3a6;--ok-bg:#1f3325;--bad:#f0a08c;--bad-bg:#3b221b;--warn:#e6c26b;--warn-bg:#352c14;--tag:#c4c2bc;--tag-bg:#2b2a27}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-wrap:anywhere}
 main{max-width:52rem;margin:0 auto;padding:2.5rem 1rem 4rem}
 h1{font-size:1.75rem;line-height:1.25;margin:.25rem 0 .75rem}
 h2{font-size:1.15rem;margin:2.5rem 0 .75rem;padding-bottom:.35rem;border-bottom:1px solid var(--line)}
@@ -191,6 +193,9 @@ details{margin:.6rem 0}summary{cursor:pointer;color:var(--muted);font-size:.9rem
 @media (max-width:480px){main{padding:1.5rem 1rem 3rem}h1{font-size:1.4rem}.meta,.kv{grid-template-columns:minmax(0,1fr)}.meta dd,.kv dd{margin-bottom:.3rem}}
 """
 DIFF_LINES = 400
+# git's defaults, stated: a setting such as diff.noprefix or diff.context would otherwise change the page.
+DIFF = ["diff", "--no-color", "--no-ext-diff", "--no-textconv", "--find-renames", "--full-index", "--src-prefix=a/", "--dst-prefix=b/",
+        "--diff-algorithm=myers", "--unified=3", "--inter-hunk-context=0"]
 
 
 def e(text: object) -> str:
@@ -232,14 +237,16 @@ def measures(observation: dict) -> str:
     return " · ".join(e(f"{m['name']} {number(m['value'])}" + (f" {m['unit']}" if "unit" in m else "")) for m in observation.get("measures", []))
 
 
-def remarks(kept: list[dict]) -> str:
-    """Reviews and notes, each with who wrote it and its text whole."""
+def remarks(kept: list[dict], anchored: bool = True) -> str:
+    """Reviews and notes, each with who wrote it and its text whole. Each is the target of its id in the
+    timeline; a card shows it a second time, so there it is not anchored and links to the timeline's."""
     if not kept:
         return ""
     items = []
     for step in kept:
         word = verdict(step)
-        items.append(f'<li id="{e(step["id"])}">{ref(step["id"])} <b class="v-{e(word)}">{e(word)}</b> '
+        anchor = f' id="{e(step["id"])}"' if anchored else ""
+        items.append(f'<li{anchor}>{ref(step["id"])} <b class="v-{e(word)}">{e(word)}</b> '
                      f'<span class="by">by {e(step["by"])} · {e(step["at"])}</span><div class="text">{e(step["text"])}</div></li>')
     return '<ul class="said">' + "".join(items) + "</ul>"
 
@@ -327,7 +334,7 @@ def card(change: dict, view: Trail) -> str:
     parts.append("<h4>How its measured runs came out</h4>" + (f'<ul class="came">{"".join(came)}</ul>' if came else "<p>No measured run.</p>"))
     about = {plan["id"], *(old["id"] for old in change["replaced"]), *(t["id"] for t in change["triggers"] if isinstance(t, dict))}
     kept = said(view.steps, about)
-    parts.append("<h4>Reviews and notes</h4>" + (remarks(kept) or "<p>None.</p>") + "</article>")
+    parts.append("<h4>Reviews and notes</h4>" + (remarks(kept, anchored=False) or "<p>None.</p>") + "</article>")
     return "".join(parts)
 
 
@@ -338,13 +345,14 @@ def diff(code: Path | None, before: str, after: str) -> str:
     if code is None:
         return shown
     commits = [kept.split("@")[-1].removeprefix("commit:") for kept in (before, after)]
-    done = subprocess.run(["git", "-C", str(code), "diff", "--no-color", "--no-ext-diff", *commits],
-                          capture_output=True, text=True, check=False)
+    quiet = {name: value for name, value in os.environ.items() if not name.startswith("GIT_CONFIG_")}
+    quiet |= {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1", "LC_ALL": "C"}
+    done = subprocess.run(["git", "-C", str(code), *DIFF, *commits], capture_output=True, text=True, check=False, env=quiet)
     if done.returncode:
         return shown
     lines = done.stdout.splitlines()
     cut = f"\n… {len(lines) - DIFF_LINES} more lines left out" if len(lines) > DIFF_LINES else ""
-    return (f"<details><summary>Code changed from {e(before)} to {e(after)}: the diff</summary>"
+    return (f"<details><summary>Code changed from <code>{e(before)}</code> to <code>{e(after)}</code>: the diff</summary>"
             f"<pre>{e(chr(10).join(lines[:DIFF_LINES]) + cut)}</pre></details>")
 
 
