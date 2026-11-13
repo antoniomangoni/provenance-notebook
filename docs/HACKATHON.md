@@ -114,6 +114,6 @@ trace a result back through, and the `task` step's question is where an ideation
 
 Almanaque is downstream. A trail is produced by capture outside any consumer, and anything
 reading it imports it with a preview (rule 4 in DESIGN.md). The
-[port to Almanaque](GRAPH.md#port-to-almanaque-g4) makes a trail a tier-3 probe in Almanaque's
+[port to Almanaque](GRAPH.md#port-to-almanaque) would make a trail a tier-3 probe in Almanaque's
 organisation graph, cited at its head. The entry stands alone: a reviewer with `trail.py` and
 the view needs nothing else.

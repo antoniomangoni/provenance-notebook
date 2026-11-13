@@ -179,7 +179,8 @@ If time runs short, cut in this order:
 Never cut: the view, `why`, runs written before they execute, measures read from a fresh
 metrics file, a live trail, the video.
 
-Out of scope: multi-trail merge in the demo, PROV-O export, the Almanaque port, and signing by
+Out of scope: multi-trail merge in the demo, PROV-O export, the Almanaque port with the
+[changes to the graph tables](docs/GRAPH.md#what-the-port-changes) it needs, and signing by
 the capture host, which stays an open question with the host named as the trust root.
 
 ## Risks
@@ -230,3 +231,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 12 Nov | The demo task is a re-analysis of an inherited script, so its failure does not depend on the model |
 | 12 Nov | Every live attempt is committed |
 | 12 Nov | Pi stays the host, after weighing Claude Code hooks, an MCP server alone, a loop of our own and Pi 0.87.1. The model is the larger risk, so the budget stop returns to capture and Anthropic is the named fallback |
+| 13 Nov | The graph tables keep their columns for the week and gain tests. They differ from the graph artifact Almanaque now builds, and GRAPH.md lists what the port changes |
