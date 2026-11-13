@@ -7,6 +7,10 @@
     python trail.py examples DIR
     python trail.py graph TRAIL_DIR [--csv]
     python trail.py merge OUT_DIR TRAIL_DIR... [--csv]
+    python trail.py why TRAIL_DIR [STEP]
+    python trail.py view TRAIL_DIR [--store STORE_DIR] [--code REPO] [--out FILE]
+    python trail.py review TRAIL_DIR STEP --verdict confirms|disputes --text TEXT --by NAME
+    python trail.py note TRAIL_DIR STEP --text TEXT --by NAME
 
 A trail is a directory of step files, steps/step-N.json, each written once. The JSON Schema
 checks one file; this checks what spans files: order, the digest chain, which kinds carry
@@ -17,6 +21,8 @@ prints the digest a trail is cited at, and `verify` says whether a checked trail
 head: one rewritten and re-chained still passes `check`, but no longer has it. `graph`
 writes graph/nodes.parquet and graph/edges.parquet (typed; `--csv` writes text tables instead), the
 probe as a named graph; `merge` writes one pair for several probes and resolves each citation of one probe by another (see docs/GRAPH.md).
+`why` and `view` are what a reviewer reads (view.py); `review` and `note` append a person's step,
+written only when the trail checks with it.
 """
 
 import csv
@@ -25,7 +31,7 @@ import hmac
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import jsonschema
@@ -65,6 +71,7 @@ KIND = re.compile(rf"(?:{NAME}/)?({NAME}):")
 # Kinds named across projects: an actor or a URL is the same node wherever it is cited.
 GLOBAL = {"url", "agent", "runner", "human"}
 EXIT = ("exit_ok", "exit_fail")
+COMPARISONS = {"lt": "<", "le": "<=", "eq": "==", "ge": ">=", "gt": ">"}
 
 
 def a(word: str) -> str:
@@ -297,6 +304,11 @@ def facts(steps: list[dict]) -> list[str]:
     these is an error; they are what a reviewer asks about, and only the steps can say why."""
     runs = {step["id"]: step for step in steps if step["kind"] == "run"}
     settlement = {observed(step): step for step in steps if step["kind"] == "observation"}
+    by_id = {step["id"]: step for step in steps}
+    # An attempt is a run that measured something, or one that never settled and might have. A command
+    # whose observation names no metrics file is exploration: listing files or reading data is not a
+    # try at the plan's expectations, so it neither counts as an attempt nor as a repeat.
+    attempts = {rid for rid in runs if rid not in settlement or settlement[rid].get("measures_source")}
 
     def call(run):
         return digest(canonical({"command": run["command"]["digest"], "code": run["code"], "environment": run.get("environment"),
@@ -306,27 +318,46 @@ def facts(steps: list[dict]) -> list[str]:
         kept = settlement[rid]
         return digest(canonical({"exit_code": kept["exit_code"], "outputs": sorted(o["digest"] for o in kept.get("outputs", []))}))
 
+    def commands(rids):
+        return f"{len(rids)} command{'s' * (len(rids) != 1)}"
+
+    def failures(rids):
+        failed = sum(settlement[rid]["outcome"] == "failed" for rid in rids if rid in settlement)
+        return f", {failed} failed" if failed else ""
+
     found = []
     for plan in (step for step in steps if step["kind"] == "plan"):
-        attempts = [rid for rid, run in runs.items()
-                    if any(link["relation"] == "implements" and link["target"] == plan["id"] for link in run["links"])]
-        if not attempts:
+        implementing = [rid for rid, run in runs.items()
+                        if any(link["relation"] == "implements" and link["target"] == plan["id"] for link in run["links"])]
+        if not implementing:
             found.append(f"{plan['id']}: never run")
             continue
-        outcomes = [settlement[rid]["outcome"] if rid in settlement else "unsettled" for rid in attempts]
-        distinct = len({result(rid) for rid in attempts if rid in settlement})
-        found.append(f"{plan['id']}: {len(attempts)} run{'s' * (len(attempts) > 1)}, {distinct} distinct result"
-                     f"{'s' * (distinct != 1)}: " + ", ".join(f"{rid} {o}" for rid, o in zip(attempts, outcomes)))
-        # Re-running a plan until it holds is the garden of forking paths; the trail shows the
-        # attempts that came before, which a write-up of the last one would leave out.
-        if "as_expected" in outcomes and "contradicted" in outcomes[:outcomes.index("as_expected")]:
-            first = outcomes.index("as_expected")
-            found.append(f"{plan['id']}: first held on attempt {first + 1} of {len(attempts)}, "
-                         f"after {outcomes[:first].count('contradicted')} contradicted")
+        if all(expectation["comparison"] in EXIT for expectation in plan["expectations"]):
+            found.append(f"{plan['id']}: exploration, {commands(implementing)}{failures(implementing)}")
+            continue
+        tried = [rid for rid in implementing if rid in attempts]
+        if not tried:
+            found.append(f"{plan['id']}: no measured run")
+        else:
+            outcomes = [settlement[rid]["outcome"] if rid in settlement else "unsettled" for rid in tried]
+            distinct = len({result(rid) for rid in tried if rid in settlement})
+            found.append(f"{plan['id']}: {len(tried)} run{'s' * (len(tried) > 1)}, {distinct} distinct result"
+                         f"{'s' * (distinct != 1)}: " + ", ".join(f"{rid} {o}" for rid, o in zip(tried, outcomes)))
+            # Re-running a plan until it holds is the garden of forking paths; the trail shows the
+            # attempts that came before, which a write-up of the last one would leave out.
+            if "as_expected" in outcomes and "contradicted" in outcomes[:outcomes.index("as_expected")]:
+                first = outcomes.index("as_expected")
+                found.append(f"{plan['id']}: first held on attempt {first + 1} of {len(tried)}, "
+                             f"after {outcomes[:first].count('contradicted')} contradicted")
+        if explored := [rid for rid in implementing if rid not in attempts]:
+            found.append(f"{plan['id']}: {commands(explored)} wrote no metrics{failures(explored)}")
+        found += eased(plan, by_id)
     calls, results = {}, {}
     for rid, run in runs.items():
         if rid not in settlement:
             found.append(f"{rid}: never settled; it has no observation")
+        if rid not in attempts:
+            continue
         if call(run) in calls:
             found.append(f"{rid}: repeats {calls[call(run)]}, with the same command, code, environment, parameters and inputs")
         calls.setdefault(call(run), rid)
@@ -334,6 +365,34 @@ def facts(steps: list[dict]) -> list[str]:
             earlier = results.setdefault(result(rid), rid)
             if earlier != rid and call(runs[earlier]) != call(run):
                 found.append(f"{rid}: a different run from {earlier}, with the same outputs")
+    return found
+
+
+def eased(plan: dict, by_id: dict[str, dict]) -> list[str]:
+    """A plan that replaced one whose expectation its trigger missed, and asks less of the same measure.
+    Lowering the bar after missing it is a change a reviewer should see stated, whatever its reason."""
+    found = []
+    triggers = [by_id[link["target"]] for link in plan.get("links", []) if link["relation"] == "triggered_by" and link["target"] in by_id]
+    for link in plan.get("links", []):
+        old = by_id.get(link["target"]) if link["relation"] == "supersedes" else None
+        if old is None or old["kind"] != "plan":
+            continue
+        for trigger in triggers:
+            run = by_id[observed(trigger)]
+            if not any(lk["relation"] == "implements" and lk["target"] == old["id"] for lk in run["links"]):
+                continue
+            missed = {check["expectation"] for check in trigger.get("checks", []) if not check["held"]}
+            for before in old["expectations"]:
+                if before["comparison"] in EXIT or before["name"] not in missed:
+                    continue
+                for after in plan["expectations"]:
+                    if (after["measure"], after["comparison"]) != (before["measure"], before["comparison"]):
+                        continue
+                    lower, higher = after["threshold"] < before["threshold"], after["threshold"] > before["threshold"]
+                    if (lower and before["comparison"] in ("ge", "gt")) or (higher and before["comparison"] in ("le", "lt")):
+                        sign = COMPARISONS[before["comparison"]]
+                        found.append(f"{plan['id']}: eases {before['measure']} from {sign} {format(before['threshold'], 'g')} "
+                                     f"to {sign} {format(after['threshold'], 'g')} after {trigger['id']} missed it")
     return found
 
 
@@ -630,6 +689,22 @@ def tuning(cited: str) -> list[dict]:
     ])
 
 
+def respond(steps: list[dict], target: str, by: str, text: str, verdict: str | None = None) -> dict:
+    """A person's review of a step (with a verdict) or note on it, as the next step of the trail. Its time
+    is now, or the last step's when that is later: `at` never goes backwards, even past a clock that lags."""
+    now, last = datetime.now(UTC).replace(microsecond=0), steps[-1]
+    at = last["at"] if datetime.fromisoformat(last["at"]) > now else now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    step = {"version": 2, "id": f"step-{len(steps)}", "seq": len(steps), "trail": steps[0]["trail"], "at": at,
+            "kind": "review" if verdict else "note", "by": f"human:{by}"}
+    if verdict:
+        step |= {"summary": f"{verdict.capitalize()} {target}", "verdict": verdict}
+    else:
+        step["summary"] = f"Note on {target}"
+    relation = "reviews" if verdict else "about"
+    return step | {"text": text, "links": [{"relation": relation, "target": target, "status": "confirmed"}],
+                   "prev": digest(canonical(last))}
+
+
 def write_graph(directory: Path, nodes: list[dict], edges: list[dict], suffix: str) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     write_table(directory / f"nodes{suffix}", NODE_COLUMNS, nodes)
@@ -637,14 +712,24 @@ def write_graph(directory: Path, nodes: list[dict], edges: list[dict], suffix: s
     print(f"{len(nodes)} nodes, {len(edges)} edges in {directory}")
 
 
+def option(args: list[str], name: str) -> str | None:
+    """Takes `name VALUE` out of the arguments and returns VALUE, or None when it is absent."""
+    if name not in args:
+        return None
+    value = args[args.index(name) + 1]
+    del args[args.index(name):args.index(name) + 2]
+    return value
+
+
 if __name__ == "__main__":
     suffix = ".csv" if "--csv" in sys.argv else ".parquet"
     args = [arg for arg in sys.argv[1:] if arg != "--csv"]
-    store = None
-    if "--store" in args:
-        store = Path(args[args.index("--store") + 1])
-        del args[args.index("--store"):args.index("--store") + 2]
+    store = Path(kept) if (kept := option(args, "--store")) else None
+    code, out = option(args, "--code"), option(args, "--out")
+    verdict, text, by = option(args, "--verdict"), option(args, "--text"), option(args, "--by")
     command, directory = args[0], Path(args[1])
+    if command in ("review", "note") and (len(args) < 3 or text is None or by is None or (command == "review") != (verdict is not None)):
+        sys.exit(f"usage: trail.py {command} DIR STEP" + " --verdict confirms|disputes" * (command == "review") + " --text TEXT --by NAME")
     if command == "examples":
         store = directory / "store"
         store.mkdir(parents=True, exist_ok=True)
@@ -674,6 +759,32 @@ if __name__ == "__main__":
             found = verify(steps, args[2])
             problems += found
             print("\n".join(found) or f"had that head after step-{heads(steps)[args[2]]} of {len(steps) - 1}")
+        if command == "why" and not found:
+            import view
+
+            try:
+                print("\n".join(view.why(steps, args[2] if len(args) > 2 else None)))
+            except LookupError as error:
+                print(error.args[0])
+                problems.append(error.args[0])
+        if command == "view" and not found:
+            import view
+
+            written = Path(out) if out else path / "view.html"
+            written.parent.mkdir(parents=True, exist_ok=True)
+            written.write_text(view.page(steps, Path(code) if code else None), encoding="utf-8")
+            print(f"wrote {written}")
+        if command in ("review", "note") and not found:
+            # The new step is checked with the whole trail before anything is written, so a review of a
+            # step the trail lacks, or one the schema refuses, leaves the trail as it was.
+            step = respond(steps, args[2], by, text, verdict)
+            found = check([*steps, step], store)
+            problems += found
+            if found:
+                print("; ".join(found))
+            else:
+                (path / "steps" / f"{step['id']}.json").write_text(json.dumps(step, indent=2) + "\n")
+                print(f"wrote {step['id']}: {step['summary']}")
     if command == "merge" and not problems:
         nodes, edges, problems = merge(loaded)
         print("\n".join(problems)) if problems else write_graph(directory, nodes, edges, suffix)
