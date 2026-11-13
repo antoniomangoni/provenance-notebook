@@ -42,8 +42,8 @@ scripts/live.sh DEMO_DIR NAME [pi options]
 git repository outside this one, runs Pi there with capture and [protocol.md](protocol.md) loaded, then
 bundles the snapshots and checks the trail. Its exit status is the check's. Under `live/NAME`, or
 `$NOTEBOOK_LIVE/NAME`, it leaves `steps/`, `code.bundle`, `session/` and `events.jsonl`; metrics files
-go to `live/store`. `git clone live/NAME/code.bundle` gives the repository that `trail.py view --code`
-reads.
+go to `live/store`. `git clone -b notebook/NAME live/NAME/code.bundle` gives the repository that
+`trail.py view --code` reads.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
@@ -76,6 +76,9 @@ real model's key.
 - **Freshness is the file's modification time.** On a file system that keeps times to the second, a
   command that rewrites the metrics within the same second as the one before is not seen as fresh, and
   its observation is inconclusive.
+- **A run cites the code as it stood before its command.** A command that edits code and then runs it,
+  such as `sed -i ... fit.py && python fit.py`, cites the code from before the edit. The edit shows in
+  the next run's snapshot.
 - **Only `bash` commands are runs.** What the agent reads with Pi's other tools is not recorded. What
   it edits shows in the next run's snapshot.
 - **Parameters** are recorded for `--name value` and `--name=value` only, when the task lists the name
