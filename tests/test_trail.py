@@ -3,6 +3,7 @@ past step is caught, by the chain if it is left broken and by the cited head if 
 
 import copy
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -199,3 +200,49 @@ def test_an_eased_threshold_is_stated(churn):
 
 def test_the_unchanged_churn_trail_eases_nothing(churn):
     assert not any("eases" in fact for fact in trail.facts(churn))
+
+
+def copied(name: str, tmp_path: Path) -> Path:
+    directory = tmp_path / name
+    shutil.copytree(EXAMPLES / name, directory)
+    return directory
+
+
+@pytest.mark.parametrize("name", [CHURN, FEATURES, TUNING])
+def test_a_review_and_a_note_leave_a_trail_that_checks_and_keeps_its_head(name, tmp_path):
+    directory = copied(name, tmp_path)
+    cited = trail.digest(trail.canonical(trail.load(directory)[-1]))
+    assert cli("review", directory, "step-1", "--verdict", "disputes", "--text", "Too few seeds.", "--by", "reviewer").returncode == 0
+    assert cli("note", directory, "step-0", "--text", "Read on the day.", "--by", "reviewer").returncode == 0
+    steps = trail.load(directory)
+    assert trail.check(steps, EXAMPLES / "store") == []
+    assert trail.verify(steps, cited) == []
+    review, note = steps[-2:]
+    assert (review["kind"], review["by"], review["summary"], review["verdict"]) == ("review", "human:reviewer", "Disputes step-1", "disputes")
+    assert review["links"] == [{"relation": "reviews", "target": "step-1", "status": "confirmed"}]
+    assert (note["kind"], note["summary"], note["links"][0]["relation"]) == ("note", "Note on step-0", "about")
+
+
+def test_a_review_after_a_step_dated_later_than_now_keeps_its_time(tmp_path):
+    directory = copied(TUNING, tmp_path)
+    last = trail.load(directory)[-1]["at"]
+    step = trail.respond(trail.load(directory), "step-1", "reviewer", "Later.", "confirms")
+    assert step["at"] >= last
+    assert cli("review", directory, "step-1", "--verdict", "confirms", "--text", "Later.", "--by", "reviewer").returncode == 0
+    assert trail.load(directory)[-1]["at"] >= last
+
+
+def test_a_review_of_an_unknown_step_writes_nothing(tmp_path):
+    directory = copied(CHURN, tmp_path)
+    done = cli("review", directory, "step-99", "--verdict", "confirms", "--text", "Fine.", "--by", "reviewer")
+    assert done.returncode == 1 and "step-99, which is not an earlier step" in done.stdout
+    assert files(directory) == files(EXAMPLES / CHURN)
+
+
+def test_a_note_on_a_broken_trail_writes_nothing(tmp_path):
+    directory = copied(CHURN, tmp_path)
+    broken = directory / "steps" / "step-4.json"
+    broken.write_text(broken.read_text().replace("Reweight classes", "Boost"))
+    before = files(directory)
+    done = cli("note", directory, "step-4", "--text", "Fine.", "--by", "reviewer")
+    assert done.returncode == 1 and files(directory) == before

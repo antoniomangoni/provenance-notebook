@@ -8,6 +8,8 @@
     python trail.py graph TRAIL_DIR [--csv]
     python trail.py merge OUT_DIR TRAIL_DIR... [--csv]
     python trail.py why TRAIL_DIR [STEP]
+    python trail.py review TRAIL_DIR STEP --verdict confirms|disputes --text TEXT --by NAME
+    python trail.py note TRAIL_DIR STEP --text TEXT --by NAME
 
 A trail is a directory of step files, steps/step-N.json, each written once. The JSON Schema
 checks one file; this checks what spans files: order, the digest chain, which kinds carry
@@ -26,7 +28,7 @@ import hmac
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import jsonschema
@@ -684,6 +686,22 @@ def tuning(cited: str) -> list[dict]:
     ])
 
 
+def respond(steps: list[dict], target: str, by: str, text: str, verdict: str | None = None) -> dict:
+    """A person's review of a step (with a verdict) or note on it, as the next step of the trail. Its time
+    is now, or the last step's when that is later: `at` never goes backwards, even past a clock that lags."""
+    now, last = datetime.now(UTC).replace(microsecond=0), steps[-1]
+    at = last["at"] if datetime.fromisoformat(last["at"]) > now else now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    step = {"version": 2, "id": f"step-{len(steps)}", "seq": len(steps), "trail": steps[0]["trail"], "at": at,
+            "kind": "review" if verdict else "note", "by": f"human:{by}"}
+    if verdict:
+        step |= {"summary": f"{verdict.capitalize()} {target}", "verdict": verdict}
+    else:
+        step["summary"] = f"Note on {target}"
+    relation = "reviews" if verdict else "about"
+    return step | {"text": text, "links": [{"relation": relation, "target": target, "status": "confirmed"}],
+                   "prev": digest(canonical(last))}
+
+
 def write_graph(directory: Path, nodes: list[dict], edges: list[dict], suffix: str) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     write_table(directory / f"nodes{suffix}", NODE_COLUMNS, nodes)
@@ -704,7 +722,11 @@ if __name__ == "__main__":
     suffix = ".csv" if "--csv" in sys.argv else ".parquet"
     args = [arg for arg in sys.argv[1:] if arg != "--csv"]
     store = Path(kept) if (kept := option(args, "--store")) else None
+    code, out = option(args, "--code"), option(args, "--out")
+    verdict, text, by = option(args, "--verdict"), option(args, "--text"), option(args, "--by")
     command, directory = args[0], Path(args[1])
+    if command in ("review", "note") and (len(args) < 3 or text is None or by is None or (command == "review") != (verdict is not None)):
+        sys.exit(f"usage: trail.py {command} DIR STEP" + " --verdict confirms|disputes" * (command == "review") + " --text TEXT --by NAME")
     if command == "examples":
         store = directory / "store"
         store.mkdir(parents=True, exist_ok=True)
@@ -742,6 +764,17 @@ if __name__ == "__main__":
             except LookupError as error:
                 print(error.args[0])
                 problems.append(error.args[0])
+        if command in ("review", "note") and not found:
+            # The new step is checked with the whole trail before anything is written, so a review of a
+            # step the trail lacks, or one the schema refuses, leaves the trail as it was.
+            step = respond(steps, args[2], by, text, verdict)
+            found = check([*steps, step], store)
+            problems += found
+            if found:
+                print("; ".join(found))
+            else:
+                (path / "steps" / f"{step['id']}.json").write_text(json.dumps(step, indent=2) + "\n")
+                print(f"wrote {step['id']}: {step['summary']}")
     if command == "merge" and not problems:
         nodes, edges, problems = merge(loaded)
         print("\n".join(problems)) if problems else write_graph(directory, nodes, edges, suffix)
