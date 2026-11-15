@@ -77,10 +77,11 @@ These are fixed. A slice that needs one changed stops and asks.
 ### Only a person can do these
 
 - Run the smoke test. It needs nothing that is not already in the repository, so it comes
-  first. Pi's model file on the development machine holds Berget and Anthropic entries from
-  September: confirm the keys with `capture/node_modules/.bin/pi --list-models`, then try
-  GLM-5.2 on Berget, then Haiku 4.5 on Anthropic. Run with `--thinking off` and note whether
-  reasoning text still appears.
+  first. Berget's model list changes, so read it at `https://api.berget.ai/v1/models` and give
+  Pi an entry for a listed model with function calling: confirm it with
+  `capture/node_modules/.bin/pi --list-models`, then try `zai-org/GLM-5.3-Flash` on Berget,
+  then Haiku 4.5 on Anthropic. Run with `--thinking off` and note whether reasoning text
+  still appears.
 - Run the live task on Saturday and decide which defects are worth fixing.
 - Ask the organisers the [open questions](#open-questions-for-the-organisers) on Friday.
 - Find one person who has not seen the task and record them answering the step question.
@@ -186,9 +187,10 @@ the capture host, which stays an open question with the host named as the trust 
 ## Risks
 
 - **The live model may not call tools reliably.** The smoke test is first for that reason. In
-  September, on another task under the same Pi version, GLM-5.2 on Berget failed 37 of 99 runs
-  and Qwen3.8-27B 13 of 23, mostly in tool loops, and Haiku 4.5 on Anthropic ran 6 of 6. The
-  rates do not carry over to this task; the failure modes do. Anthropic is the fallback.
+  September, on another task under the same Pi version, two models that Berget has since
+  withdrawn failed 37 of 99 runs and 13 of 23, mostly in tool loops, and Haiku 4.5 on Anthropic
+  ran 6 of 6. The rates do not carry over to this task; the failure modes do. Anthropic is the
+  fallback.
 - **A loop is expensive.** Berget bills cached input at the full rate, so cost grows with the
   square of the calls: one looping run cost EUR 10.76, against EUR 50 of credit. Capture stops
   at a ceiling on runs and tokens, and the launcher at a wall clock.
@@ -214,8 +216,9 @@ the capture host, which stays an open question with the host named as the trust 
    the first commit says so. The write-up discloses it either way.
 2. Must the repository be public, and under which licence?
 3. What are the judging criteria, and is there a length limit for the video and the write-up?
-4. Which Berget model do they recommend for tool calling? GLM-5.2 and Qwen3.8-27B called tools
-   in September.
+4. Which Berget model do they recommend for tool calling? On 15 November
+   `zai-org/GLM-5.3-Flash` and `google/gemma-4-31B-it` both called the tools in order; only the
+   first recorded a replacement plan.
 
 ## Decisions
 
@@ -232,3 +235,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 12 Nov | Every live attempt is committed |
 | 12 Nov | Pi stays the host, after weighing Claude Code hooks, an MCP server alone, a loop of our own and Pi 0.87.1. The model is the larger risk, so the budget stop returns to capture and Anthropic is the named fallback |
 | 13 Nov | The graph tables keep their columns for the week and gain tests. They differ from the graph artifact Almanaque now builds, and GRAPH.md lists what the port changes |
+| 15 Nov | The live model is `zai-org/GLM-5.3-Flash` on Berget, which no longer offers the two models tried in September. `google/gemma-4-31B-it` is the second model, for a live attempt and for the reader check |

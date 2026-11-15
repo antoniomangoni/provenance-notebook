@@ -114,7 +114,9 @@ JSON object:
 Every call appends one line to `DIR/answers.jsonl`: the presentation, the repeat, the model as
 Pi names it, the raw reply and the parsed object, or `null` when the reply holds no JSON
 object. A call that fails is recorded and counted, not repeated silently. The default is
-5 repeats and `--provider berget --model zai-org/GLM-5.3-Flash --thinking off`.
+5 repeats and `--provider berget --model zai-org/GLM-5.3-Flash --thinking off`. The check is
+made twice, once with the default and once with `--model google/gemma-4-31B-it`: 10 calls to
+each model, in the same `answers.jsonl`.
 
 A presentation longer than one argument allows (128 kB on Linux) cannot be passed on the
 command line. Step 4 of the sequence finds how Pi 0.84.1 takes it, on standard input or as a
@@ -128,7 +130,7 @@ Scores every line of `answers.jsonl` against the key and writes `DIR/table.md`.
   match exactly, numbers within 0.0005, a commit by its first 7 characters, a command after
   collapsing white space. An unparsed reply scores 0 on every item.
 - A question's score is the share of its items that are right. The table gives, for each
-  question and presentation, the mean over repeats and the range, then the number of
+  model, question and presentation, the mean over repeats and the range, then the number of
   characters of each presentation and the number of calls, failed calls and unparsed replies.
 - For each key item the table also says whether its value occurs in each presentation's text.
   An item the baseline cannot contain, such as a snapshot commit, is marked so.
@@ -196,7 +198,7 @@ Work on `spec/04-evidence`, in small commits with imperative subjects, one pull 
 | `.gitignore` | fix 3 |
 
 `evidence/README.md` says what each file is, how to rebuild it, the limits of the comparison
-and how many live attempts there were (one).
+and how many live attempts there were and which one the evidence uses.
 
 ## Testing and conformance
 
@@ -233,6 +235,8 @@ uv run python tamper.py live/madelon-2026-11-15-1 --store live/store \
 uv run python readers.py texts live/madelon-2026-11-15-1 --store live/store \
   --log evidence/madelon-2026-11-15-1/git-log.txt --out evidence/madelon-2026-11-15-1
 uv run python readers.py ask evidence/madelon-2026-11-15-1 --questions evidence/questions.json --repeats 5
+uv run python readers.py ask evidence/madelon-2026-11-15-1 --questions evidence/questions.json --repeats 5 \
+  --model google/gemma-4-31B-it
 uv run python readers.py grade evidence/madelon-2026-11-15-1 --questions evidence/questions.json --trail live/madelon-2026-11-15-1
 uv run pytest && uv run ruff check
 ```
@@ -245,7 +249,7 @@ why a rule exists.
 - **Always**: run the tests and `ruff check` before each commit; keep every reply a model
   gave; report the table as measured, whichever presentation it favours.
 - **Ask first**: a change to a question's wording or to the key after its commit; a model other
-  than the default; more than 40 calls to a model; any file outside the target files.
+  than the two named; more than 40 calls to a model; any file outside the target files.
 - **Never**: write under `live/` or `examples/`; put a key or a token in a file or a message;
   grade by hand; drop or rerun a call because of its answer.
 
