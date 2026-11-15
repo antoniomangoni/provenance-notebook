@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-2026-11-15-2",
+  "at": "2026-11-15T22:16:06.109Z",
+  "kind": "plan",
+  "by": "agent:pi/google/gemma-4-31B-it",
+  "hook": "pi:propose_plan",
+  "summary": "Fix data leakage in analysis.py",
+  "reasoning": "The current analysis has a data leakage problem: `SelectKBest` is fitted on the entire pilot set before cross-validation. This leads to an optimistic CV AUC. I need to move the feature selection into the pipeline so it's performed within each fold. I'll then run the analysis again to see the true CV AUC and the holdout AUC.",
+  "expectations": [
+    {
+      "name": "check-leakage-fix",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:08a29b9beecb08406bec52b63a68f1e31c3755d24cb8138e38c3c4e11827ded1"
+}

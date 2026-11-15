@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "madelon-2026-11-15-2",
+  "at": "2026-11-15T22:16:23.449Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 1; no fresh out/metrics.json with holdout_auc",
+  "exit_code": 1,
+  "duration_ms": 1749,
+  "checks": [],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-14",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-13",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a7e4995c9d5ab4eea6ac763eb237c32f24dbccdbc820de31c28fdeea83640adb"
+}
