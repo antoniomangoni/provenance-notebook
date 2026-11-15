@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:41:52.247Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python analysis.py",
+  "command": {
+    "shown": "uv run python analysis.py",
+    "digest": "sha256:0c18fd218e7a8104207e21c167219dbc6c9c51e632ef6eb5972a0bca307db6ba"
+  },
+  "code": {
+    "ref": "commit:fc7113b70239dbee04542f4ed23f65adaaafa9a3"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:416ec3dc8cfaec1a8a5cda65a8d5a66fd0c660fa117248da6dd959361ca9db71"
+}

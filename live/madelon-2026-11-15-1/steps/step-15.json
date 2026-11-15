@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:45:09.082Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "git log --oneline -3; git status --porcelain",
+  "command": {
+    "shown": "git log --oneline -3; git status --porcelain",
+    "digest": "sha256:002197d88230e275d675bb14eb4997bcd0e4894e54d7932402ac23b204870d95"
+  },
+  "code": {
+    "ref": "commit:c339426a726b5e8b11ee336c08c7ddcfbca015a8"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-14",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:7aab8013e9d19dc308ea342c14bf65447b8a40c2e59b066aa6fe112eaa52d95a"
+}

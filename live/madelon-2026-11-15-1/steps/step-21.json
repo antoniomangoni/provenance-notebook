@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "id": "step-21",
+  "seq": 21,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:46:39.067Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "inconclusive: no fresh out/metrics.json with holdout_auc, cv_auc, gap",
+  "exit_code": 0,
+  "duration_ms": 6,
+  "checks": [],
+  "outcome": "inconclusive",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-20",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-19",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:aa610c616a09bf8354c1128f76272382c1ec78db4005f3ce813db4b66b857ae0"
+}

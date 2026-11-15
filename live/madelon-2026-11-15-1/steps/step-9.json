@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:42:31.146Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Look around: honest nested CV, leaky CV, and held-out association/alignment diagnostics",
+  "reasoning": "Purely investigative (looking around): the honest-vs-leaky CV value and the held-out association checks decide whether the gap comes from selection leakage inside the CV estimate or from a problem with the held-out file itself. No numeric commitment yet, since these diagnostics have no task-declared measures; their outputs guide the corrected run, which will be judged on cv_auc/holdout_auc/gap.",
+  "expectations": [
+    {
+      "name": "diag-look",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:bf300032572d758b7e1e802bb200fb0cde6be5f30cb29eeab1932adddf30ebcf"
+}

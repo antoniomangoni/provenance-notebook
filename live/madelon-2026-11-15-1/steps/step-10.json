@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:42:43.403Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python diagnose.py",
+  "command": {
+    "shown": "uv run python diagnose.py",
+    "digest": "sha256:6bcd820f3c04870fb172f69c00076694195c37767ceb5531d77e471132c32115"
+  },
+  "code": {
+    "ref": "commit:828c58a41acf5b502ebac875e8b8f73f7c6390d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-9",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:74bd7276a6617b8487a9c0fab97e47ec957323e6bd1b85ea417aa0014612a19a"
+}

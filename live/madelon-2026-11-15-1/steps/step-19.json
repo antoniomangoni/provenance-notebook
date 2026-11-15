@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:46:37.402Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Replace deprecated penalty=l1 with l1_ratio=1, re-run to reproduce the metrics, then update README and commit",
+  "reasoning": "The corrected analysis met all three criteria (holdout 0.7185, nested CV 0.7564, gap 0.0378), but the logistic-l1 limb of the search used sklearn's deprecated penalty= parameter, emitting ambiguous warnings. Cleaning it to the l1_ratio API must not change the outcome (logistic never wins; the final model is an RF on top-20 features), so the same three criteria should reproduce, after which the README gets the corrected result and the work is committed.",
+  "expectations": [
+    {
+      "name": "holds-criterion",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "corrected-cv-sane",
+      "measure": "cv_auc",
+      "comparison": "le",
+      "threshold": 0.76
+    },
+    {
+      "name": "cv-holdout-agree",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.08
+    }
+  ],
+  "prev": "sha256:497dcd811dd48a877bf95611b30c1f51f29b7e6e9c563a8b7f48a34470b1f205"
+}

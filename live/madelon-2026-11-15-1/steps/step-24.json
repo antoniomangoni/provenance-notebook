@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-24",
+  "seq": 24,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:47:21.840Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "git add -A && git commit -q -m \"Correct selection leakage in pilot CV; nested tuning; held-out AUC 0.7185 [0.697, 0.740]\" && git log --oneline -2 && git status --porcelain; echo \"commit done\"",
+  "command": {
+    "shown": "git add -A && git commit -q -m \"Correct selection leakage in pilot CV; nested tuning; held-out AUC 0.7185 [0.697, 0.740]\" && git log --oneline -2 && git status --porcelain; echo \"commit done\"",
+    "digest": "sha256:c9b7f6e4dd36e77bbfd2340f409c0d66d1bfca2dbbf96f14a69098bc8945b7e3"
+  },
+  "code": {
+    "ref": "commit:07479744ad276e044277ff0b07075e73faf6993d"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-19",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:32c8b1e575add689f2f61be9cca6f982f5ca55dfe7a3fc8f7600d8a37579b9aa"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:46:39.060Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat .gitignore",
+  "command": {
+    "shown": "cat .gitignore",
+    "digest": "sha256:4196dd5ccae0d02c4235b44966f9233de2ef78878660e312c87d154acdf59f08"
+  },
+  "code": {
+    "ref": "commit:190a21455d94f5be3d4440df4b493f35d48d2a4a"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-19",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:086c3eaa68edad770fc411bbec4247c136323f32cae1e0381713dbd30ccf55af"
+}

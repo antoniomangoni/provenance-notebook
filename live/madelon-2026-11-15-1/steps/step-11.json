@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:42:44.341Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 1",
+  "exit_code": 1,
+  "duration_ms": 937,
+  "checks": [
+    {
+      "expectation": "diag-look",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-10",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-9",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:f05f595a253f9a9e4b33dddbe60036d83921c87574e1d5b3390c63070ce0f2af"
+}
