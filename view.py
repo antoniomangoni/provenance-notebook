@@ -211,6 +211,17 @@ def outcome(observation: dict | None) -> str:
     return f'<span class="outcome o-{e(kept)}">{e(OUTCOMES.get(kept, kept))}</span>'
 
 
+def settled(observation: dict) -> str:
+    """An observation's outcome and its summary. Capture begins a summary with the outcome's own label
+    ("contradicted: holdout_auc 0.5639, expected >= 0.71"); the label is then printed once."""
+    label, summary = OUTCOMES.get(observation["outcome"]), observation["summary"]
+    if summary == label:
+        return outcome(observation)
+    if label and summary.startswith(f"{label}: "):
+        summary = summary[len(label) + 2:]
+    return f"{outcome(observation)} {e(summary)}"
+
+
 def promise(expectation: dict) -> str:
     """One expectation in words: auc-floor: auc >= 0.75."""
     comparison = expectation["comparison"]
@@ -323,7 +334,7 @@ def card(change: dict, view: Trail) -> str:
             continue
         run = by_id[trail.observed(trigger)]
         missed_items = "".join(f"<li>{e(expected(miss))}</li>" for miss in missed(trigger, by_id))
-        parts.append(f'<h4>Trigger</h4><p>{ref(trigger["id"])} {outcome(trigger)} {e(trigger["summary"])}</p>'
+        parts.append(f'<h4>Trigger</h4><p>{ref(trigger["id"])} {settled(trigger)}</p>'
                      f'<dl class="kv"><dt>Run</dt><dd>{ref(run["id"])} <code>{e(run["command"]["shown"])}</code></dd>'
                      f"<dt>Parameters</dt><dd>{parameters(run)}</dd></dl>"
                      + (f'<ul class="missed">{missed_items}</ul>' if missed_items else ""))
@@ -361,7 +372,7 @@ def run_item(run: dict, view: Trail) -> str:
     if observation is None:
         result = f"{outcome(None)} no observation: the run never settled"
     else:
-        result = f'<span id="{e(observation["id"])}">{ref(observation["id"])}</span> {outcome(observation)} {e(observation["summary"])}'
+        result = f'<span id="{e(observation["id"])}">{ref(observation["id"])}</span> {settled(observation)}'
     rows = [("Parameters", parameters(run)), ("Code", f"<code>{e(run['code']['ref'])}</code>")]
     if observation and observation.get("measures"):
         rows.append(("Measures", measures(observation)))

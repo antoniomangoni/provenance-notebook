@@ -301,3 +301,24 @@ def test_long_unbroken_text_wraps_inside_the_page(churn, tmp_path):
     page = view.page(churn, two_commits(tmp_path, churn))
     summary = page[page.index("<summary>"):page.index("</summary>")]
     assert summary.count("<code>commit:notebook@") == 2
+
+
+LIVE = ROOT / "live" / "madelon-2026-11-15-1"
+
+
+def test_a_captured_observation_shows_its_outcome_once():
+    """Capture begins a summary with the outcome's own label; the page prints the label and the rest."""
+    steps = trail.load(LIVE)
+    assert steps[8]["summary"] == "contradicted: holdout_auc 0.5639, expected >= 0.71" and steps[18]["summary"] == "as expected"
+    page = view.page(steps)
+    # step-8 is on the page twice, as the trigger in the card and under its run in the timeline.
+    assert page.count(">contradicted</span> holdout_auc 0.5639, expected &gt;= 0.71<") == 2
+    assert page.count("contradicted: holdout_auc") == 0
+    for label in view.OUTCOMES.values():
+        assert f">{label}</span> {label}" not in page
+    assert '<span id="step-18"><a class="id" href="#step-18">step-18</a></span> <span class="outcome o-as_expected">as expected</span></dd>' in page
+
+
+def test_a_summary_that_only_mentions_its_outcome_is_shown_whole(churn):
+    churn[3]["summary"] = "contradicted the floor: AUC 0.58"
+    assert ">contradicted</span> contradicted the floor: AUC 0.58<" in view.page(churn)

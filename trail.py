@@ -712,12 +712,25 @@ def write_graph(directory: Path, nodes: list[dict], edges: list[dict], suffix: s
     print(f"{len(nodes)} nodes, {len(edges)} edges in {directory}")
 
 
+OPTIONS = ("--store", "--code", "--out", "--verdict", "--text", "--by")
+
+
+def usage(message: str) -> None:
+    """One line on standard error and exit code 2: the command line was wrong, the trail was not read."""
+    print(message, file=sys.stderr)
+    sys.exit(2)
+
+
 def option(args: list[str], name: str) -> str | None:
-    """Takes `name VALUE` out of the arguments and returns VALUE, or None when it is absent."""
+    """Takes `name VALUE` out of the arguments and returns VALUE, or None when it is absent. An option
+    at the end, or followed by another option, has no value."""
     if name not in args:
         return None
-    value = args[args.index(name) + 1]
-    del args[args.index(name):args.index(name) + 2]
+    at = args.index(name)
+    if at + 1 == len(args) or args[at + 1] in OPTIONS:
+        usage(f"trail.py: {name} needs a value")
+    value = args[at + 1]
+    del args[at:at + 2]
     return value
 
 
@@ -727,7 +740,11 @@ if __name__ == "__main__":
     store = Path(kept) if (kept := option(args, "--store")) else None
     code, out = option(args, "--code"), option(args, "--out")
     verdict, text, by = option(args, "--verdict"), option(args, "--text"), option(args, "--by")
+    if len(args) < 2:
+        usage("usage: trail.py COMMAND DIR [STEP or HEAD] [--store DIR] [--code REPO] [--out FILE] [--csv]")
     command, directory = args[0], Path(args[1])
+    if command == "verify" and len(args) < 3:
+        usage("usage: trail.py verify DIR HEAD")
     if command in ("review", "note") and (len(args) < 3 or text is None or by is None or (command == "review") != (verdict is not None)):
         sys.exit(f"usage: trail.py {command} DIR STEP" + " --verdict confirms|disputes" * (command == "review") + " --text TEXT --by NAME")
     if command == "examples":
