@@ -32,9 +32,10 @@ node and their edges show whether they saw the same content. Almanaque's closed 
 
 ### Tables
 
-Parquet by default, the format Almanaque's G1 plans for its graph artifact, read with DuckDB
-locally; `--csv` writes the same columns as text, with an absent value empty rather than null.
-Parquet needs `pyarrow`, CSV nothing beyond the checker.
+Parquet by default, the format of Almanaque's graph artifact, read with DuckDB locally; `--csv`
+writes the same columns as text, with an absent value empty rather than null. Parquet needs
+`pyarrow`, CSV nothing beyond the checker. The columns are not yet Almanaque's
+([What the port changes](#what-the-port-changes)).
 
 `nodes`: `id`, `kind` (`probe`, a step kind, or the cited reference's kind), `graph` (the probe,
 for its own nodes), `tier` (int8), `version` (the probe's head digest), `at` (UTC timestamp),
@@ -51,9 +52,11 @@ Every other column is a string; `id`, `kind` and all of `edges` but `digest` are
 | `runs_code` | run → commit | confirmed | the dirty diff, if any |
 | `used`, `generated` | run → input, output | confirmed | what the run read or wrote |
 
-Parameters, measures, commands and environment stay on the steps and out of the graph: they are
-properties, and non-public parameter digests are keyed, so a graph never carries anything joinable
-to a hidden value.
+Parameters, measures, the environment and the command's digest stay on the steps and out of the
+graph: they are properties, and non-public parameter digests are keyed, so no digest in the graph
+is joinable to a hidden value. `label` is the one column of text. It is the step's summary, which
+for a run is the command as shown and for an observation may state a measure, so the graph shows
+what the step shows and no more.
 
 ### The boundary
 
@@ -111,6 +114,8 @@ For export the probe is a `prov:Bundle`, itself a `prov:Entity` of the graph tha
 | observation | `prov:Entity`, `prov:wasGeneratedBy` the run it observes |
 | task, review, note | `prov:Entity`, `prov:wasAttributedTo` its author |
 | `used`, `generated` | `prov:used`, `prov:wasGeneratedBy` |
+| an input or output at a digest | a `prov:Entity` that is a `prov:specializationOf` the unversioned file |
+| a step's `at` | `prov:generatedAtTime`; a run's `at` is also its `prov:startedAtTime`, and its observation's `at` its `prov:endedAtTime` |
 | `supersedes` | `prov:wasRevisionOf` |
 | `triggered_by` | `prov:wasInfluencedBy` |
 | `written_by` | `prov:wasAttributedTo` (`prov:wasAssociatedWith` for a run) |
@@ -125,12 +130,40 @@ Each field has one type, objects have fixed keys and there is no `$ref` or `oneO
 fields are therefore optional in the schema and required by the checker, as `planning/check.py` does
 for work records.
 
-## Port to Almanaque (G4)
+## Port to Almanaque
+
+Not built. Almanaque's graph artifact is node and edge tables per release, joined from four
+sources: the inventory, planning records, development activity and metric definitions. A trail
+would be a fifth.
 
 | Trail | Almanaque |
 | --- | --- |
-| the probe | a tier-3 source like `work commits`: its tables imported with a preview, pinned at its head |
+| the probe | a source at tier 3, like development activity: its tables imported with a preview, pinned at its head |
 | task | a work item cites the probe (`item:task-12` → `probe:T@HEAD`) |
 | a superseding plan and its review | an accepted decision citing the step, which is what makes it tier 1 |
 | `suggested` / `confirmed` links | the same `status` field planning links already carry |
-| references | the existing syntax, with the kinds `probe`, `file`, `agent`, `runner` and `human` added to G0's list |
+| references | the existing syntax, with the kinds `probe`, `file`, `agent`, `runner` and `human` added to its closed list |
+
+### What the port changes
+
+The tables above stand alone. They differ from the ones Almanaque builds and reads, and its
+relation table refuses every edge of a trail as it is. The port settles each difference:
+
+| Here | In Almanaque | The port |
+| --- | --- | --- |
+| a node's `kind` is the step kind for a step and the reference kind otherwise | `kind` is the reference kind, and `type` the node type the relation table reads | `kind` becomes `probe` for a probe and its steps. A new `type` holds `probe` or the step kind under a prefix (`step_plan`, `step_run`), because `plan`, `review` and `task` are Almanaque types with another meaning |
+| nodes carry `label`, `at` and `outcome` | rows never hold titles or descriptions | `label` is dropped on import; `at` and `outcome` are new columns there or stay on the steps |
+| an edge's `digest` | `target_version`, the version a source cited | renamed. It already means the version of the target that the source saw: the previous step's hash, a file's content, a cited probe's head |
+| no column says which step states an edge | `provenance`, a reference to the row an edge came from | new: the step, pinned at the head (`churn/probe:T@HEAD#step-4`). Almanaque confirms a suggested edge by naming its provenance, so a person can confirm an agent's link there without adding a step here |
+| `graph` on nodes and edges | `origins` and `origin`, the source that gave a row | `graph` stays, and the origin is the trail source |
+| no manifest | `graph.json`: the ontology version, the inputs and a digest of the sorted rows | new: the format version, each probe's id and head, the counts and a digest of the sorted rows |
+| fourteen relations | a strict table of which node types a relation may join | twelve are added: `contains`, `follows`, `written_by`, `runs_code`, `used`, `generated`, `observes`, `tests`, `triggered_by`, `reviews`, `about` and `builds_on`. `implements` and `supersedes` exist and gain clauses for steps, which widens the table without breaking a committed record |
+
+Open in the port:
+
+- **Audience.** Every Almanaque graph is built for one audience, and a probe has none. The
+  importing project has to name it.
+- **A dirty run.** Its `runs_code` edge points at the commit, with the digest of the diff beside
+  it, so a join on the commit alone reads the run as clean.
+- **Declared datasets.** A run in an Almanaque project could cite `dataset:NAME` as an input and
+  join the node that exists, if the snapshot hash and the trail's digest have the same form.
