@@ -322,3 +322,76 @@ def test_a_key_for_another_trail_is_refused(tmp_path):
     found = readers.key_problems(QUESTIONS, other)
     assert "the key is for madelon-2026-11-15-1, the trail is madelon-2026-11-15-2" in found
     assert "question 3: step-22 is not a step of the trail" not in found and "question 2: step-22 is not a step of the trail" in found
+
+
+def test_ask_writes_one_line_for_every_call_and_records_one_that_fails(tmp_path, monkeypatch):
+    for name in ("view.txt", "baseline.txt"):
+        (tmp_path / name).write_text(f"the {name} of a record")
+    given = []
+
+    def model(asked: str, options: list[str]) -> str:
+        given.append((asked, options))
+        if len(given) == 2:
+            raise readers.Failed("exit code 1: 503 from the provider")
+        return "I cannot tell." if len(given) == 3 else f"```json\n{json.dumps(perfect())}\n```\n"
+
+    monkeypatch.setattr(readers, "reply", model)
+    lines = readers.ask(tmp_path, QUESTIONS, 2, {"--model": "some/other"})
+    assert [json.loads(line) for line in (tmp_path / "answers.jsonl").read_text().splitlines()] == lines
+    assert [(line["presentation"], line["repeat"], line["model"]) for line in lines] == [
+        ("view", 1, "berget/some/other"), ("baseline", 1, "berget/some/other"), ("view", 2, "berget/some/other"), ("baseline", 2, "berget/some/other"),
+    ]  # fmt: skip
+    first, failed, unparsed, last = lines
+    assert first["answer"] == perfect() == last["answer"] and first["reply"].startswith("```json") and "error" not in first
+    assert failed == {
+        "presentation": "baseline",
+        "repeat": 1,
+        "model": "berget/some/other",
+        "reply": None,
+        "answer": None,
+        "error": "exit code 1: 503 from the provider",
+    }
+    assert unparsed["reply"] == "I cannot tell." and unparsed["answer"] is None and "error" not in unparsed
+
+    # Every call is one presentation, the four questions and every field of the answer, with Pi's options.
+    for (asked, options), name in zip(given, ["view.txt", "baseline.txt"] * 2, strict=True):
+        assert f"the {name} of a record" in asked and ("view.txt" in asked) != ("baseline.txt" in asked)
+        assert all(f"{question['number']}. {question['text']}" in asked for question in QUESTIONS["questions"])
+        assert all(f'- "{field}": ' in asked for question in QUESTIONS["questions"] for field in question["fields"])
+        assert options == ["--provider", "berget", "--model", "some/other", "--thinking", "off"]
+
+    # A second model's calls are added after the first's; nothing is overwritten.
+    monkeypatch.setattr(readers, "reply", lambda asked, options: json.dumps(perfect()))
+    readers.ask(tmp_path, QUESTIONS, 1, {})
+    kept = [json.loads(line) for line in (tmp_path / "answers.jsonl").read_text().splitlines()]
+    assert kept[:4] == lines and [line["model"] for line in kept[4:]] == ["berget/zai-org/GLM-5.3-Flash"] * 2
+
+
+def test_parse_finds_the_object_or_nothing():
+    assert readers.parse('{"a": 1}') == {"a": 1} == readers.parse('Here it is:\n```json\n{"a": 1}\n```\nDone.')
+    assert readers.parse("no object here") is None and readers.parse("[1, 2]") is None and readers.parse("{broken") is None
+
+
+def test_reply_calls_pi_with_no_tools_and_reports_a_failure(monkeypatch, tmp_path):
+    """Pi is replaced by a script, so the call itself is tested without a model or the network."""
+    fake = tmp_path / "pi"
+    fake.write_text('#!/bin/sh\nif [ "$FAKE_FAIL" ]; then echo "context too long" >&2; exit 1; fi\necho "$@"; pwd; ls -A | wc -l; cat\n')
+    fake.chmod(0o755)
+    monkeypatch.setattr(readers, "PI", fake)
+    said = readers.reply("the prompt, on standard input", ["--model", "m"]).splitlines()
+    assert said[0].startswith(
+        "-p --no-tools --no-extensions --no-skills --no-context-files --no-prompt-templates --no-session --system-prompt "
+    )
+    assert said[0].endswith(" --model m") and said[2].strip() == "0" and said[3] == "the prompt, on standard input"
+    assert not Path(said[1]).exists(), "the call ran in a directory of its own, removed afterwards"
+    monkeypatch.setenv("FAKE_FAIL", "1")
+    with pytest.raises(readers.Failed, match="exit code 1: context too long"):
+        readers.reply("x", [])
+
+
+def test_readers_exits_2_on_a_wrong_command_line():
+    for args in ([], ["ask", "dir"], ["ask", "dir", "--questions", "q.json", "--repeats"], ["ask", "dir", "--questions", "q.json", "--repeats", "many"],
+                 ["ask", "dir", "--questions", "q.json", "--repeats", "5", "--model"], ["grade", "dir", "--questions", "q.json"],
+                 ["texts", "dir", "--store", "s", "--log", "l", "--out", "o", "extra"]):  # fmt: skip
+        done = subprocess.run([sys.executable, "readers.py", *args], cwd=ROOT, check=False, capture_output=True, text=True)
+        assert done.returncode == 2 and done.stdout == "" and done.stderr.startswith("usage: readers.py"), args

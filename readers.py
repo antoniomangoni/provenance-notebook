@@ -2,11 +2,16 @@
 
 Usage:
   readers.py texts TRAIL --store STORE --log FILE --out DIR
+  readers.py ask DIR --questions FILE --repeats N [pi options]
   readers.py grade DIR --questions FILE --trail TRAIL
 
 `texts` writes the two presentations of one trail: `view.txt`, the text of the reviewer's page,
-and `baseline.txt`, what a reviewer has today, Pi's transcript and the agent's git log. `grade`
-scores the answers in `DIR/answers.jsonl` against the key in FILE and writes `DIR/table.md`.
+and `baseline.txt`, what a reviewer has today, Pi's transcript and the agent's git log. `ask`
+gives each presentation to a model N times, through Pi with no tools, and appends every reply to
+`DIR/answers.jsonl`. `grade` scores those answers against the key in FILE and writes `DIR/table.md`.
+
+The model is Pi's to choose and to reach: the options after N go to Pi, over the defaults
+`--provider berget --model zai-org/GLM-5.3-Flash --thinking off`, and no key is read here.
 
 Grading is mechanical. An answer is one JSON object, an item of the key is right when the
 answer's fields hold one of the accepted values, and a question's score is the share of its
@@ -145,6 +150,85 @@ def texts(directory: Path, store: Path, log: Path, out: Path) -> list[str]:
     (out / "view.txt").write_text(view_text(directory, steps), encoding="utf-8")
     (out / "baseline.txt").write_text(baseline_text(directory, log), encoding="utf-8")
     return []
+
+
+# --- ask ---------------------------------------------------------------------------------------------
+
+PI = Path(__file__).parent / "capture" / "node_modules" / ".bin" / "pi"
+DEFAULTS = {"--provider": "berget", "--model": "zai-org/GLM-5.3-Flash", "--thinking": "off"}
+SYSTEM = (
+    "You review the record of an analysis that someone else carried out. You were not there. Answer only from the record you are given."
+)
+SECONDS = 600
+
+
+class Failed(Exception):
+    """A call that gave no reply. It is recorded and counted, never repeated silently."""
+
+
+def prompt(text: str, questions: dict) -> str:
+    """What a reader is given. The words are the same for both presentations: the record, the four
+    questions, then the form of the answer."""
+    asked = "\n".join(f"{question['number']}. {question['text']}" for question in questions["questions"])
+    fields = "\n".join(f'- "{name}": {meaning}' for question in questions["questions"] for name, meaning in question["fields"].items())
+    return (
+        "Below is the record of an analysis that an AI agent carried out. Read it, then answer the questions after it.\n\n"
+        f"===== THE RECORD =====\n{text}\n===== END OF THE RECORD =====\n\n"
+        f"Questions:\n{asked}\n\n"
+        "Answer with one JSON object and nothing else: no explanation and no code fence. It has exactly these fields.\n"
+        f"{fields}\n\n{questions['form']}\n"
+    )
+
+
+def reply(asked: str, options: list[str]) -> str:
+    """One call to Pi in print mode: no tools, no extensions, no skills, no context files, no session
+    kept, in an empty directory. The prompt goes in on standard input, since a presentation is longer
+    than one argument may be (128 kB on Linux). The tests replace this function."""
+    command = [str(PI), "-p", "--no-tools", "--no-extensions", "--no-skills", "--no-context-files", "--no-prompt-templates",
+               "--no-session", "--system-prompt", SYSTEM, *options]  # fmt: skip
+    with tempfile.TemporaryDirectory() as work:
+        try:
+            done = subprocess.run(command, input=asked, cwd=work, capture_output=True, text=True, timeout=SECONDS, check=False)
+        except subprocess.TimeoutExpired:
+            raise Failed(f"no reply in {SECONDS} seconds") from None
+    if done.returncode != 0 or not done.stdout.strip():
+        said = (done.stderr.strip() or done.stdout.strip() or "no output").splitlines()[-1][:300]
+        raise Failed(f"exit code {done.returncode}: {said}")
+    return done.stdout
+
+
+def parse(text: str) -> dict | None:
+    """The JSON object of a reply: the reply itself, or what lies from its first brace to its last, so
+    a code fence or a sentence around the object does not lose it."""
+    for candidate in (text, text[text.find("{") : text.rfind("}") + 1]):
+        try:
+            found = json.loads(candidate)
+        except ValueError:
+            continue
+        if isinstance(found, dict):
+            return found
+    return None
+
+
+def ask(directory: Path, questions: dict, repeats: int, options: dict[str, str]) -> list[dict]:
+    """Each presentation, `repeats` times. A line is appended as soon as its call returns, so the file
+    holds every call that was made, whatever happens to the ones after it."""
+    chosen = DEFAULTS | options
+    model = f"{chosen['--provider']}/{chosen['--model']}"
+    asked = {name: prompt((directory / f"{name}.txt").read_text(encoding="utf-8"), questions) for name in PRESENTATIONS}
+    lines = []
+    for repeat in range(1, repeats + 1):
+        for presentation in PRESENTATIONS:
+            line = {"presentation": presentation, "repeat": repeat, "model": model, "reply": None, "answer": None}
+            try:
+                line["reply"] = reply(asked[presentation], [word for pair in chosen.items() for word in pair])
+                line["answer"] = parse(line["reply"])
+            except Failed as failed:
+                line["error"] = failed.args[0]
+            with (directory / "answers.jsonl").open("a", encoding="utf-8") as answers:
+                answers.write(json.dumps(line, ensure_ascii=False) + "\n")
+            lines.append(line)
+    return lines
 
 
 # --- grade ---------------------------------------------------------------------------------------
@@ -351,6 +435,7 @@ def grade(directory: Path, questions_file: Path, trail_directory: Path) -> list[
 
 USAGE = {
     "texts": ("readers.py texts TRAIL --store STORE --log FILE --out DIR", ("--store", "--log", "--out")),
+    "ask": ("readers.py ask DIR --questions FILE --repeats N [pi options]", ("--questions", "--repeats")),
     "grade": ("readers.py grade DIR --questions FILE --trail TRAIL", ("--questions", "--trail")),
 }
 
@@ -358,16 +443,35 @@ USAGE = {
 def main(argv: list[str]) -> int:
     args = argv[1:]
     usage, names = USAGE.get(args[0] if args else "", ("\n       ".join(line for line, _ in USAGE.values()), ()))
-    if not names or len(args) != 2 + 2 * len(names) or args[-1] in names or any(args.count(name) != 1 for name in names):
+    rest = len(args) - 2 - 2 * len(names)
+    # After the command, its directory and its own options, only `ask` takes more: Pi's options, in pairs.
+    wrong = rest % 2 != 0 or not all(word.startswith("--") for word in args[2:][::2]) if args[:1] == ["ask"] else rest != 0
+    if not names or rest < 0 or wrong or args[-1] in names or any(args.count(name) != 1 for name in names):
         print(f"usage: {usage}", file=sys.stderr)
         return 2
-    named = {name[2:]: Path(trail.option(args, name)) for name in names}
+    named = {name[2:]: trail.option(args, name) for name in names}
     command, directory = args[0], Path(args[1])
     if command == "texts":
-        found = texts(directory, named["store"], named["log"], named["out"])
-        print("\n".join(found) or f"wrote {named['out'] / 'view.txt'} and {named['out'] / 'baseline.txt'}")
+        found = texts(directory, Path(named["store"]), Path(named["log"]), Path(named["out"]))
+        print("\n".join(found) or f"wrote {Path(named['out']) / 'view.txt'} and {Path(named['out']) / 'baseline.txt'}")
+    elif command == "ask":
+        if not named["repeats"].isdigit() or int(named["repeats"]) < 1:
+            print(f"usage: {usage}", file=sys.stderr)
+            return 2
+        lines = ask(
+            directory,
+            json.loads(Path(named["questions"]).read_text()),
+            int(named["repeats"]),
+            dict(zip(args[2::2], args[3::2], strict=True)),
+        )
+        for line in lines:
+            state = (
+                f"failed: {line['error']}" if "error" in line else "no JSON object in the reply" if line["answer"] is None else "answered"
+            )
+            print(f"{line['model']} {line['presentation']} {line['repeat']}: {state}")
+        found = []
     else:
-        found = grade(directory, named["questions"], named["trail"])
+        found = grade(directory, Path(named["questions"]), Path(named["trail"]))
         print("\n".join(found) or f"wrote {directory / 'table.md'}")
     return 1 if found else 0
 
