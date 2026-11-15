@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-2026-11-15-2",
+  "at": "2026-11-15T22:16:12.837Z",
+  "kind": "plan",
+  "by": "agent:pi/google/gemma-4-31B-it",
+  "hook": "pi:propose_plan",
+  "summary": "Run fixed analysis",
+  "reasoning": "Now that I've fixed the data leakage, I want to see the new CV and holdout AUCs. I expect the CV AUC to drop, reflecting a more honest estimate.",
+  "expectations": [
+    {
+      "name": "run-fixed-analysis",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:6ba9fff115f92ce7966a511754035ba7c918ca2651ab65ca2a949206ac3997d1"
+}

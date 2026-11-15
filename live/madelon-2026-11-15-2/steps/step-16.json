@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-16",
+  "seq": 16,
+  "trail": "madelon-2026-11-15-2",
+  "at": "2026-11-15T22:16:25.059Z",
+  "kind": "plan",
+  "by": "agent:pi/google/gemma-4-31B-it",
+  "hook": "pi:propose_plan",
+  "summary": "Fix RF prediction method",
+  "reasoning": "RandomForestClassifier does not have `decision_function`. I should use `predict_proba` and take the probability of the positive class.",
+  "expectations": [
+    {
+      "name": "fix-rf-call",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:3d6e960fe9b27659bad133879d702324b8bdd5a4eebdf251e4bb226e2756b54b"
+}
