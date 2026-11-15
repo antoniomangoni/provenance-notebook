@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:40:16.168Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 12,
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-2",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:6d7fd53eea1dad0c7883c4b4632cf466cad016dc386f839f7af2abc44ef68aec"
+}

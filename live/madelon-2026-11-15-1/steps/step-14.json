@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "id": "step-14",
+  "seq": 14,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:45:07.706Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Rewrite analysis.py: selection + all tuning nested in CV, tuned on pilot only, one held-out scoring",
+  "reasoning": "Diagnosis confirmed: cv_auc 0.76 was inflated by selecting features on all pilot data before CV; honest CV is 0.59, matching holdout 0.564, and the held-out file is clean and aligned. Supersedes step-4 (whose holds-criterion failed per observation step-8): the corrected analysis must place SelectKBest inside every CV fold and let nested CV - not the leaked pre-selection - choose k, regularization, and model family, all tuned on pilot only. Heldout is scored exactly once by the final tuned model, so holdout_auc is the number I would stand behind (n=2200). I expect the tuned pipeline to clear 0.71 on the held-out set given the strong univariate signal (top feature AUC ~0.63 there), a corrected CV no longer inflated above the leaky 0.76, and CV/holdout to agree within ~0.08.",
+  "expectations": [
+    {
+      "name": "holds-criterion",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "corrected-cv-sane",
+      "measure": "cv_auc",
+      "comparison": "le",
+      "threshold": 0.76
+    },
+    {
+      "name": "cv-holdout-agree",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.08
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-4",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-8",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:f124c22cbccfa3e8990d6f227b1b8c68cc80723ebdb537c6de4482ce318a4568"
+}

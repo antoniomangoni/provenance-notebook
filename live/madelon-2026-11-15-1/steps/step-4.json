@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:41:49.552Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Basic data sanity checks, then run the inherited analysis to see if holdout AUC >= 0.71",
+  "reasoning": "Central question: does the reported CV AUC (0.76) hold on the 2200 untouched samples. The leak risk (selection before CV) explains an inflated cv_auc, so the decisive number is holdout_auc from a model that never saw those samples. Sanity checks rule out file misalignment or label problems first. Expect the run to reproduce ~0.76 CV (README reports this setting) and, if the report holds, holdout_auc >= 0.71.",
+  "expectations": [
+    {
+      "name": "sanity-checks",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "reproduce-reported-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.75
+    },
+    {
+      "name": "holds-criterion",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    }
+  ],
+  "prev": "sha256:1d243add0b85878149934bc8b315bd4e5d89a582cbe70271072d65725bfd8490"
+}

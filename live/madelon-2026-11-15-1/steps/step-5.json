@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "madelon-2026-11-15-1",
+  "at": "2026-11-15T21:41:51.796Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python - <<'PY' import hashlib import numpy as np def load(p): t = np.loadtxt(p, delimiter=\",\", skiprows=1) return t[:, :-1], t[:, -1] Xp, yp = load(\"data/pilot.csv\") Xh, yh = load(\"data/heldou",
+  "command": {
+    "shown": "uv run python - <<'PY'\nimport hashlib\nimport numpy as np\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\n\nXp, yp = load(\"data/pilot.csv\")\nXh, yh = load(\"data/heldout.csv\")\nprint(\"pilot\", Xp.shape, \"pos\", (yp==1).sum(), \"neg\", (yp==-1).sum())\nprint(\"heldout\", Xh.shape, \"pos\", (yh==1).sum(), \"neg\", (yh==-1).sum())\nprint(\"headers equal:\", open(\"data/pilot.csv\").readline() == open(\"data/heldout.csv\").readline())\nprint(\"NaNs:\", np.isnan(Xp).sum(), np.isnan(Xh).sum())\nprint(\"constant cols pilot:\", int((Xp.std(0)==0).sum()), \"heldout:\", int((Xh.std(0)==0).sum()))\n\ndef h(r): return hashlib.md5(r.tobytes()).hexdigest()\npset = {h(r) for r in Xp}\nhset = {h(r) for r in Xh}\nprint(\"heldout rows also in pilot:\", sum(h(r) in pset for r in Xh))\nprint(\"exact dup rows within heldout:\", Xh.shape[0] - len(hset))\nPY",
+    "digest": "sha256:73e62f594f1f87eb2e99910fdff00635764c851d061a8fc6359c9639e7c4f9e2"
+  },
+  "code": {
+    "ref": "commit:fc7113b70239dbee04542f4ed23f65adaaafa9a3"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:ea04bbc61cbab723f56ed81ff7f403901c6c923a4b5920092bdbec52dd49659a"
+}
