@@ -1,0 +1,24 @@
+commit cb37651
+Date: 2026-11-15T22:47:21+01:00
+
+    Correct selection leakage in pilot CV; nested tuning; held-out AUC 0.7185 [0.697, 0.740]
+
+
+ README.md   | 51 +++++++++++++++++++++----------
+ analysis.py | 99 ++++++++++++++++++++++++++++++++++++++++++++++++++-----------
+ diagnose.py | 92 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 209 insertions(+), 33 deletions(-)
+commit f05dae9
+Date: 2026-11-15T22:40:11+01:00
+
+    The workspace as the task starts
+
+
+ .gitignore       |    2 +
+ README.md        |   46 ++
+ analysis.py      |   52 ++
+ data/heldout.csv | 2201 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ data/pilot.csv   |  401 ++++++++++
+ pyproject.toml   |    9 +
+ uv.lock          |  252 +++++++
+ 7 files changed, 2963 insertions(+)
