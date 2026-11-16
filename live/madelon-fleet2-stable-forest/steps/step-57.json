@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "id": "step-57",
+  "seq": 57,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:38:56.193Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run the corrected analysis.py once: locked 10-feature GINI-stability screen + tuned RF; 3x5 nested CV on pilot then a single scoring of data/heldout.csv, writing cv_auc, holdout_auc, gap, n_features",
+  "reasoning": "Milestone 1 is set: the locked GINI(30,th>0.5) bootstrap-stability screen keeps 10 features and scored cv_auc 0.7554 under 3x5 repeated nested CV on the pilot alone (step-55). The corrected analysis.py repeats exactly that protocol (byte-identical code and seeds, so cv_auc should reproduce 0.7554), tunes the delivered RF's max_features/min_samples_leaf by pilot-only 4-fold CV, fits all 400 pilot samples and then reads data/heldout.csv for the single allowed scoring. The compact-stable-forest milestone needs holdout_auc >= 0.71 and |gap| <= 0.05 with n_features <= 50. Given the honest nested estimate 0.755 and prior corroboration (vote route's screen+RF at cv 0.73 passed its screen; selected-forest's RF procedure cleared the floor), the central expectation is holdout around 0.72-0.80 with |gap| <= 0.05. If contradicted, I will re-diagnose on pilot-only evidence, never reusing heldout for tuning.",
+  "expectations": [
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "n-features-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:8337e6e4913f7ec1b61281638f50da9dc52b3ebf8ba98efd8f4b6582eb7fd174"
+}

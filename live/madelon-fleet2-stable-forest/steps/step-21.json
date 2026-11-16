@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-21",
+  "seq": 21,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T14:52:11.566Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "D=/tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleetlogs/notebook-madelon-fleet-vote.n3Ae7h; ls $D/out/; cat $D/out/*.json 2>/dev/null; echo ===",
+  "command": {
+    "shown": "D=/tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleetlogs/notebook-madelon-fleet-vote.n3Ae7h; ls $D/out/; cat $D/out/*.json 2>/dev/null; echo ===; cat $D/diag1.py | head -40; echo ===; ls $D/*.txt $D/*.md 2>/dev/null",
+    "digest": "sha256:c39a4cd40ecfcee4b195de55c4f46574986c20d1ab444d6fedf957cda36ec41c"
+  },
+  "code": {
+    "ref": "commit:274339e2043b2d70ec0154f030f0bffd683ca45f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:1453d3cc7f317a9d0017394ba72ee23241018d3091a2b951a25492c870547ede"
+}

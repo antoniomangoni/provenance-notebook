@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "id": "step-22",
+  "seq": 22,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T14:52:11.601Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 2",
+  "exit_code": 2,
+  "duration_ms": 34,
+  "reads": [],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-21",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:0cfed4a4ee838243992a46fd80ecb1e654041133259ad403469b6083795a2554"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "madelon-fleet-stable-forest",
+  "at": "2026-11-16T14:21:38.356Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python screen_search.py 2>&1 | tail -60",
+  "command": {
+    "shown": "uv run python screen_search.py 2>&1 | tail -60",
+    "digest": "sha256:f631b4363d52b72d791afe8d2d5dede42185378e81f2c408c3222a887ea7b3a7"
+  },
+  "code": {
+    "ref": "commit:aa4761356ec1a6641841026297c5b1e968a6e4d8"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-12",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:2e65c441d392c714e01a53344ae08742fb78f7ffb4cd7b71bba5b1c35c0ba99b"
+}

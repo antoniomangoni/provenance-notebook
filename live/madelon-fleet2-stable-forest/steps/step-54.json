@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "id": "step-54",
+  "seq": 54,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:31:02.178Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Lock GINI(30,th.50) bootstrap screen from the search; run 3x5 nested CV of screen+RF on pilot only, writing cv_auc and n_features to out/metrics.json (screen milestone)",
+  "reasoning": "My pilot-only search (step-51, built on fleet1 stable-forest's design) evaluated F(20/30/40) vs GINI(30) bootstrap-stability screens by honest 2x5 nested CV: GINI(30,th>0.5) won with cv_auc 0.7590 +- 0.0315, keeping a 10-feature majority set (x65,x106,x129,x159,x242,x337,x339,x360,x445,x476; seed-Jaccard 1.0). Locking that procedure and re-estimating with 3x5 repeated nested CV (screen refit inside every outer fold, so no selection leakage like the inherited analysis) should land cv_auc near the search's 0.759, comfortably above the 0.70 milestone floor. The fleet2-vote trail independently found a pilot-only screen + model at cv_auc 0.73, corroborating that this regime is reachable. n_features is the full-pilot majority set size, 10 <= 50. Expect: cv_auc >= 0.7, n_features <= 50. If cv_auc comes back below 0.7, the plan is contradicted and I will return to pilot-only evidence.",
+  "expectations": [
+    {
+      "name": "cv-auc-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "n-features-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet-stable-forest@sha256:92cd6d200c1ad3f29df883554540eca17392a5261f2b02c250606fcbf91dece4#step-14",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:863516f315f4a2d33186727d4dfd5d226eb21b4fc784aeef312d277098e03cc4"
+}

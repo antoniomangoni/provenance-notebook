@@ -414,3 +414,101 @@ def test_with_tracing_off_an_observation_has_no_reads(tmp_path):
     session = live(tmp_path, [[plan()], [bash("cat data/telco.csv > /dev/null")]], NOTEBOOK_TRACE="0")
     (observation,) = session.of("observation")
     assert "reads" not in observation and observation["outcome"] == "as_expected"
+
+
+# ---------------------------------------------------------------------------------------------
+# The live map (spec 7): project_map, and plans that build on another agent's step
+
+TINY_MAP = {
+    "version": 1,
+    "project": "capture-demo",
+    "rev": 0,
+    "at": "2026-11-16T00:00:00Z",
+    "by": "agent:test",
+    "reason": "A test map.",
+    "triggered_by": [],
+    "goals": [{"id": "fit", "statement": "A model meets the floor"}],
+    "nodes": [
+        {
+            "id": "floor",
+            "statement": "The AUC is at least 0.75",
+            "criteria": [{"name": "auc-floor", "measure": "auc", "comparison": "ge", "threshold": 0.75}],
+        }
+    ],
+    "routes": [{"id": "base", "goal": "fit", "method": "a baseline", "path": ["floor"], "status": "open"}],
+    "resolutions": [],
+    "sealed_inputs": ["data/absent.csv"],
+}
+READ_MAP = ["project_map", {}]
+
+
+def mapped(tmp_path: Path) -> dict[str, str]:
+    (tmp_path / "map").mkdir(exist_ok=True)
+    (tmp_path / "map" / "rev-0.json").write_text(json.dumps(TINY_MAP))
+    return {"NOTEBOOK_MAP": str(tmp_path / "map"), "NOTEBOOK_REPO": str(ROOT)}
+
+
+def head(steps: list[dict]) -> str:
+    return trail.digest(trail.canonical(steps[-1]))
+
+
+def test_project_map_is_recorded_as_a_note_and_a_plan_may_build_on_what_it_showed(tmp_path):
+    sibling = live(tmp_path, [[plan(FLOOR)], [bash("python3 fit.py --auc 0.8")]], name="sibling-a")
+    session = live(tmp_path, [[READ_MAP], [plan(LOOK, builds_on=["{{ref:0}}"])], [bash("true")]], name="agent-b", **mapped(tmp_path))
+    tool, error, text = session.results[0]
+    assert (tool, error) == ("project_map", False) and "map revision 0" in text and "sibling-a" in text
+    note, built = session.of("note")[0], session.of("plan")[0]
+    assert note["hook"] == "pi:project_map" and note["by"] == "runner:notebook/0.1"
+    assert {"relation": "about", "target": f"probe:sibling-a@{head(sibling.steps)}", "status": "confirmed"} in note["links"]
+    observation = sibling.of("observation")[0]["id"]
+    assert built["links"] == [
+        {"relation": "builds_on", "target": f"probe:sibling-a@{head(sibling.steps)}#{observation}", "status": "suggested"}
+    ]
+    assert trail.merge([sibling.steps, session.steps])[2] == []
+
+
+def test_a_plan_cannot_build_on_a_reference_project_map_did_not_show(tmp_path):
+    made_up = "probe:sibling-a@sha256:" + "0" * 64 + "#step-2"
+    session = live(tmp_path, [[READ_MAP], [plan(LOOK, builds_on=[made_up])]], name="agent-b", **mapped(tmp_path))
+    tool, error, text = session.results[1]
+    assert (tool, error) == ("propose_plan", True) and "exactly as project_map showed them" in text
+    assert session.of("plan") == []
+
+
+def test_without_a_map_there_is_no_project_map_tool(tmp_path):
+    session = live(tmp_path, [[READ_MAP]], name="agent-b")
+    tool, error, _ = session.results[0]
+    assert (tool, error) == ("project_map", True) and session.of("note") == []
+
+
+def test_two_agents_at_once_read_the_map_cite_each_other_and_both_trails_check(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+
+    env = mapped(tmp_path)
+
+    def agent(name: str, auc: str) -> Session:
+        turns = [
+            [plan(FLOOR)],
+            [bash(f"python3 fit.py --auc {auc}")],
+            [bash("sleep 6")],
+            [READ_MAP],
+            [plan(LOOK, builds_on=["{{ref:0}}"])],
+            [bash("true")],
+        ]
+        return live(tmp_path, turns, name=name, **env)
+
+    with ThreadPoolExecutor(2) as pool:
+        a, b = pool.map(lambda args: agent(*args), [("agent-a", "0.8"), ("agent-b", "0.9")])
+    for me, other in ((a, b), (b, a)):
+        (built,) = [p for p in me.of("plan") if p["summary"] == LOOK["summary"]]
+        (cited,) = [link["target"] for link in built["links"] if link["relation"] == "builds_on"]
+        assert cited.startswith(f"probe:{other.steps[0]['trail']}@")
+    assert trail.merge([a.steps, b.steps])[2] == []
+
+
+def test_an_agent_is_told_when_others_found_something_since_it_last_read_the_map(tmp_path):
+    live(tmp_path, [[plan(FLOOR)], [bash("python3 fit.py --auc 0.8")]], name="sibling-a")
+    session = live(tmp_path, [[plan()], [READ_MAP], [plan(LOOK, summary="After reading")]], name="agent-b", **mapped(tmp_path))
+    first, _, after = session.results
+    assert "1 new observation since you last read the project map" in first[2]
+    assert "[notebook]" not in after[2]

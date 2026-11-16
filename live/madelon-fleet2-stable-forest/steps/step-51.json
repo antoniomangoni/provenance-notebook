@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-51",
+  "seq": 51,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:17:48.041Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "nice -n 10 uv run python -u screen_search4.py 2>&1 | tee out_search4.log; echo \"EXIT=${PIPESTATUS[0]}\"",
+  "command": {
+    "shown": "nice -n 10 uv run python -u screen_search4.py 2>&1 | tee out_search4.log; echo \"EXIT=${PIPESTATUS[0]}\"",
+    "digest": "sha256:6f60af31b089486c559a46742cb09f2e8712257b8514b476db6836ba1236b304"
+  },
+  "code": {
+    "ref": "commit:65cda03df0d8ad671809d50f970809e48c42254f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d79fba77f98f5acfd5f7622db11a730f09a3e15f87378766a197dd76418d8b4a"
+}

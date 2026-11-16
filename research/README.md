@@ -16,6 +16,31 @@ is the specification, and `project.py` the tool.
 | Reuses results | `project.py brief ROUTE` writes a task for one route that `builds_on` the steps already reached on its path. Its workspace is the code that produced the last of them, so the agent starts there. |
 | Steers what runs next | `project.py next` ranks each open route's next milestone. The milestone the most open routes are waiting on comes first. |
 
+## Watching a map, and agents that share one
+
+[Spec 7](../docs/specs/07-live-map.md) draws the map and its trails as they grow, and lets agents
+running at the same time contribute to the same map.
+
+```sh
+uv run python project.py serve research/madelon-reanalysis/map --live live      # http://127.0.0.1:8077/
+uv run python project.py page  research/madelon-reanalysis/map --live live --out map.html
+scripts/fleet.sh research/madelon-reanalysis/map madelon-fleet boost stable-forest vote -- --provider … --model …
+```
+
+- **The picture.** The map is drawn as a metro map: milestones are stations, routes are lines in
+  their goal's colour, and goals are the termini. Under it, each trail is a lane of its steps. Lines
+  join each milestone to the observations that resolved it. Arcs join steps that cite another
+  trail. A milestone a trail has met but no revision has sealed is drawn with a dashed ring, never
+  as reached.
+- **Agents read the map.** Capture gives an agent of a fleet a `project_map` tool. It shows the map
+  and what every other trail has found so far, each step pinned at its trail's present head. Each
+  call is recorded as a note naming the revision and the heads it showed.
+- **Agents cite each other.** A plan may build on a step that `project_map` showed (`builds_on`),
+  so the project graph gains edges between agents' trails as they work.
+- **Withheld numbers.** An agent is not shown a sibling's numbers from a run that opened a sealed
+  input, whether that read was traced live or found on re-execution. Otherwise one agent's
+  held-out score could steer another's design.
+
 ## What a map claims, and what is checked
 
 A map is a chain of revisions, `map/rev-N.json`. Each revision is a whole snapshot, written once

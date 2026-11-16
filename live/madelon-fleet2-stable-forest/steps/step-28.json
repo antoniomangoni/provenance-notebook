@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-28",
+  "seq": 28,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T14:55:01.050Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only search: compare bootstrap-stability screen variants (F vs RF-GINI statistics, k_per, majority threshold) by honest 2x5 nested CV of an RF",
+  "reasoning": "The established miss (cv 0.761 vs holdout 0.5639) comes from the inherited analysis fitting its F-test screen on the full pilot outside CV. My route needs a bootstrap-stability screen instead; fleet1 stable-forest's diagnostics (step-11) and variant search (step-14) went as expected, and their screen design (per-resample top-k selection frequency, majority threshold >0.5, cap 50, RF nested CV with screen refit inside outer folds) is sound, so I reproduce that design in my workspace with a small variant grid: F(20/30/40) and GINI(30/40) resample statistics, majority threshold 0.5. Prior evidence (vote trail F-profile, SVM route cv 0.66 on F25) says roughly 11 features carry F >= 10 signal on this pilot; a majority-vote screen should keep ~8-15 robust features. This run is pilot-only and writes no metrics.json; the winner will be locked afterwards.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet-stable-forest@sha256:92cd6d200c1ad3f29df883554540eca17392a5261f2b02c250606fcbf91dece4#step-11",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet-stable-forest@sha256:92cd6d200c1ad3f29df883554540eca17392a5261f2b02c250606fcbf91dece4#step-14",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:49540ca7c151281eec2d1fdb6d6dc2b684d9d6d5ccf6a89c842bb41e0a0e9038"
+}

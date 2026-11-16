@@ -298,3 +298,16 @@ def test_a_traced_read_is_a_read_edge_with_its_digest_and_a_fact_when_undeclared
         (trail.qualify(kept["ref"], steps[0]["project"]), kept["digest"]) for kept in observation["reads"]}
     assert all(edge["source"].endswith("#" + trail.observed(observation)) for edge in read)
     assert f"{trail.observed(observation)}: read 1 file beyond its declared inputs: file:notes/holdout.csv" in trail.facts(steps)
+
+
+def test_builds_on_is_accepted_on_a_plan_and_refused_on_a_run():
+    steps = trail.load(EXAMPLES / "churn-model-2026-11-11")
+    cited = "probe:other-trail@sha256:" + "0" * 64 + "#step-3"
+    plan = next(step for step in steps if step["kind"] == "plan")
+    plan.setdefault("links", []).append({"relation": "builds_on", "target": cited, "status": "suggested"})
+    for seq in range(plan["seq"] + 1, len(steps)):
+        steps[seq]["prev"] = trail.digest(trail.canonical(steps[seq - 1]))
+    assert trail.check(steps) == []
+    run = next(step for step in steps if step["kind"] == "run")
+    run["links"].append({"relation": "builds_on", "target": cited, "status": "confirmed"})
+    assert any("a run step cannot hold builds_on" in error for error in trail.check(steps))

@@ -1,0 +1,83 @@
+{
+  "version": 2,
+  "id": "step-18",
+  "seq": 18,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:59:11.285Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "inconclusive: no fresh out/metrics.json with cv_auc, n_features",
+  "exit_code": 0,
+  "duration_ms": 228810,
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:out/search/stab.2_0.log",
+      "digest": "sha256:50d43d538183a0fafd056b3371560829a3ed34c97c6e0222a00634680431bdb9"
+    },
+    {
+      "ref": "file:out/search/stab.2_1.log",
+      "digest": "sha256:cbab8f3015f2601d2ea41085713b50b9c8725b9f5a3fd25614e7a9e95fce87b9"
+    },
+    {
+      "ref": "file:out/search/stab.3_0.log",
+      "digest": "sha256:f47a79513c77c5536b07f6b424c4c0890864c9afc8429ce7668a1edcd4ce5ba2"
+    },
+    {
+      "ref": "file:out/search/stab.3_1.log",
+      "digest": "sha256:f8dda2f0bbff5555344e0a228c2a40885c4121453ce2a9c080b27c7febdf72e8"
+    },
+    {
+      "ref": "file:out/search/stab.5_0.log",
+      "digest": "sha256:9730decb15a86c59a69a2716b9f6bc4ed99c1e57a361086eadd5a96848086d45"
+    },
+    {
+      "ref": "file:out/search/stab.5_1.log",
+      "digest": "sha256:70572b3c4ab5bc953247ad0fd4845e271397a9996fc7458a88184fae7cede13f"
+    },
+    {
+      "ref": "file:out/search/top20F_0.log",
+      "digest": "sha256:3fc8e1c8e090d1e6d8175cb62cfd20832c6494934d59af8cac41a0593ac13031"
+    },
+    {
+      "ref": "file:out/search/top20F_1.log",
+      "digest": "sha256:cd934574560ba4801025421f3b248c585a19f285705ad47a1a373a6004fe986f"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+    },
+    {
+      "ref": "file:search.py",
+      "digest": "sha256:29c225c2414dccd70af92e840e1438b5b3b01eae344296e46ce3a6215f871c79"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "screen-search-runs",
+      "held": true
+    }
+  ],
+  "outcome": "inconclusive",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-17",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-13",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:1915e6aad8117ec0213dc41a51d827de5b3c4da83a1a7d1f21da94b2e4bd5414"
+}

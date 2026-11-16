@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "id": "step-29",
+  "seq": 29,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T15:48:24.180Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Score heldout once with locked screen+GBM analysis; claim compact-boost",
+  "reasoning": "Final full run: `uv run python analysis.py` — one single scoring of data/heldout.csv by the locked procedure (bootstrap ET-stability screen fitted on all pilot: 10 features; HistGBM tuned on pilot: lr 0.03, leaf 8, min_leaf 15, max_features 1.0; honest 2x5-fold procedure CV for cv_auc). Builds on step-59: stable-forest's nearly identical screen family (10-feature bootstrap GINI screen + RF) just provisionally cleared the heldout floor with an agreeing estimate, and its pilot numbers (0.7554) sit between my exploration RF (0.79) and GBM (0.753) honest estimates; my honest cv 0.7645 should track holdout within ±0.05 with holdout around 0.73-0.79. Expected: holdout_auc >= 0.71, gap in [-0.05, 0.05], n_features 10 <= 50, cv_auc >= 0.7. This is the route's one heldout scoring; if it misses, I supersede this plan and diagnose from the recorded measures.",
+  "expectations": [
+    {
+      "name": "floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-hi",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lo",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "k-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    },
+    {
+      "name": "cv-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-59",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-56",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:e7d24e6e50c66112dbaca83ea12f300ff96db330db8b5eb92bef53fcc0da8c77"
+}

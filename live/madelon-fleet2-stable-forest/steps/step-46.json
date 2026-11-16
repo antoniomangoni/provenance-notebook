@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-46",
+  "seq": 46,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:17:15.616Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 423,
+  "reads": [
+    {
+      "ref": "file:out_search3.log",
+      "digest": "sha256:bf458454a9b9c2ab3e328e5c425d3db2e201014a5e1b78871c5d782ba61d65eb"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-45",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:95b738dd4ac42a3146b1d0a5d7c772714ff906aa4a28ef47b74b7aa60ae5f19d"
+}

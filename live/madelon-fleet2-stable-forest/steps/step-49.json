@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-49",
+  "seq": 49,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:17:22.311Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ps -eo pid,comm,args --sort=-etimes | grep -v grep | grep python | head; echo ---; pgrep -f \"screen_search3\" | while read p; do readlink /proc/$p/exe 2>/dev/null; done",
+  "command": {
+    "shown": "ps -eo pid,comm,args --sort=-etimes | grep -v grep | grep python | head; echo ---; pgrep -f \"screen_search3\" | while read p; do readlink /proc/$p/exe 2>/dev/null; done",
+    "digest": "sha256:50a8f7818ee61754e1ec2a3894c90333e249fd6a469a39e164d6e3e87650f3c8"
+  },
+  "code": {
+    "ref": "commit:36d904d9ef766622dec508c09de4b6b6e9b23c8e"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8989a16c7c945cdb924aed2244627da0efa4fed03f1cefac65387725cbf0065d"
+}

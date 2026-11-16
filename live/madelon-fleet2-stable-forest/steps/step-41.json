@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-41",
+  "seq": 41,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:16:41.699Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat /sys/fs/cgroup/cpu.max 2>/dev/null; cat /sys/fs/cgroup/cpu.stat 2>/dev/null | head -4; echo ---; ps -eo pid,ppid,pcpu,etimes,comm --sort=-etimes | grep -c python; ps -o pid,pcpu,etimes,cputime -p ",
+  "command": {
+    "shown": "cat /sys/fs/cgroup/cpu.max 2>/dev/null; cat /sys/fs/cgroup/cpu.stat 2>/dev/null | head -4; echo ---; ps -eo pid,ppid,pcpu,etimes,comm --sort=-etimes | grep -c python; ps -o pid,pcpu,etimes,cputime -p $(pgrep -f screen_search3.py | head -1) 2>/dev/null",
+    "digest": "sha256:38e36f8d1b93295f84ba107438ae3f4d762cd34661c7152ab424d913507b45cd"
+  },
+  "code": {
+    "ref": "commit:36d904d9ef766622dec508c09de4b6b6e9b23c8e"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:35bf58a1d68dfe5eb2611bf31886d40bc679a0edabc9ec8115b929fd65834841"
+}

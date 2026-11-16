@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T14:51:48.204Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "D=/tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleetlogs; wc -c $D/fleet-madelon-fleet-stable-forest.log; grep -n \"cv_auc\\|jaccard\\|Jaccard\\|fin",
+  "command": {
+    "shown": "D=/tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleetlogs; wc -c $D/fleet-madelon-fleet-stable-forest.log; grep -n \"cv_auc\\|jaccard\\|Jaccard\\|finalists\\|GINI screen\\|sizes\\|freq\" $D/fleet-madelon-fleet-stable-forest.log | tail -60",
+    "digest": "sha256:d2e816beb7d16c50dac967c4f42d34623ab5ce1e8202967d31d0e295ca226a14"
+  },
+  "code": {
+    "ref": "commit:274339e2043b2d70ec0154f030f0bffd683ca45f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:fce080739f6413db07ad8ce6f5973e4b7c6711af140382cb185d6d35fb2d5833"
+}

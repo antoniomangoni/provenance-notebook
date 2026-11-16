@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T15:04:57.562Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "git add analysis.py vote_lib.py search.py lock.py calib.py && git commit -qm \"vote route: pilot-only screen search (top20F + manhattan-knn soft vote, nested cv 0.73) and locked analysis\" && git log --",
+  "command": {
+    "shown": "git add analysis.py vote_lib.py search.py lock.py calib.py && git commit -qm \"vote route: pilot-only screen search (top20F + manhattan-knn soft vote, nested cv 0.73) and locked analysis\" && git log --oneline | head -3 && uv run python analysis.py",
+    "digest": "sha256:0a717a96cbf37f769d2bb22076b3f7b10eacbee7bdf60bcc852d78a28243bfc1"
+  },
+  "code": {
+    "ref": "commit:d75281e6172794fc444955c7df3932b633605060"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:4c514503bba82441dfc7711adc6cfe7a8813d50544ac5e8cc2009c36df2a2138"
+}

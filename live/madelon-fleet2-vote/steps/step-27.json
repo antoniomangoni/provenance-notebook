@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-27",
+  "seq": 27,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T15:10:48.193Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "git add README.md && git commit -qm \"vote route final: corrected analysis holds on heldout (cv 0.730, holdout 0.719, gap 0.011, 20 features)\" && git log --oneline && echo --- && cat out/metrics.json",
+  "command": {
+    "shown": "git add README.md && git commit -qm \"vote route final: corrected analysis holds on heldout (cv 0.730, holdout 0.719, gap 0.011, 20 features)\" && git log --oneline && echo --- && cat out/metrics.json",
+    "digest": "sha256:96dac8ccbb468818916dc143027bfa0652e3df3a0d272d6ccedc6135e85275e5"
+  },
+  "code": {
+    "ref": "commit:473a99d6a276f717a98a038c8034a61215181e0d"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:60f7e34b69f48232bbcfc55904adca851c341ccc4d8ec74aa713613dbdee0eb5"
+}

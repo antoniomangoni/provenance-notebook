@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-21",
+  "seq": 21,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:21:37.615Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat > vote_lib.py <<'EOF' \"\"\"Shared pilot-only screen + vote procedure. Every choice fits on pilot data only.\"\"\" import numpy as np from sklearn.ensemble import RandomForestClassifier from sklearn.fea",
+  "command": {
+    "shown": "cat > vote_lib.py <<'EOF'\n\"\"\"Shared pilot-only screen + vote procedure. Every choice fits on pilot data only.\"\"\"\nimport numpy as np\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.feature_selection import f_classif\nfrom sklearn.metrics import roc_auc_score\nfrom sklearn.model_selection import StratifiedKFold\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef stab_screen(X, y, thr=0.3, B=200, seed=0, K=30, cap=50):\n    \"\"\"Features stable among the K best by F statistic across B half-resamples.\"\"\"\n    r = np.random.default_rng(seed)\n    counts = np.zeros(X.shape[1])\n    for b in range(B):\n        idx = r.choice(len(y), size=len(y) // 2, replace=False)\n        Fb, _ = f_classif(X[idx], y[idx])\n        counts[np.argsort(-Fb)[:K]] += 1\n    feats = np.where(counts / B >= thr)[0]\n    if len(feats) > cap:  # safety valve; the threshold alone stays well under 50\n        Ft, _ = f_classif(X, y)\n        feats = feats[np.argsort(-Ft[feats])[:cap]]\n    return feats\n\n\ndef f_screen(X, y, k=20):\n    F, _ = f_classif(X, y)\n    return np.argsort(-F)[:k]\n\n\nRF_GRID = [\n    {\"max_features\": \"sqrt\", \"min_samples_leaf\": 1},\n    {\"max_features\": \"sqrt\", \"min_samples_leaf\": 5},\n    {\"max_features\": 0.35, \"min_samples_leaf\": 1},\n    {\"max_features\": 0.35, \"min_samples_leaf\": 5},\n    {\"max_features\": 0.5, \"min_samples_leaf\": 1},\n    {\"max_features\": 0.5, \"min_samples_leaf\": 5},\n]\nKNN_GRID = [\n    {\"n_neighbors\": k, \"weights\": w}\n    for k in (5, 9, 13, 17, 21, 25, 31)\n    for w in (\"uniform\", \"distance\")\n]\nKNN_P_GRID = [dict(p, **{\"metric\": \"manhattan\"}) for p in KNN_GRID]\nWS = (0.2, 0.35, 0.5, 0.65, 0.8)  # weight on RF (KNN gets 1-w)\n\n\ndef make_rf(p):\n    return RandomForestClassifier(\n        n_estimators=500, random_state=0, n_jobs=1, **p)\n\n\ndef make_knn(p):\n    return make_pipeline(StandardScaler(), KNeighborsClassifier(**p))\n\n\ndef nested_vote_cv(X, y, screen_fn, n_out=5, n_i",
+    "digest": "sha256:68414c002c836e62d76ab72e567751bc2da0e7def3bd2d2dace6b19956cf8eca"
+  },
+  "code": {
+    "ref": "commit:db96fdf2ca5f08cd8beeb925dd22b75381c2c975"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-14",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:5815cbe5d9738d6ac5c2c0493bb18524978b2f5bdc67e8a5802634d5c613baa9"
+}

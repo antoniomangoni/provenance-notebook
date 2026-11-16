@@ -20,7 +20,7 @@ exports several as one graph ([Many probes](GRAPH.md#many-probes)); `--csv` writ
 | Kind | Written by | Carries | Links |
 | --- | --- | --- | --- |
 | task (step 0 only) | human, runner | question, project, agent identity, the measures the runner can produce, public parameter names | builds_on other probes |
-| plan | agent, human | reasoning, at least one expectation (measure, comparison, threshold) | supersedes a plan + triggered_by an observation (this probe's or another's), both or neither |
+| plan | agent, human | reasoning, at least one expectation (measure, comparison, threshold) | supersedes a plan + triggered_by an observation (this probe's or another's), both or neither; builds_on other probes' steps, pinned at their heads |
 | run | runner, before it executes | command (shown + digest), code commit, dirty diff digest, environment digest, parameters, inputs | implements exactly one plan |
 | observation | runner, after the run ends | exit code, outputs, duration, measures and the metrics file they were read from, checks against the plan's expectations, outcome, error class, and, when the command was traced, the workspace files it opened for reading (`reads`) | observes one run, at most once; tests the plan that run implements |
 | review | human | confirms or disputes, text | reviews a step |

@@ -8,7 +8,7 @@
 // adapter for another host is new wiring. The Trail writes steps one at a time. The default
 // export gathers data from Pi's hooks and calls the two.
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve, sep } from "node:path";
 import { Type } from "typebox";
@@ -93,12 +93,12 @@ function known(steps: Step[]): string {
 }
 
 export type PlanInput = {
-	summary: string; reasoning: string; expectations: Expectation[]; supersedes?: string; triggered_by?: string;
+	summary: string; reasoning: string; expectations: Expectation[]; supersedes?: string; triggered_by?: string; builds_on?: string[];
 };
 
 // The agent's plan as a step, or a Refusal that says what can be used instead. Nothing the agent
 // wrote is shortened or corrected: a plan that does not fit is refused, and the agent writes it again.
-export function planStep(input: PlanInput, task: Task, steps: Step[], by: string): Step {
+export function planStep(input: PlanInput, task: Task, steps: Step[], by: string, citable: Set<string> = new Set()): Step {
 	if (!input.summary || input.summary.length > 200) throw new Refusal("summary is 1 to 200 characters; the plan was not recorded");
 	if (!input.reasoning || input.reasoning.length > 8000) throw new Refusal("reasoning is 1 to 8,000 characters; the plan was not recorded");
 	if (!Array.isArray(input.expectations) || !input.expectations.length)
@@ -123,6 +123,14 @@ export function planStep(input: PlanInput, task: Task, steps: Step[], by: string
 		expectations.push({ name, measure: given.measure, comparison: given.comparison, threshold: given.threshold });
 	}
 	const step: Step = { kind: "plan", by, hook: "pi:propose_plan", summary: input.summary, reasoning: input.reasoning, expectations };
+	// A sibling's step this plan builds on: only a reference project_map showed, so its head is one the
+	// sibling had. The link is the agent's, so it is suggested, as the checker requires.
+	const cited = input.builds_on ?? [];
+	if (!Array.isArray(cited) || cited.some((ref) => typeof ref !== "string" || !citable.has(ref)))
+		throw new Refusal("builds_on lists step references exactly as project_map showed them in this session, such as "
+			+ "probe:NAME@sha256:HEX#step-N; the plan was not recorded");
+	const builds = [...new Set(cited)].map((target) => ({ relation: "builds_on", target, status: "suggested" }));
+	if (builds.length) step.links = builds;
 	if (!input.supersedes && !input.triggered_by) return step;
 	// A plan that replaces another names the observation that made it, and the other way round.
 	const old = steps.find((kept) => kept.id === input.supersedes);
@@ -135,6 +143,7 @@ export function planStep(input: PlanInput, task: Task, steps: Step[], by: string
 	step.links = [
 		{ relation: "supersedes", target: old.id, status: "suggested" },
 		{ relation: "triggered_by", target: trigger.id, status: "suggested" },
+		...builds,
 	];
 	return step;
 }
@@ -385,7 +394,7 @@ export class Trail {
 // ---------------------------------------------------------------------------------------------
 // Configuration, from the environment. A missing or wrong value fails at load.
 
-export type Config = { task: string; trail: string; store: string; maxRuns: number; maxTokens: number };
+export type Config = { task: string; trail: string; store: string; maxRuns: number; maxTokens: number; map?: string; repo?: string };
 
 function positive(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
 	const value = env[name];
@@ -405,6 +414,14 @@ export function configure(env: NodeJS.ProcessEnv): Config {
 	if (!TRAIL_NAME.test(name) || name.length > 100)
 		throw new Error("NOTEBOOK_TRAIL ends in the trail's name: lower-case letters, digits and single hyphens");
 	if (existsSync(join(config.trail, "steps"))) throw new Error("NOTEBOOK_TRAIL already holds steps; a trail is written once");
+	// A research map the agent may read, with the repository whose project.py reads it. Both or neither.
+	if (!env.NOTEBOOK_MAP !== !env.NOTEBOOK_REPO) throw new Error("NOTEBOOK_MAP and NOTEBOOK_REPO go together");
+	if (env.NOTEBOOK_MAP) {
+		const map = resolve(env.NOTEBOOK_MAP), repo = resolve(env.NOTEBOOK_REPO!);
+		if (!existsSync(join(map, "rev-0.json"))) throw new Error("NOTEBOOK_MAP is not a research map: it has no rev-0.json");
+		if (!existsSync(join(repo, "project.py"))) throw new Error("NOTEBOOK_REPO has no project.py");
+		return { ...config, map, repo };
+	}
 	return config;
 }
 
@@ -423,7 +440,12 @@ const PLAN = Type.Object({
 	expectations: Type.Array(EXPECTATION, { description: "What the next commands must show, fixed before they run" }),
 	supersedes: Type.Optional(Type.String({ description: "The id of the plan this one replaces, such as step-1" })),
 	triggered_by: Type.Optional(Type.String({ description: "The id of the observation that contradicted that plan, such as step-3" })),
+	builds_on: Type.Optional(Type.Array(Type.String(), {
+		description: "Steps of other agents' trails this plan uses, each copied whole from project_map, such as probe:NAME@sha256:HEX#step-N",
+	})),
 });
+// Step references as project_map prints them: another trail's step, pinned at its present head.
+const SHOWN_REF = /(?:[a-z][a-z0-9_-]*\/)?probe:[a-z0-9]+(?:-[a-z0-9]+)*@sha256:[0-9a-f]{64}#step-(?:0|[1-9][0-9]*)/g;
 const NO_PLAN = "No plan is recorded yet, so this command was not run. Call propose_plan first. "
 	+ "To look around before committing to numbers, propose a plan whose only expectation is exit_ok on measure exit.";
 const NOT_STARTED = "Capture did not start, so nothing can be recorded and nothing is run.";
@@ -443,6 +465,27 @@ export default function (pi: ExtensionAPI) {
 	};
 	const strace = tracer();
 	const pending = new Map<string, Pending>();
+	// Every sibling step reference project_map has shown in this session: what a plan may build on.
+	const citable = new Set<string>();
+	// How many observations the other trails of this project had when the agent last read the map.
+	let seenAtRead = 0;
+	function siblingObservations(): number {
+		const root = dirname(config.trail);
+		let count = 0;
+		for (const name of existsSync(root) ? readdirSync(root) : []) {
+			const steps = join(root, name, "steps");
+			if (name === trail.name || !existsSync(join(steps, "step-0.json"))) continue;
+			try {
+				if (JSON.parse(readFileSync(join(steps, "step-0.json"), "utf8")).project !== task.project) continue;
+				for (const file of readdirSync(steps)) {
+					try {
+						if (JSON.parse(readFileSync(join(steps, file), "utf8")).kind === "observation") count++;
+					} catch { /* a step being written: counted next time */ }
+				}
+			} catch { /* not a trail */ }
+		}
+		return count;
+	}
 
 	pi.on("session_start", async (_event, ctx) => {
 		if (trail.steps.length) return;
@@ -479,8 +522,53 @@ export default function (pi: ExtensionAPI) {
 			if (!trail.steps.length) throw new Refusal(NOT_STARTED);
 			const over = await ceiling();
 			if (over) throw new Refusal(over);
-			const step = await trail.write(planStep(params as PlanInput, task, trail.steps, agent));
-			return { content: [{ type: "text", text: `recorded as ${step.id}` }], details: {} };
+			const step = await trail.write(planStep(params as PlanInput, task, trail.steps, agent, citable));
+			// An agent that has not read the map since its siblings found something is told so: the prompt
+			// asks it to read the map before each plan, and a model forgets.
+			let text = `recorded as ${step.id}`;
+			if (config.map) {
+				const fresh = siblingObservations() - seenAtRead;
+				if (fresh > 0) text += `\n[notebook] Other agents' trails have ${fresh} new observation${fresh === 1 ? "" : "s"} since you last `
+					+ "read the project map. Call project_map before your next plan, and build on what serves your route.";
+			}
+			return { content: [{ type: "text", text }], details: {} };
+		},
+	});
+
+	// The research map, read live: what the map and the other agents' trails show now. Each read is a
+	// note naming the revision and every sibling head it showed, so the trail records what the agent saw.
+	if (config.map) pi.registerTool({
+		name: "project_map", label: "Project map", executionMode: "sequential", parameters: Type.Object({}),
+		description: "Read the research map this task belongs to, as it stands now: its goals, routes and milestones, what reached each, "
+			+ "and what the other agents' trails have found so far, each step pinned at its trail's present head. Numbers from a run that "
+			+ "opened a sealed input are withheld. To use another agent's step, copy its reference whole into propose_plan's builds_on.",
+		async execute() {
+			if (!trail.steps.length) throw new Refusal(NOT_STARTED);
+			const over = await ceiling();
+			if (over) throw new Refusal(over);
+			// project.py runs with no more of the environment than it needs: never the model's key.
+			const env = Object.fromEntries(["PATH", "HOME", "TMPDIR"].filter((name) => process.env[name]).map((name) => [name, process.env[name]!]));
+			let text: string;
+			try {
+				text = execFileSync("uv", ["run", "--quiet", "--project", config.repo!, "python", join(config.repo!, "project.py"), "status", config.map!,
+					"--live", dirname(config.trail), "--for", trail.name], { cwd: config.repo, env, encoding: "utf8", timeout: 60_000, stdio: ["ignore", "pipe", "pipe"] });
+			} catch (error: any) {
+				throw new Refusal(`The project map could not be read: ${clip(String(error?.stderr || error?.message || error), 500)}`);
+			}
+			seenAtRead = siblingObservations();
+			const own = new RegExp(`(^|/)probe:${trail.name}@`);
+			const refs = [...new Set(text.match(SHOWN_REF) ?? [])].filter((ref) => !own.test(ref));
+			for (const ref of refs) citable.add(ref);
+			const heads = [...new Set(refs.map((ref) => ref.split("#")[0]))];
+			const rev = /map revision (\d+) \((sha256:[0-9a-f]{64})/.exec(text.split("\n")[0]);
+			await trail.write({
+				kind: "note", by: RUNNER, hook: "pi:project_map",
+				summary: clip(`Read the project map at revision ${rev?.[1] ?? "unknown"}, with ${heads.length} other trail heads`, 200),
+				text: clip(`project_map showed map revision ${rev?.[1] ?? "unknown"} (${rev?.[2] ?? "no digest"}) and these trails at these heads, `
+					+ `as project.py status --for ${trail.name} prints them:\n${heads.join("\n") || "none"}`, 8000),
+				links: [{ relation: "about", target: "step-0", status: "confirmed" }, ...heads.map((target) => ({ relation: "about", target, status: "confirmed" }))],
+			});
+			return { content: [{ type: "text", text }], details: {} };
 		},
 	});
 
@@ -561,7 +649,12 @@ export default function (pi: ExtensionAPI) {
 			metrics = { digest: digest(kept.fresh), measures };
 			mkdirSync(config.store, { recursive: true });
 			const stored = join(config.store, metrics.digest.split(":")[1]);
-			if (!existsSync(stored)) writeFileSync(stored, kept.fresh);
+			// Agents running at once share the store: the file is created whole by one of them, never twice.
+			try {
+				writeFileSync(stored, kept.fresh, { flag: "wx" });
+			} catch (error: any) {
+				if (error?.code !== "EEXIST") throw error;
+			}
 		}
 		const observation = await trail.write(observationStep(kept.run, kept.plan, kept.exitCode ?? -1, kept.ended! - kept.started, metrics, kept.reads));
 		let line = receipt(kept.run, observation, kept.plan);

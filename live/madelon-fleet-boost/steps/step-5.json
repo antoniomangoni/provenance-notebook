@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "madelon-fleet-boost",
+  "at": "2026-11-16T14:17:19.402Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only screen exploration: F-test vs ExtraTrees vs MI, coarse GB/RF/LR CV landscape",
+  "reasoning": "The miss is established (holdout_auc 0.5639 < 0.71 at cv_auc 0.761, step-7 of madelon-2026-11-15-2), so no need to recompute it. My job is the compact boost route. First step: a pilot-only diagnostic run that never touches data/heldout.csv. It computes three candidate screens on the 400 pilot rows (ANOVA F, ExtraTrees Gini importance, mutual information), compares top-k (20/30/40/50) with quick CV AUCs for gradient boosting vs RF vs logistic, and gauges how much the fixed-screen CV inflates vs screening inside the folds. From that landscape I will pick the screen type, k, and a small GB tuning grid, before running a proper repeated nested CV as the screen-lock run. All numbers here are pilot-only, so they are visible to me; only the final heldout scoring must be a single locked run.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:067f298be4de686a134caa57cd3cf5b993370204e61b17e86ee809185989cae5"
+}

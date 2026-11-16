@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-60",
+  "seq": 60,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:46:44.185Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat out/metrics.json; git add -A; git commit -q -m \"Correct the analysis: bootstrap-stability GINI screen (10 features) + RF, honest nested CV; held-out AUC 0.7125, gap 0.038\" && git log --oneline | h",
+  "command": {
+    "shown": "cat out/metrics.json; git add -A; git commit -q -m \"Correct the analysis: bootstrap-stability GINI screen (10 features) + RF, honest nested CV; held-out AUC 0.7125, gap 0.038\" && git log --oneline | head -3",
+    "digest": "sha256:e3ed7f118dcea1c1833024df858bd0e677d22a4ab8370e27163d455f09d1fe54"
+  },
+  "code": {
+    "ref": "commit:51ec582d0e4753f3fa4270d0153de21fb5482eb5"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-57",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:28a0e637730ef329cb23b76697c0d84e4554b0828a5055298927358cd254cc39"
+}

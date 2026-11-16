@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "id": "step-28",
+  "seq": 28,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T15:48:09.976Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "inconclusive: no fresh out/metrics.json with cv_auc, n_features",
+  "exit_code": 0,
+  "duration_ms": 68,
+  "reads": [
+    {
+      "ref": "file:.gitignore",
+      "digest": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84"
+    },
+    {
+      "ref": "file:analysis.py",
+      "digest": "sha256:53190863f58812fcf3486ef3f7b3698d58f35ee310a1120815a50bdcd59a7e43"
+    },
+    {
+      "ref": "file:explore_bag.py",
+      "digest": "sha256:1efccf2d4f65b7759bff2bb418833f8abda0d9d5635060da614ed171579e93c1"
+    },
+    {
+      "ref": "file:explore_leaders.py",
+      "digest": "sha256:d96053d8e2b72b587a6c796f320c4702a48796a5633fa2d4671cd112fcec6a8e"
+    },
+    {
+      "ref": "file:explore_lock.py",
+      "digest": "sha256:9b3fe05839a386b4b58ff573bfabe5d724748fd280b00007b464dfd3b87bfa71"
+    },
+    {
+      "ref": "file:explore_screens.py",
+      "digest": "sha256:67cb3b372da3e34c4e050c771642a60a9caa2892ea6aeea019c9ba9041cb340a"
+    },
+    {
+      "ref": "file:explore_stats.py",
+      "digest": "sha256:70fd77cdee387312924b6fc2095d44baaca179656c9e95f0ec1bd86e2af2e9ae"
+    }
+  ],
+  "checks": [],
+  "outcome": "inconclusive",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-27",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8bd22a32c598608f0aac348e53b9c64de882fab5297a6a25be6ab54faa154443"
+}

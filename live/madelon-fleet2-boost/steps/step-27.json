@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-27",
+  "seq": 27,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T15:48:09.906Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "git add -A && git commit -q -m \"boost route: locked bootstrap-stability screen (10 features) + tuned HistGBM; honest 2x5 CV 0.7645 on pilot\" && git log --oneline | head -3",
+  "command": {
+    "shown": "git add -A && git commit -q -m \"boost route: locked bootstrap-stability screen (10 features) + tuned HistGBM; honest 2x5 CV 0.7645 on pilot\" && git log --oneline | head -3",
+    "digest": "sha256:2cea6de8b5ac8ba50a2915e9dc2e9a09d3703acfd851bb5b3f18a33c106d06c8"
+  },
+  "code": {
+    "ref": "commit:72f52682ebf16e5bb153e5c5f591e4d34bb66bd1"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:cf48db3ea9d1ddb11229a5d0fae16bb286d76ecb98304923e93bff8bfa105743"
+}

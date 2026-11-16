@@ -302,3 +302,134 @@ def test_propose_flags_a_hit_that_came_after_misses_of_the_same_node():
     draft = project.propose(revs, trails(LIVE1, LIVE2, ROUTE1, ROOT / "live" / "madelon-route-knn"))
     (hit,) = [c for c in draft["candidates"] if c["node"] == "compact-knn"]
     assert (hit["cites"].split("#")[1], hit["holds"], hit["after_misses"]) == ("step-40", True, ["step-30"])
+
+
+# ---------------------------------------------------------------------------------------------
+# The live state (spec 7)
+
+ALL = [LIVE1, LIVE2, ROUTE1, ROOT / "live" / "madelon-route-knn", ROOT / "live" / "madelon-route-svm"]
+
+
+def test_the_live_state_agrees_with_the_view_on_the_committed_map():
+    revs = project.revisions(MAP)
+    live = project.live_state(revs, trails(*ALL))
+    now = project.state(revs[-1])
+    assert {n["id"]: n["state"] for n in live["nodes"]} == {n["id"]: project.node_state(n["id"], now) for n in revs[-1]["nodes"]}
+    assert {r["id"]: r["status"] for r in live["routes"]} == {k: v["status"] for k, v in now["routes"].items()}
+    assert [t["trail"] for t in live["trails"]] == [p.name for p in ALL]
+    assert all(r["sealed"] for n in live["nodes"] for r in n["resolutions"])
+
+
+def test_what_a_trail_meets_before_it_is_sealed_is_provisional_and_changes_no_state():
+    revs = first_two()
+    live = project.live_state(revs, trails(LIVE1, LIVE2, ROUTE1))
+    screen = next(n for n in live["nodes"] if n["id"] == "screen")
+    assert screen["state"] == "open" and screen["resolutions"] == []
+    assert screen["provisional"] and all(not r["sealed"] for r in screen["provisional"])
+    assert screen["provisional"][0]["probe"] == trail.probe_id(trail.load(ROUTE1))
+
+
+def test_an_agent_is_not_shown_a_sibling_s_numbers_from_a_run_that_opened_a_sealed_input(tmp_path):
+    copy_of = tmp_path / "madelon-route-screened-forest"
+    steps = trail.load(ROUTE1)
+    next(s for s in steps if s["id"] == "step-39")["reads"] = [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]
+    tamper.rechain(steps, 40)
+    tamper.write(copy_of, steps)
+    revs = [sealed(r) for r in first_two()]
+    given = trails(LIVE2, copy_of)
+    other = project.live_state(revs, given, for_probe=trail.probe_id(trail.load(LIVE2)))
+    lane = next(t for t in other["trails"] if t["trail"] == "madelon-route-screened-forest")
+    step39 = next(s for s in lane["steps"] if s["id"] == "step-39")
+    assert step39["withheld"] and step39["measures"] == {} and step39["summary"] == project.WITHHELD
+    text = "\n".join(project.status_text(other, project.datetime.now(project.UTC), refs_per_trail=50))
+    assert "step-39: " + project.WITHHELD in text
+    own = project.live_state(revs, given, for_probe=trail.probe_id(steps))
+    lane = next(t for t in own["trails"] if t["trail"] == "madelon-route-screened-forest")
+    mine = next(s for s in lane["steps"] if s["id"] == "step-39")
+    assert not mine["withheld"] and mine["summary"] == "as expected"
+
+
+def test_discovery_takes_the_trails_of_the_map_s_project_only(tmp_path):
+    shutil.copytree(LIVE2, tmp_path / "ours")
+    shutil.copytree(LIVE1, tmp_path / "theirs")
+    task = json.loads((tmp_path / "theirs" / "steps" / "step-0.json").read_text()) | {"project": "elsewhere"}
+    (tmp_path / "theirs" / "steps" / "step-0.json").write_text(json.dumps(task))
+    (tmp_path / "empty").mkdir()
+    assert project.discover(tmp_path, "madelon-reanalysis") == [tmp_path / "ours"]
+
+
+def test_a_trail_ending_in_a_half_written_step_is_kept_and_marked_reading(tmp_path):
+    shutil.copytree(LIVE2, tmp_path / "t")
+    count = len(trail.load(LIVE2))
+    (tmp_path / "t" / "steps" / f"step-{count}.json").write_text('{"version": 2, "id": "st')
+    given = project.Trails([tmp_path / "t"])
+    probe = trail.probe_id(trail.load(LIVE2))
+    assert len(given.steps[probe]) == count and probe in given.reading
+    lane = project.live_state(first_two(), given)["trails"][0]
+    assert lane["reading"] and lane["problems"] == []
+
+
+def test_a_second_seal_of_the_same_revision_fails(tmp_path, monkeypatch, capsys):
+    shutil.copytree(MAP, tmp_path / "map")
+    for extra in sorted((tmp_path / "map").glob("rev-*.json"))[2:]:
+        extra.unlink()
+    draft = {k: v for k, v in project.sealed(first_two()[1]).items() if k not in project.SEALED} | {"reason": "A test."}
+    (tmp_path / "draft.json").write_text(json.dumps(draft))
+    stale = project.revisions(tmp_path / "map")
+    monkeypatch.setattr(project, "revisions", lambda _: [dict(r) for r in stale])
+    argv = [
+        "project.py",
+        "seal",
+        str(tmp_path / "map"),
+        str(tmp_path / "draft.json"),
+        "--by",
+        "agent:test",
+        "--trails",
+        str(LIVE1),
+        str(LIVE2),
+    ]
+    assert project.main(argv) == 0
+    assert project.main(argv) == 1
+    assert "rev-2 was sealed meanwhile; propose again" in capsys.readouterr().out
+
+
+def test_a_step_a_revision_has_judged_is_not_proposed_again():
+    revs = project.revisions(MAP)
+    judged = {r["cites"].split("@")[0] + "#" + r["cites"].split("#")[1] for rev in revs for r in rev["resolutions"]}
+    proposed = project.propose(revs, trails(*ALL))["candidates"]
+    assert not [c for c in proposed if c["cites"].split("@")[0] + "#" + c["cites"].split("#")[1] in judged]
+    # floor-search, withdrawn in rev-6, cited live-1 step-18; it stays withdrawn.
+    assert not [c for c in proposed if c["node"] == "floor-search"]
+
+
+def test_a_captured_sealed_read_passes_check_only_when_the_revision_excuses_it_and_says_why(tmp_path):
+    copy_of = tmp_path / "route"
+    steps = trail.load(ROUTE1)
+    next(s for s in steps if s["id"] == "step-39")["reads"] = [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]
+    tamper.rechain(steps, 40)
+    tamper.write(copy_of, steps)
+    given = trails(LIVE1, LIVE2, copy_of)
+    ref = head_ref(copy_of, "step-45")
+    excused = {"node": "compact-forest", "cites": ref, "holds": True, "excused": [{"run": "step-38", "why": "It counted rows."}]}
+    assert project.check(alone(sealed(first_two()[1], excused)), given) == []
+    idle = excused | {"excused": [*excused["excused"], {"run": "step-41", "why": "Nothing."}]}
+    assert project.check(alone(sealed(first_two()[1], idle)), given) == [
+        "rev-0: resolution of compact-forest: excuses step-41, which did not read a sealed input before step-45's run"
+    ]
+    unsaid = excused | {"excused": [{"run": "step-38", "why": ""}]}
+    assert "excused is a list of runs" in project.check(alone(sealed(first_two()[1], unsaid)), given)[0]
+    view_lines = "\n".join(project.show(sealed(first_two()[1], excused), given))
+    assert "step-38 read (excused: It counted rows.)" in view_lines
+
+
+def test_an_agent_is_not_shown_that_a_sibling_met_a_milestone_by_a_run_that_opened_a_sealed_input(tmp_path):
+    copy_of = tmp_path / "madelon-route-screened-forest"
+    steps = trail.load(ROUTE1)
+    next(s for s in steps if s["id"] == "step-15")["reads"] = [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]
+    tamper.rechain(steps, 16)
+    tamper.write(copy_of, steps)
+    revs = [sealed(r) for r in first_two()]
+    everyone = project.live_state(revs, trails(LIVE2, copy_of))
+    assert any(r["step"] == "step-15" for n in everyone["nodes"] for r in n["provisional"])
+    agent = project.live_state(revs, trails(LIVE2, copy_of), for_probe=trail.probe_id(trail.load(LIVE2)))
+    assert not any(r["step"] == "step-15" for n in agent["nodes"] for r in n["provisional"])

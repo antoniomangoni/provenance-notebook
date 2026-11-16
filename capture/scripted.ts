@@ -4,11 +4,30 @@
 // NOTEBOOK_SCRIPT names a JSON file: an array of turns, each an array of [tool, arguments]. The
 // turn played is the number of assistant messages so far; past the last turn the reply is plain
 // text, which ends the session. Turn N reports 100 * (N + 1) input tokens and 10 output tokens.
+// A string argument may hold {{ref:N}}: the Nth step reference (probe:NAME@sha256:HEX#step-N) in
+// the latest tool result, so a scripted agent can cite what project_map showed it.
 import { readFileSync } from "node:fs";
 import { type AssistantMessage, createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 type Call = [string, Record<string, unknown>];
+
+const REF = /(?:[a-z][a-z0-9_-]*\/)?probe:[a-z0-9]+(?:-[a-z0-9]+)*@sha256:[0-9a-f]{64}#step-(?:0|[1-9][0-9]*)/g;
+
+function latestRefs(messages: any[]): string[] {
+	const result = [...messages].reverse().find((message) => message.role === "toolResult");
+	const text = (result?.content ?? []).map((part: any) => part?.text ?? "").join("\n");
+	// A scripted agent cites other trails only: its own trail's steps appear in the map too.
+	const own = new RegExp(`(^|/)probe:${(process.env.NOTEBOOK_TRAIL ?? "").split("/").pop()}@`);
+	return [...new Set<string>(text.match(REF) ?? [])].filter((ref) => !own.test(ref));
+}
+
+function fill(value: unknown, refs: string[]): unknown {
+	if (typeof value === "string") return value.replace(/\{\{ref:(\d+)\}\}/g, (kept, n) => refs[Number(n)] ?? kept);
+	if (Array.isArray(value)) return value.map((item) => fill(item, refs));
+	if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fill(item, refs)]));
+	return value;
+}
 
 export default function (pi: ExtensionAPI) {
 	const path = process.env.NOTEBOOK_SCRIPT;
@@ -18,7 +37,8 @@ export default function (pi: ExtensionAPI) {
 	function stream(model: any, context: any) {
 		const events = createAssistantMessageEventStream();
 		const turn = context.messages.filter((message: any) => message.role === "assistant").length;
-		const calls = turns[turn] ?? [];
+		const refs = latestRefs(context.messages);
+		const calls = (turns[turn] ?? []).map(([name, args]) => [name, fill(args, refs)] as Call);
 		const input = 100 * (turn + 1);
 		const output = {
 			role: "assistant", content: [], api: model.api, provider: model.provider, model: model.id,

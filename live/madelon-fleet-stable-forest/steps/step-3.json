@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-fleet-stable-forest",
+  "at": "2026-11-16T14:16:43.341Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ls -la && echo '---' && ls -la data out 2>/dev/null && echo '---' && find . -maxdepth 2 -name '*.md' -not -path './node_modules/*' | head -20 && echo '---' && wc -l data/*.csv",
+  "command": {
+    "shown": "ls -la && echo '---' && ls -la data out 2>/dev/null && echo '---' && find . -maxdepth 2 -name '*.md' -not -path './node_modules/*' | head -20 && echo '---' && wc -l data/*.csv",
+    "digest": "sha256:c7b3dfe2507441219d273dfe566005477dc5ea4520231c957c722128712bfd86"
+  },
+  "code": {
+    "ref": "commit:ecee59fba647f79107508db5b5b15c83e09f65b2"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:b934be30b144e7c3c24cbc3aa6466b8365b1d8dba5a9c4e7523d8d729d68bc45"
+}

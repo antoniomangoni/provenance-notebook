@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "id": "step-0",
+  "seq": 0,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:50:24.423Z",
+  "kind": "task",
+  "by": "human:antonio",
+  "hook": "pi:session_start",
+  "summary": "Route vote: Check whether the inherited Madelon result holds on samples it never saw",
+  "question": "The inherited analysis reports a cross-validated AUC of 0.76 on the 400 pilot samples. Does that result hold on the 2200 held-out samples, taking a held-out AUC of at least 0.71 as holding? If it does not, why not, and what estimate can be stood behind?",
+  "project": "madelon-reanalysis",
+  "agent": {
+    "name": "pi",
+    "version": "0.84.1",
+    "model": "berget/zai-org/GLM-5.3-Flash"
+  },
+  "declared_measures": [
+    "cv_auc",
+    "holdout_auc",
+    "gap",
+    "n_features"
+  ],
+  "public_parameters": [
+    "seed",
+    "k",
+    "folds"
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "status": "confirmed"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T14:54:07.814Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python explore_stats.py 2>&1 | tail -60 && echo \"=== SCREENS ===\" && uv run python explore_screens.py 2>&1 | tail -30",
+  "command": {
+    "shown": "uv run python explore_stats.py 2>&1 | tail -60 && echo \"=== SCREENS ===\" && uv run python explore_screens.py 2>&1 | tail -30",
+    "digest": "sha256:9e538b89a3c566777992e09e16ee210bd544b2c14b5db1b83cd92cf02969d08d"
+  },
+  "code": {
+    "ref": "commit:1525b6723b57b941fa22dce95cae417afb13b7c6"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-6",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:c28ddd5c8effe0f15d75f1547f9f66d5a8d238183e4efd7740a6d00de01a6680"
+}

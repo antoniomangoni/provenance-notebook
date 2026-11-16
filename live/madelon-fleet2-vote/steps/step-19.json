@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:59:30.844Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python search.py top20F 2 > out/search/top20F_2.log 2>&1 & uv run python search.py top20F 0 man > out/search/top20F_0man.log 2>&1 & uv run python search.py top20F 1 man > out/search/top20F_1man",
+  "command": {
+    "shown": "uv run python search.py top20F 2 > out/search/top20F_2.log 2>&1 &\nuv run python search.py top20F 0 man > out/search/top20F_0man.log 2>&1 &\nuv run python search.py top20F 1 man > out/search/top20F_1man.log 2>&1 &\nwait\ncat out/search/top20F_2.log out/search/top20F_0man.log out/search/top20F_1man.log",
+    "digest": "sha256:ffdf18007155a8f6e18c97b4b456335f7c6b3db7d43023ba9cb27807e640f98d"
+  },
+  "code": {
+    "ref": "commit:04b8af464f5eb0a8f4a3bbb34f499e29c315809d"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-13",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:e30a4a92b7ea09820319e8936a85237f57cedb534ec5bc25e8e75da97ef09c77"
+}

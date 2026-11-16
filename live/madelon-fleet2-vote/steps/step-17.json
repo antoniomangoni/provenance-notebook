@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:55:22.427Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "mkdir -p out/search && cat > search.py <<'EOF' import json, sys, time import numpy as np from vote_lib import nested_vote_cv, stab_screen, f_screen, KNN_GRID, KNN_P_GRID name, seed = sys.argv[1], int(",
+  "command": {
+    "shown": "mkdir -p out/search && cat > search.py <<'EOF'\nimport json, sys, time\nimport numpy as np\nfrom vote_lib import nested_vote_cv, stab_screen, f_screen, KNN_GRID, KNN_P_GRID\n\nname, seed = sys.argv[1], int(sys.argv[2])\nman = len(sys.argv) > 3 and sys.argv[3] == \"man\"\n\ntab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = tab[:, :-1], tab[:, -1]\n\nif name == \"top20F\":\n    fn = lambda Xx, yy: f_screen(Xx, yy, 20)\nelse:\n    thr = float(name[4:])\n    fn = lambda Xx, yy: stab_screen(Xx, yy, thr)\n\nt0 = time.time()\naucs, chosen = nested_vote_cv(X, y, fn, seed=seed, knn_grid=KNN_P_GRID if man else KNN_GRID)\nres = {\n    \"screen\": name, \"seed\": seed, \"manhattan\": man,\n    \"mean\": float(aucs.mean()), \"folds\": [float(a) for a in aucs],\n    \"n_feats\": [int(c[3]) for c in chosen],\n    \"weight\": [float(c[2]) for c in chosen],\n    \"time\": round(time.time() - t0, 1),\n}\nsuffix = \"man\" if man else \"\"\njson.dump(res, open(f\"out/search/{name}_{seed}{suffix}.json\", \"w\"))\nprint(json.dumps({k: res[k] for k in (\"screen\", \"seed\", \"manhattan\", \"mean\", \"folds\", \"n_feats\", \"time\")}))\nEOF\nfor s in 0 1; do\n  for scr in top20F stab.5 stab.3 stab.2; do\n    uv run python search.py $scr $s > out/search/${scr}_${s}.log 2>&1 &\n  done\ndone\nwait\necho \"=== phase 1 done ===\"; cat out/search/*.log",
+    "digest": "sha256:988cfd86fec24a6afd1ace5ca26d0fd61de17bccab447f3018fd1ade437967d2"
+  },
+  "code": {
+    "ref": "commit:e7add166fccbbca44a2fbebc1cbd571af8e6cd08"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-13",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:fc0dfb8d35ab7831cbce1bbdd7cd8aa246048636deba3c3ed555322f7fc4e848"
+}
