@@ -70,6 +70,17 @@ across agents: otherwise one agent's held-out score could steer another's design
 **`project.py status MAP [--for TRAIL] [--json]`.** It prints the state: as text for a person or
 an agent, as JSON for a program.
 
+**What an agent is shown of a sibling.** For each other trail, `status` prints its latest step, and its last
+three observations with their measures and the summary of the plan each tested. Each is pinned
+at the trail's present head, so a plan can cite it.
+
+**Re-executions count.** A map's own `retrace/` files are used for the trails given, without
+`--reads`. A run known only by re-execution to have opened a sealed input is therefore withheld
+from agents too.
+
+**Judged steps stay judged.** `propose` does not offer a step that any revision has already
+cited. A credit that a revision withdrew stays withdrawn until a later revision says otherwise.
+
 **`seal`.** It creates `rev-N.json` exclusively, so of two seals of the same revision, the
 second fails and says so.
 
@@ -134,6 +145,10 @@ enable the tool. Without them, capture is as it was.
 - Each is written as a `builds_on` link with status `suggested`, as every link an agent writes
   is. Capture confirms the reference was shown to the agent, not that the plan uses it.
 
+**A nudge.** When the other trails have new observations since the agent last called
+`project_map`, the reply to its next `propose_plan` says so. This was added after the first
+fleet, where each agent read the map once, at its start, and never again.
+
 **The checker.** `trail.check` allows `builds_on` on a plan as well as on the task. It is
 already cross-probe, so `merge` checks its head and step. The schema stays version 2.
 
@@ -143,8 +158,8 @@ not interleave.
 ### The fleet (`scripts/fleet.sh MAP ROUTE…`)
 
 For each route, the script:
-1. writes a brief (`project.py brief`) into `research/PROJECT/briefs/ROUTE`;
-2. starts `scripts/live.sh BRIEF madelon-fleet-ROUTE [pi options]` in the background, with
+1. writes a brief (`project.py brief --with`) into `research/PROJECT/briefs/PREFIX-ROUTE`;
+2. starts `scripts/live.sh BRIEF PREFIX-ROUTE [pi options]` in the background, with
    `NOTEBOOK_MAP` and `NOTEBOOK_REPO` set.
 
 It then waits for every agent and prints each trail's check. Pi options come after `--`.
