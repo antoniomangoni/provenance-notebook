@@ -433,3 +433,106 @@ def test_an_agent_is_not_shown_that_a_sibling_met_a_milestone_by_a_run_that_open
     assert any(r["step"] == "step-15" for n in everyone["nodes"] for r in n["provisional"])
     agent = project.live_state(revs, trails(LIVE2, copy_of), for_probe=trail.probe_id(trail.load(LIVE2)))
     assert not any(r["step"] == "step-15" for n in agent["nodes"] for r in n["provisional"])
+
+
+# ---------------------------------------------------------------------------------------------
+# What a credit rests on, and recorded withdrawals (spec 8)
+
+LIVE = ROOT / "live"
+
+
+def everything() -> project.Trails:
+    return project.Trails(project.discover(LIVE, "madelon-reanalysis"), beside=MAP.parent)
+
+
+def probe(name: str) -> str:
+    return f"madelon-reanalysis/probe:{name}"
+
+
+def test_a_step_rests_on_what_its_trail_built_on_in_other_trails_and_on_what_those_rest_on():
+    given = everything()
+    # vote's plans at step-13 and step-23 build on the first fleet's vote step-21; its task builds on live-2 step-7.
+    assert project.upstream(given, probe("madelon-fleet2-vote"), 26, "madelon-reanalysis") == {
+        probe("madelon-fleet-vote"): 21,
+        probe("madelon-2026-11-15-2"): 7,
+    }
+    # boost built on vote and stable-forest, so it rests on what they rest on too.
+    boost = project.upstream(given, probe("madelon-fleet2-boost"), 25, "madelon-reanalysis")
+    assert boost[probe("madelon-fleet2-vote")] == 22 and boost[probe("madelon-fleet-vote")] == 21
+    # Before it built on anyone, boost rested only on its task's citation.
+    assert project.upstream(given, probe("madelon-fleet2-boost"), 3, "madelon-reanalysis") == {probe("madelon-2026-11-15-2"): 7}
+
+
+def test_a_head_without_a_step_rests_on_the_step_that_head_ended_at(tmp_path):
+    vote = trail.load(LIVE / "madelon-fleet2-vote")
+    head = trail.digest(trail.canonical(vote[22]))
+    copy_of = tmp_path / "madelon-fleet2-boost"
+    steps = trail.load(LIVE / "madelon-fleet2-boost")
+    steps[15]["links"] = [
+        {**link, "target": f"probe:madelon-fleet2-vote@{head}"} if link["relation"] == "builds_on" else link for link in steps[15]["links"]
+    ]
+    tamper.rechain(steps, 16)
+    tamper.write(copy_of, steps)
+    given = project.Trails([LIVE / "madelon-fleet2-vote", copy_of, LIVE2])
+    assert project.upstream(given, probe("madelon-fleet2-boost"), 15, "madelon-reanalysis")[probe("madelon-fleet2-vote")] == 22
+
+
+def as_version_2(revision: dict) -> list[dict]:
+    changed = alone(revision)
+    changed[0]["version"] = 2
+    return changed
+
+
+def test_version_2_judges_sealed_reads_in_other_trails_a_credit_rests_on():
+    rev9 = project.revisions(MAP)[9]
+    given = everything()
+    assert project.check(alone(rev9), given) == []  # version 1: the cited trail only
+    errors = project.check(as_version_2(rev9), given)
+    said = "rev-0: resolution of compact-vote: madelon-fleet-vote#step-5 read a sealed input before step-26's run"
+    assert said in errors
+    excused = copy.deepcopy(rev9)
+    vote = next(r for r in excused["resolutions"] if r["node"] == "compact-vote")
+    vote["excused"].append({"run": "madelon-fleet-vote#step-5", "why": "It counted rows."})
+    assert said not in project.check(as_version_2(excused), given)
+    view_lines = "\n".join(project.show(as_version_2(excused)[0], given))
+    assert "madelon-fleet-vote#step-5 read (excused: It counted rows.)" in view_lines
+    assert "rests on madelon-2026-11-15-2 to step-7, madelon-fleet-vote to step-21" in view_lines
+
+
+def test_a_version_2_revision_says_why_it_drops_a_resolution_and_names_only_what_it_drops():
+    revs = copy.deepcopy(project.revisions(MAP)[:7])  # rev-6 dropped screen and floor-search
+    revs[6]["version"] = 2
+    given = everything()
+    errors = project.check(revs, given)
+    dropped = [e for e in errors if "without saying why in withdrawn" in e]
+    assert len(dropped) == 2 and any("resolution of screen by" in e for e in dropped)
+    gone = {(r["node"], project.unpinned(r["cites"])) for r in revs[5]["resolutions"]} - {
+        (r["node"], project.unpinned(r["cites"])) for r in revs[6]["resolutions"]
+    }
+    full = {project.unpinned(r["cites"]): r["cites"] for r in revs[5]["resolutions"]}
+    revs[6]["withdrawn"] = [{"node": node, "cites": full[ref], "why": "The trace showed a held-out read."} for node, ref in sorted(gone)]
+    assert not [e for e in project.check(revs, given) if "withdrawn" in e]
+    kept = revs[6]["resolutions"][0]
+    revs[6]["withdrawn"].append({"node": kept["node"], "cites": kept["cites"], "why": "Nothing."})
+    assert any("which this revision keeps" in e for e in project.check(revs, given))
+    revs[6]["version"] = 1
+    assert any("only a version 2 revision records withdrawals" in e for e in project.check(revs, given))
+
+
+def test_history_gives_each_resolution_its_lifetime_and_no_reason_a_version_1_revision_did_not_record():
+    lives = project.history(project.revisions(MAP))
+    screen = [h for h in lives if h["node"] == "screen" and h["cites"].startswith("probe:madelon-route-screened-forest")]
+    assert [(h["from"], h["dropped"], h["why"]) for h in screen] == [(3, 6, None)]
+    assert all(h["dropped"] is None for h in lives if h["from"] == 9)
+
+
+def test_editing_a_draft_does_not_change_the_revision_it_was_drafted_from():
+    revs = project.revisions(MAP)
+    before = json.dumps(project.sealed(revs[-1]), sort_keys=True)
+    draft = project.propose(revs, everything())
+    draft["resolutions"][0]["excused"] = [{"run": "step-1", "why": "edited"}]
+    assert json.dumps(project.sealed(revs[-1]), sort_keys=True) == before and draft["version"] == 2
+
+
+def test_the_committed_map_checks_with_every_trail_under_live():
+    assert project.check(project.revisions(MAP), everything()) == []
