@@ -51,6 +51,7 @@ Every other column is a string; `id`, `kind` and all of `edges` but `digest` are
 | the step's links | step → step, record or another probe | as written | the head another probe was cited at |
 | `runs_code` | run → commit | confirmed | the dirty diff, if any |
 | `used`, `generated` | run → input, output | confirmed | what the run read or wrote |
+| `read` | run → each file a traced command opened | confirmed | the file's digest when the command ended; `used` is what the run declared, `read` what it was seen to open |
 
 Parameters, measures, the environment and the command's digest stay on the steps and out of the
 graph: they are properties, and non-public parameter digests are keyed, so no digest in the graph

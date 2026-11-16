@@ -267,3 +267,34 @@ def test_a_command_without_its_arguments_is_a_usage_error():
     for args in [(), ("check",), ("verify", EXAMPLES / CHURN)]:
         done = cli(*args)
         assert done.returncode == 2 and len(done.stderr.splitlines()) == 1 and done.stderr.startswith("usage: trail.py")
+
+
+def traced_trail() -> list[dict]:
+    """The churn example with one observation traced: it read the data and a file its run never declared."""
+    steps = trail.load(EXAMPLES / "churn-model-2026-11-11")
+    observation = next(step for step in steps if step["kind"] == "observation")
+    run = next(step for step in steps if step["id"] == trail.observed(observation))
+    declared = run["inputs"][0]
+    observation["reads"] = [declared, {"ref": "file:notes/holdout.csv", "digest": trail.h("held out")}]
+    for seq in range(observation["seq"] + 1, len(steps)):
+        steps[seq]["prev"] = trail.digest(trail.canonical(steps[seq - 1]))
+    return steps
+
+
+def test_reads_are_accepted_on_an_observation_and_refused_on_a_run():
+    steps = traced_trail()
+    assert trail.check(steps) == []
+    run = next(step for step in steps if step["kind"] == "run")
+    run["reads"] = []
+    assert any("reads" in error for error in trail.check(steps))
+
+
+def test_a_traced_read_is_a_read_edge_with_its_digest_and_a_fact_when_undeclared():
+    steps = traced_trail()
+    observation = next(step for step in steps if step.get("reads"))
+    _, edges = trail.graph(steps)
+    read = [edge for edge in edges if edge["relation"] == "read"]
+    assert {(edge["target"], edge["digest"]) for edge in read} == {
+        (trail.qualify(kept["ref"], steps[0]["project"]), kept["digest"]) for kept in observation["reads"]}
+    assert all(edge["source"].endswith("#" + trail.observed(observation)) for edge in read)
+    assert f"{trail.observed(observation)}: read 1 file beyond its declared inputs: file:notes/holdout.csv" in trail.facts(steps)

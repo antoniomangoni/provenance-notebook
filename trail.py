@@ -46,7 +46,7 @@ KINDS = {
     # so a run that never finished stays in the trail, unsettled.
     "run": ({"command", "code"}, {"environment", "parameters", "inputs"}, {"runner"}),
     "observation": ({"outcome", "exit_code"},
-                    {"outputs", "duration_ms", "measures", "measures_source", "checks", "error"}, {"runner"}),
+                    {"outputs", "reads", "duration_ms", "measures", "measures_source", "checks", "error"}, {"runner"}),
     "review": ({"verdict", "text"}, set(), {"human"}),
     "note": ({"text"}, set(), {"agent", "human", "runner"}),
 }
@@ -352,6 +352,10 @@ def facts(steps: list[dict]) -> list[str]:
         if explored := [rid for rid in implementing if rid not in attempts]:
             found.append(f"{plan['id']}: {commands(explored)} wrote no metrics{failures(explored)}")
         found += eased(plan, by_id)
+    for rid, run in runs.items():
+        declared = {kept["ref"] for kept in run.get("inputs", [])}
+        if rid in settlement and (beyond := [r["ref"] for r in settlement[rid].get("reads", []) if r["ref"] not in declared]):
+            found.append(f"{rid}: read {len(beyond)} file{'s' * (len(beyond) != 1)} beyond its declared inputs: " + ", ".join(beyond[:5]))
     calls, results = {}, {}
     for rid, run in runs.items():
         if rid not in settlement:
@@ -462,6 +466,9 @@ def graph(steps: list[dict]) -> tuple[list[dict], list[dict]]:
             # The run generated the outputs; its observation, the settlement, is where they are kept.
             for made in step.get("outputs", []):
                 edge(f"{probe}#{observed(step)}", "generated", cited(made["ref"]), kept=made["digest"])
+            # What the run was traced opening, which may differ from the inputs it declared.
+            for opened in step.get("reads", []):
+                edge(f"{probe}#{observed(step)}", "read", cited(opened["ref"]), kept=opened["digest"])
     return list(nodes.values()), edges
 
 

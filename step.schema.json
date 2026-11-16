@@ -104,6 +104,15 @@
         "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
       }
     }},
+    "reads": {"$comment": "the files a traced command opened for reading, at their digest when it ended; absent when untraced", "type": "array", "maxItems": 500, "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "digest"],
+      "properties": {
+        "ref": {"type": "string", "maxLength": 500, "pattern": "^file:[^\\s@#]+$"},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }},
     "exit_code": {"type": "integer"},
     "duration_ms": {"type": "integer", "minimum": 0},
     "measures_source": {
