@@ -19,7 +19,7 @@ export type Step = Record<string, any>;
 export type Expectation = { name: string; measure: string; comparison: string; threshold?: number };
 export type Task = {
 	summary: string; question: string; project: string; declared_measures: string[];
-	public_parameters: string[]; inputs: string[]; by: string;
+	public_parameters: string[]; inputs: string[]; by: string; builds_on?: string[];
 };
 
 export const RUNNER = "runner:notebook/0.1";
@@ -28,6 +28,8 @@ const SIGNS: Record<string, string> = { lt: "<", le: "<=", eq: "==", ge: ">=", g
 const TRAIL_NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const MEASURE = /^[A-Za-z0-9_.-]{1,100}$/;
 const METRICS = "out/metrics.json";
+// Another probe's step, pinned at a head: the form the step schema gives a cross-probe link target.
+const PROBE_REF = /^([a-z][a-z0-9_-]*\/)?probe:[a-z0-9]+(-[a-z0-9]+)*@sha256:[0-9a-f]{64}(#step-(0|[1-9][0-9]*))?$/;
 
 // The first `length` characters, counted as the schema counts them, so a cut never splits one.
 function clip(text: string, length: number): string {
@@ -60,6 +62,9 @@ export function readTask(text: string): Task {
 		["public_parameters of letters, digits, _ . and -", task.public_parameters.every((name: string) => MEASURE.test(name))],
 	];
 	for (const [rule, ok] of fits) if (!ok) throw new Error(`the task file needs ${rule}`);
+	// The probes this task starts from, as a research map's brief cites them. Optional.
+	if (task.builds_on !== undefined && (!Array.isArray(task.builds_on) || task.builds_on.some((ref: unknown) => typeof ref !== "string" || !PROBE_REF.test(ref))))
+		throw new Error("the task file needs builds_on as a list of probe references pinned at a head, PROJECT/probe:TRAIL@sha256:HEX#step-N");
 	return task;
 }
 
@@ -72,6 +77,7 @@ export function taskStep(task: Task, version: string, model: string): Step {
 	return {
 		kind: "task", by: task.by, hook: "pi:session_start", summary: task.summary, question: task.question, project: task.project,
 		agent: { name: "pi", version, model }, declared_measures: task.declared_measures, public_parameters: task.public_parameters,
+		...(task.builds_on?.length ? { links: task.builds_on.map((target) => ({ relation: "builds_on", target, status: "confirmed" })) } : {}),
 	};
 }
 

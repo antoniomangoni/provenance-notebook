@@ -55,8 +55,8 @@ These are fixed. A slice that needs one changed stops and asks.
 
 - **The step format.** `step.schema.json` and the rules in `trail.check`. No slice changes them.
 - **The task file.** `task.json` holds `summary`, `question`, `project`, `declared_measures`,
-  `public_parameters`, `inputs` (file paths relative to the workspace) and `by` (`human:NAME`).
-  Capture writes step 0 from it.
+  `public_parameters`, `inputs` (file paths relative to the workspace) and `by` (`human:NAME`),
+  and optionally `builds_on`, probe steps pinned at a head (spec 5). Capture writes step 0 from it.
 - **The metrics file.** A run reports its numbers by writing `out/metrics.json` in the
   workspace: one object of measure names to numbers.
 - **A demo directory.** `task.json`, `prompt.md` and `workspace/`, the files the agent starts
