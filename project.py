@@ -15,6 +15,13 @@ every one from the trails, so the map claims nothing the trails do not show.
   shared                     milestones, files, code and computation that trails have in common
   graph --out DIR [--csv]    the merged trails' tables with the map's nodes and edges added
   view                       the map as text
+  status [--for TRAIL] [--json]   the live state: the map, provisional resolutions and every trail
+  page --out FILE            the map and its trails drawn as one static page
+  serve [--port N]           the same page, redrawn as trails grow (127.0.0.1 only)
+
+--live DIR adds every trail under DIR whose task names the map's project. --reads FILE... adds
+re-executions by retrace.py. With --for TRAIL, a sibling's observation whose run opened a sealed
+input is shown without its numbers: what an agent's project_map tool is shown.
 
 docs/specs/05-research-map.md is the specification.
 """
@@ -66,17 +73,45 @@ def digest(revision: dict) -> str:
     return trail.digest(trail.canonical(sealed(revision)))
 
 
+def readable(directory: Path) -> tuple[list[dict], bool]:
+    """A trail's steps up to the first file that does not parse, and whether one did not. Capture writes
+    steps in order, so a trail being written can end in a half-written file, and only there."""
+    files = sorted((directory / "steps").glob("step-*.json"), key=lambda p: int(p.stem.split("-")[1]))
+    steps = []
+    for path in files:
+        try:
+            steps.append(json.loads(path.read_text()))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return steps, True
+    return steps, False
+
+
+def discover(directory: Path, project: str) -> list[Path]:
+    """The trails under DIR whose task names the project."""
+    found = []
+    for path in sorted(directory.iterdir()) if directory.is_dir() else []:
+        try:
+            task = json.loads((path / "steps" / "step-0.json").read_text())
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            continue
+        if task.get("project") == project:
+            found.append(path)
+    return found
+
+
 class Trails:
     """The trails a map cites, by probe id, with the head after each step and where they live."""
 
     def __init__(self, paths: list[Path], retraced: list[Path] = ()):
-        self.steps, self.heads, self.paths = {}, {}, {}
+        self.steps, self.heads, self.paths, self.reading = {}, {}, {}, set()
         for path in paths:
-            steps = trail.load(path)
+            steps, partial = readable(path)
             if not steps:
                 continue
             probe = trail.probe_id(steps)
             self.steps[probe], self.heads[probe], self.paths[probe] = steps, trail.heads(steps), path
+            if partial:
+                self.reading.add(probe)
         # Re-executions by retrace.py, by probe and run: what each run read when it was run again.
         self.retraced, self.problems = {}, []
         for path in retraced:
@@ -741,18 +776,200 @@ def show(revision: dict, trails: Trails) -> list[str]:
 
 
 # ---------------------------------------------------------------------------------------------
+# The live state: what the terminal, the viewer and an agent's project_map tool are shown
+
+WITHHELD = "scored a sealed input; numbers withheld"
+ACTIVE_S = 300
+
+
+def cross_links(step: dict, project: str) -> list[dict]:
+    found = []
+    for link in step.get("links", []):
+        if cites := trail.PROBE_REF.fullmatch(link["target"]):
+            found.append(
+                {
+                    "relation": link["relation"],
+                    "probe": f"{cites['project'] or project}/probe:{cites['trail']}",
+                    "step": cites["step"],
+                    "head": cites["head"],
+                    "ref": link["target"],
+                }
+            )
+    return found
+
+
+def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -> dict:
+    """The map's latest sealed revision with its derived states, what `propose` would draft now (never
+    sealed), and every trail as it stands. For an agent (`for_probe`), a sibling's observation whose run
+    opened a sealed input is shown without its numbers."""
+    last = revs[-1]
+    project, now, common = last["project"], state(last), shared_nodes(last)
+    sealed_inputs = last.get("sealed_inputs", [])
+
+    def opened(probe: str, step: dict) -> str | None:
+        return trails.read(probe, step, sealed_inputs) if sealed_inputs and step["kind"] == "run" else None
+
+    def hidden(probe: str, observation: dict) -> bool:
+        if for_probe is None or probe == for_probe:
+            return False
+        run = next((s for s in trails.steps[probe] if s["id"] == trail.observed(observation)), None)
+        return run is not None and opened(probe, run) is not None
+
+    def resolution(ref: str, holds: bool, sealed_: bool, extra: dict) -> dict:
+        found = trails.cite(ref, project)
+        probe, step = found if not isinstance(found, str) else (None, None)
+        quiet = probe is not None and hidden(probe, step)
+        return {
+            "cites": ref,
+            "probe": probe,
+            "step": step["id"] if step else None,
+            "holds": holds,
+            "sealed": sealed_,
+            "summary": WITHHELD if quiet else (step["summary"] if step else found),
+            **extra,
+        }
+
+    candidates = propose(revs, trails)["candidates"]
+    nodes = []
+    for node in last["nodes"]:
+        nodes.append(
+            {
+                "id": node["id"],
+                "statement": node["statement"],
+                "criteria": [criterion_text(c) for c in node["criteria"]],
+                "state": node_state(node["id"], now),
+                "routes": [route["id"] for route in last["routes"] if node["id"] in route["path"]],
+                "shared": node["id"] in common,
+                "resolutions": [resolution(r["cites"], r["holds"], True, {}) for r in last["resolutions"] if r["node"] == node["id"]],
+                "provisional": [
+                    resolution(
+                        c["cites"],
+                        c["holds"],
+                        False,
+                        {"routes": c["routes"], **({"after_misses": c["after_misses"]} if "after_misses" in c else {})},
+                    )
+                    for c in candidates
+                    if c["node"] == node["id"]
+                ],
+            }
+        )
+    lanes = []
+    for probe, steps in trails.steps.items():
+        tag = ROUTE_TAG.match(steps[0]["summary"])
+        shown = []
+        for step in steps:
+            entry = {
+                "id": step["id"],
+                "kind": step["kind"],
+                "at": step["at"],
+                "summary": step["summary"],
+                "links": cross_links(step, project),
+            }
+            if step["kind"] == "observation":
+                quiet = hidden(probe, step)
+                entry |= {
+                    "observes": trail.observed(step),
+                    "outcome": step["outcome"],
+                    "measures": {} if quiet else measures(step),
+                    "summary": WITHHELD if quiet else step["summary"],
+                    "withheld": quiet,
+                }
+            elif step["kind"] == "run" and (how := opened(probe, step)):
+                entry["sealed_read"] = how
+            shown.append(entry)
+        lanes.append(
+            {
+                "probe": probe,
+                "trail": steps[0]["trail"],
+                "route": tag[1] if tag else None,
+                "agent": (steps[0].get("agent") or {}).get("model"),
+                "head": trail.digest(trail.canonical(steps[-1])),
+                "count": len(steps),
+                "last_at": steps[-1]["at"],
+                "reading": probe in trails.reading,
+                "problems": [] if probe in trails.reading else trail.check(steps),
+                "steps": shown,
+            }
+        )
+    marker = trail.digest(
+        trail.canonical({"rev": digest(last), "heads": sorted((lane["probe"], lane["head"], lane["reading"]) for lane in lanes)})
+    )
+    return {
+        "project": project,
+        "rev": last["rev"],
+        "rev_digest": digest(last),
+        "at": last["at"],
+        "by": last["by"],
+        "for": for_probe,
+        "etag": marker,
+        "sealed_inputs": sealed_inputs,
+        "goals": [{"id": g["id"], "statement": g["statement"], "reached": now["goals"][g["id"]]} for g in last["goals"]],
+        "routes": [
+            {
+                "id": route["id"],
+                "goal": route["goal"],
+                "method": route["method"],
+                "path": route["path"],
+                "status": now["routes"][route["id"]]["status"],
+                "next": now["routes"][route["id"]]["next"],
+                **({"why": route["why"]} if route["status"] == "abandoned" else {}),
+            }
+            for route in last["routes"]
+        ],
+        "nodes": nodes,
+        "next": ranked(last),
+        "trails": lanes,
+    }
+
+
+def age(at: str, clock: datetime) -> float:
+    return (clock - datetime.fromisoformat(at)).total_seconds()
+
+
+def status_text(live: dict, clock: datetime, refs_per_trail: int = 3) -> list[str]:
+    """The live state as text: what `status` prints and an agent's project_map tool returns. Each step
+    reference it shows is pinned at its trail's present head, so a plan may build on it."""
+    marks = {"reached": "✓", "refuted": "✗", "open": "○"}
+    lines = [f"Project {live['project']}, map revision {live['rev']} (sealed {live['at']} by {live['by']})."]
+    lines.append("Goals: " + ", ".join(f"{'✓' if g['reached'] else '○'} {g['id']}" for g in live["goals"]))
+    lines += ["", "Routes:"]
+    state_of = {node["id"]: node["state"] for node in live["nodes"]}
+    for route in live["routes"]:
+        path = " → ".join(f"{node} {marks[state_of[node]]}" for node in route["path"])
+        lines.append(f"  {route['id']} ({route['status']}, for {route['goal']}): {path}")
+    lines += ["", "Milestones, with what reached them (sealed in the map, or provisional: found in a trail, not yet sealed):"]
+    for node in live["nodes"]:
+        lines.append(f"  {marks[node['state']]} {node['id']}: {node['statement']} ({', '.join(node['criteria'])})")
+        for r in node["resolutions"] + node["provisional"]:
+            kind = "sealed" if r["sealed"] else "provisional"
+            lines.append(f"      {kind}, {'reached' if r['holds'] else 'refuted'} by {r['cites']}: {r['summary']}")
+    lines += ["", "Trails (each reference is pinned at the trail's present head):"]
+    for lane in live["trails"]:
+        if lane["probe"] == live["for"]:
+            continue
+        idle = age(lane["last_at"], clock)
+        doing = "running" if idle < ACTIVE_S else "idle"
+        lines.append(f"  {lane['trail']} (route {lane['route'] or 'none'}, {lane['count']} steps, {doing}, last step {int(idle)} s ago)")
+        name = lane["probe"].split("/", 1)[1] if lane["probe"].startswith(live["project"] + "/") else lane["probe"]
+        for step in [s for s in lane["steps"] if s["kind"] == "observation"][-refs_per_trail:]:
+            lines.append(f"      {name}@{lane['head']}#{step['id']}: {step['summary']}")
+    return lines
+
+
+# ---------------------------------------------------------------------------------------------
 # Command line
 
-OPTIONS = ("--trails", "--out", "--by", "--demo", "--at")
+OPTIONS = ("--trails", "--out", "--by", "--demo", "--at", "--live", "--for", "--port")
+FLAGS = ("--csv", "--json")
 
 
-def parse(argv: list[str]) -> tuple[list[str], list[Path], list[Path], dict[str, str], bool]:
-    args, paths, retraced, named, csv = [], [], [], {}, False
+def parse(argv: list[str]) -> tuple[list[str], list[Path], list[Path], dict[str, str], set[str]]:
+    args, paths, retraced, named, flags = [], [], [], {}, set()
     rest = list(argv)
     while rest:
         word = rest.pop(0)
-        if word == "--csv":
-            csv = True
+        if word in FLAGS:
+            flags.add(word[2:])
         elif word in ("--trails", "--reads"):
             into = paths if word == "--trails" else retraced
             while rest and not rest[0].startswith("--"):
@@ -765,17 +982,25 @@ def parse(argv: list[str]) -> tuple[list[str], list[Path], list[Path], dict[str,
             raise Usage(f"project.py: unknown option {word}")
         else:
             args.append(word)
-    return args, paths, retraced, named, csv
+    return args, paths, retraced, named, flags
 
 
 def main(argv: list[str]) -> int:
     try:
-        args, paths, retraced, named, csv = parse(argv[1:])
+        args, paths, retraced, named, flags = parse(argv[1:])
         if len(args) < 2:
             raise Usage("usage: project.py COMMAND MAP --trails TRAIL... [options]; see the docstring")
         command, directory = args[0], Path(args[1])
-        trails = Trails(paths, retraced)
         revs = revisions(directory)
+        if command == "serve":
+            if not revs or not ("live" in named or paths):
+                raise Usage("usage: project.py serve MAP --live DIR [--trails TRAIL...] [--reads FILE...] [--port N]")
+            import mapview
+
+            return mapview.serve(directory, named.get("live"), paths, retraced, int(named.get("port", 8077)))
+        if "live" in named and revs:
+            paths = [*paths, *(found for found in discover(Path(named["live"]), revs[-1]["project"]) if found not in paths)]
+        trails = Trails(paths, retraced)
         if command == "seal":
             if len(args) != 3 or "by" not in named:
                 raise Usage("usage: project.py seal MAP DRAFT --by ACTOR --trails TRAIL...")
@@ -785,7 +1010,12 @@ def main(argv: list[str]) -> int:
                 print("\n".join(errors))
                 return 1
             directory.mkdir(parents=True, exist_ok=True)
-            (directory / f"rev-{revision['rev']}.json").write_text(json.dumps(revision, indent=2, ensure_ascii=False) + "\n")
+            try:
+                with (directory / f"rev-{revision['rev']}.json").open("x") as file:
+                    file.write(json.dumps(revision, indent=2, ensure_ascii=False) + "\n")
+            except FileExistsError:
+                print(f"rev-{revision['rev']} was sealed meanwhile; propose again")
+                return 1
             print(f"wrote {directory / f'rev-{revision["rev"]}.json'}")
             return 0
         errors = check(revs, trails)
@@ -816,9 +1046,27 @@ def main(argv: list[str]) -> int:
             if problems:
                 print("\n".join(problems))
                 return 1
-            trail.write_graph(Path(named["out"]), nodes, edges, ".csv" if csv else ".parquet")
+            trail.write_graph(Path(named["out"]), nodes, edges, ".csv" if "csv" in flags else ".parquet")
         elif command == "view":
             print("\n".join(show(last, trails)))
+        elif command == "status":
+            for_probe = named.get("for")
+            if for_probe is not None and for_probe not in trails.steps:
+                for_probe = next((probe for probe in trails.steps if probe.endswith(f"/probe:{for_probe}")), None)
+                if for_probe is None:
+                    raise Usage(f"project.py: --for {named['for']} is not among the trails")
+            live = live_state(revs, trails, for_probe)
+            if "json" in flags:
+                print(json.dumps(live, indent=2, ensure_ascii=False))
+            else:
+                print("\n".join(status_text(live, datetime.now(UTC))))
+        elif command == "page":
+            if "out" not in named:
+                raise Usage("usage: project.py page MAP --out FILE --trails TRAIL... [--live DIR]")
+            import mapview
+
+            Path(named["out"]).write_text(mapview.page(live_state(revs, trails), datetime.now(UTC)))
+            print(f"wrote {named['out']}")
         else:
             raise Usage(f"project.py: unknown command {command}")
         return 0
