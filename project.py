@@ -39,6 +39,8 @@ AT = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z")
 REVISION = re.compile(r"rev-(?:0|[1-9][0-9]*)\.json")
 ROUTE_TAG = re.compile(r"Route ([a-z0-9]+(?:-[a-z0-9]+)*): ")
 FIELDS = {"version", "project", "rev", "prev", "at", "by", "reason", "triggered_by", "goals", "nodes", "routes", "resolutions"}
+# Optional: text every brief carries, and files only the run a resolution cites may read.
+OPTIONAL = {"instructions", "sealed_inputs"}
 SEALED = ("rev", "prev", "at", "by")
 MARKS = {"reached": "✓", "refuted": "✗", "open": "○"}
 
@@ -119,7 +121,7 @@ def criterion_text(criterion: dict) -> str:
 
 def check_revision(revision: dict, trails: Trails) -> list[str]:
     where = f"rev-{revision.get('rev')}"
-    errors = [f"{where}: unknown field {name}" for name in sorted(set(sealed(revision)) - FIELDS)]
+    errors = [f"{where}: unknown field {name}" for name in sorted(set(sealed(revision)) - FIELDS - OPTIONAL)]
     required = FIELDS - ({"prev"} if revision.get("rev") == 0 else set())
     errors += [f"{where}: needs {name}" for name in sorted(required - set(revision))]
     if errors:
@@ -134,6 +136,12 @@ def check_revision(revision: dict, trails: Trails) -> list[str]:
         errors.append(f"{where}: at must be a UTC time such as 2026-11-16T12:00:00Z")
     if not isinstance(revision["by"], str) or not ACTOR.fullmatch(revision["by"]):
         errors.append(f"{where}: by must be human:NAME or agent:NAME")
+    if "instructions" in revision and (not isinstance(revision["instructions"], str) or not 0 < len(revision["instructions"]) <= 4000):
+        errors.append(f"{where}: instructions must be text of at most 4,000 characters")
+    if "sealed_inputs" in revision and (
+        not isinstance(revision["sealed_inputs"], list) or not all(isinstance(path, str) and path for path in revision["sealed_inputs"])
+    ):
+        errors.append(f"{where}: sealed_inputs must be a list of paths")
     if not isinstance(revision["reason"], str) or not 0 < len(revision["reason"]) <= 4000:
         errors.append(f"{where}: reason must be text of at most 4,000 characters")
     project = revision["project"]
@@ -462,6 +470,8 @@ def brief(revision: dict, route_id: str, trails: Trails, demo: Path, out: Path) 
             said = ", ".join(f"{name} {view.number(value)}" for name, value in measures(step).items())
             lines.append(f"- {'; '.join(statements)}: {said} ({step['id']} of {ref.split('@')[0]})")
         lines += ["", f"The workspace is the code that produced the last of these: {source}."]
+    if revision.get("instructions"):
+        lines += ["", "Rules for every route of this map:", revision["instructions"]]
     lines += ["", "What your route must reach, in order:"]
     lines += [
         f"{n}. {nodes[node]['statement']}: {', '.join(criterion_text(c) for c in nodes[node]['criteria'])}"
@@ -631,6 +641,23 @@ def graph(revision: dict, trails: Trails) -> tuple[list[dict], list[dict], list[
     return nodes, edges, errors
 
 
+def peeks(revision: dict, trails: Trails, resolution: dict) -> list[str]:
+    """Runs before the cited observation's own run, in its trail, whose command names a sealed input.
+    A script that reads the file without naming it on the command line is not found: this is a lead
+    for a reader, not a check."""
+    sealed_inputs = revision.get("sealed_inputs", [])
+    found = trails.cite(resolution["cites"], revision["project"])
+    if not sealed_inputs or isinstance(found, str):
+        return []
+    probe, observation = found
+    own = trail.observed(observation)
+    return [
+        step["id"]
+        for step in trails.steps[probe][: observation["seq"]]
+        if step["kind"] == "run" and step["id"] != own and any(path in step["command"]["shown"] for path in sealed_inputs)
+    ]
+
+
 def show(revision: dict, trails: Trails) -> list[str]:
     now, project = state(revision), revision["project"]
     statement = {node["id"]: node["statement"] for node in revision["nodes"]}
@@ -656,6 +683,8 @@ def show(revision: dict, trails: Trails) -> list[str]:
                 _, step = trails.cite(resolution["cites"], project)
                 name = resolution["cites"].split("@")[0]
                 lines.append(f"      {'reached' if resolution['holds'] else 'refuted'} by {name} {step['id']}: {step['summary']}")
+                if peeked := peeks(revision, trails, resolution):
+                    lines.append(f"        before it, runs whose command names a sealed input: {', '.join(peeked)}")
     lines += ["", "Next, the most shared first:"]
     for row in ranked(revision) or []:
         goals = f"; goals not yet reached: {', '.join(row['open_goals'])}" if row["open_goals"] else ""

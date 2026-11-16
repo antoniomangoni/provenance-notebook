@@ -232,3 +232,22 @@ def test_the_command_line_checks_and_refuses_what_it_does_not_know(tmp_path, cap
     assert "ok: 2 revisions, 8 resolutions, 2 trails" in capsys.readouterr().out
     assert project.main(["project.py", "check", str(tmp_path), "--nope"]) == 2
     assert project.main(["project.py", "view", str(tmp_path), "--trails", str(LIVE1)]) == 1
+
+
+ROUTE1 = ROOT / "live" / "madelon-route-screened-forest"
+
+
+def test_view_names_the_runs_that_read_a_sealed_input_before_a_resolution():
+    revision = copy.deepcopy(first_two()[1]) | {"sealed_inputs": ["data/heldout.csv"]}
+    steps = trail.load(ROUTE1)
+    cites = f"probe:{steps[0]['trail']}@{trail.digest(trail.canonical(steps[-1]))}#step-45"
+    peeked = project.peeks(revision, trails(LIVE1, LIVE2, ROUTE1), {"node": "screen", "cites": cites, "holds": True})
+    # step-38 and step-41 scored candidate designs on the held-out file before step-45's run, step-44.
+    assert {"step-38", "step-41"} <= set(peeked) and "step-44" not in peeked
+
+
+def test_a_revision_s_instructions_reach_every_brief_and_must_be_text(tmp_path):
+    revision = copy.deepcopy(first_two()[1]) | {"instructions": "Score the held-out file once."}
+    project.brief(revision, "knn", trails(), ROOT / "demo", tmp_path / "knn")
+    assert "Rules for every route of this map:\nScore the held-out file once." in (tmp_path / "knn" / "prompt.md").read_text()
+    assert "rev-0: instructions must be text of at most 4,000 characters" in project.check(alone(revision | {"instructions": ""}), trails())

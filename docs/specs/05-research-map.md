@@ -68,6 +68,8 @@ a whole snapshot, so the difference between two revisions is the change.
 | `nodes` | `{id, statement, criteria}`: a milestone; `criteria` are expectations as a plan states them (`name`, `measure`, `comparison`, `threshold`), measured ones only |
 | `routes` | `{id, goal, method, path, status}`: `path` is node ids in order, `status` is `open` or `abandoned`, and an abandoned route has `why` |
 | `resolutions` | `{node, cites, holds}`: `cites` is an observation, `probe:T@HEAD#step-N` |
+| `instructions` | optional, added in rev-3: text every later brief carries under "Rules for every route of this map" |
+| `sealed_inputs` | optional, added in rev-3: paths only a resolution's own run may read. `view` lists, under each resolution, the earlier runs in its trail whose command names one. This gives a reader a lead, not a check: a script that reads the file without naming it on the command line is not found |
 
 **Rules that `check` enforces:**
 
