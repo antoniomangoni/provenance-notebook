@@ -1,4 +1,4 @@
-Research map of madelon-reanalysis, revision 9 (2026-11-16T15:53:51Z, agent:claude-code/claude-opus-5-5).
+Research map of madelon-reanalysis, revision 10 (2026-11-16T16:26:44Z, agent:claude-code/claude-opus-5-5).
 11 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
 
 Goals:
@@ -52,26 +52,38 @@ Milestones and what reached them:
         before it, a sealed input: step-6 read on re-execution, step-10 read on re-execution, step-14 read on re-execution
   ✓ screen: A screen fitted on pilot data alone keeps at most 50 features, and a model on them has a nested cross-validated AUC of at least 0.70 (n_features <= 50, cv_auc >= 0.7)
       reached by probe:madelon-fleet2-boost step-25: as expected
-        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.)
+        rests on madelon-2026-11-15-2 to step-19, madelon-fleet-stable-forest to step-14, madelon-fleet-vote to step-21, madelon-fleet2-stable-forest to step-56, madelon-fleet2-vote to step-22
+        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.), madelon-2026-11-15-2#step-6 read on re-execution, madelon-2026-11-15-2#step-10 read on re-execution, madelon-2026-11-15-2#step-14 read on re-execution, madelon-2026-11-15-2#step-18 read on re-execution, madelon-fleet-stable-forest#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l) and printed the held-out file's last two column names (head -1 is the header: x500, label). No value of the file was printed.), madelon-fleet-vote#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed.), madelon-fleet2-stable-forest#step-3 read (excused: While looking around, before any design, it counted both data files' rows (wc -l data/*.csv). No value of the held-out file was printed; rev-9 excused the same read for this trail's own credits.), madelon-fleet2-vote#step-5 read (excused: While looking around, before any design, it printed the held-out file's column and row counts (head -1 | wc -l; wc -l). No value was printed; rev-9 excused the same read for this trail's own credits.)
       reached by probe:madelon-fleet2-stable-forest step-56: as expected
-        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.)
+        rests on madelon-2026-11-15-2 to step-7, madelon-fleet-stable-forest to step-14
+        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.), madelon-2026-11-15-2#step-6 read on re-execution, madelon-fleet-stable-forest#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l) and printed the held-out file's last two column names (head -1 is the header: x500, label). No value of the file was printed.)
       reached by probe:madelon-fleet2-vote step-22: as expected
-        before it, a sealed input: step-5 read (excused: It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design.)
+        rests on madelon-2026-11-15-2 to step-7, madelon-fleet-vote to step-21
+        before it, a sealed input: step-5 read (excused: It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design.), madelon-2026-11-15-2#step-6 read on re-execution, madelon-fleet-vote#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed.)
   ✗ compact-knn: k-nearest neighbours on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
       refuted by probe:madelon-route-knn step-30: contradicted: holdout_auc 0.709, expected >= 0.71
+        before it, a sealed input: madelon-2026-11-15-2#step-6 read on re-execution, madelon-route-screened-forest#step-5 read on re-execution, madelon-route-screened-forest#step-8 read on re-execution, madelon-route-screened-forest#step-11 read on re-execution, madelon-route-screened-forest#step-14 read on re-execution
   ✗ compact-forest: A random forest on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
       refuted by probe:madelon-route-screened-forest step-15: contradicted: holdout_auc 0.6989, expected >= 0.71
-        before it, a sealed input: step-5 read on re-execution, step-8 read on re-execution, step-11 read on re-execution
+        before it, a sealed input: step-5 read on re-execution, step-8 read on re-execution, step-11 read on re-execution, madelon-2026-11-15-2#step-6 read on re-execution
       refuted by probe:madelon-route-screened-forest step-36: contradicted: holdout_auc 0.6989, expected >= 0.71
-        before it, a sealed input: step-5 read on re-execution, step-8 read on re-execution, step-11 read on re-execution, step-14 read on re-execution, step-29 read on re-execution
+        before it, a sealed input: step-5 read on re-execution, step-8 read on re-execution, step-11 read on re-execution, step-14 read on re-execution, step-29 read on re-execution, madelon-2026-11-15-2#step-6 read on re-execution
   ○ compact-svm: An RBF support vector machine on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
   ○ compact-boost: Gradient boosting on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
   ✓ compact-stable-forest: A random forest on features that a pilot-only screen keeps in most bootstrap resamples clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
       reached by probe:madelon-fleet2-stable-forest step-59: as expected
-        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.)
+        rests on madelon-2026-11-15-2 to step-7, madelon-fleet-stable-forest to step-14, madelon-fleet-vote to step-21, madelon-fleet2-vote to step-22
+        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.), madelon-2026-11-15-2#step-6 read on re-execution, madelon-fleet-stable-forest#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l) and printed the held-out file's last two column names (head -1 is the header: x500, label). No value of the file was printed.), madelon-fleet-vote#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed.), madelon-fleet2-vote#step-5 read (excused: While looking around, before any design, it printed the held-out file's column and row counts (head -1 | wc -l; wc -l). No value was printed; rev-9 excused the same read for this trail's own credits.)
   ✓ compact-vote: A soft vote of a random forest and k-nearest neighbours on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
       reached by probe:madelon-fleet2-vote step-26: as expected
-        before it, a sealed input: step-5 read (excused: It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design.)
+        rests on madelon-2026-11-15-2 to step-7, madelon-fleet-vote to step-21
+        before it, a sealed input: step-5 read (excused: It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design.), madelon-2026-11-15-2#step-6 read on re-execution, madelon-fleet-vote#step-5 read (excused: While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed.)
+
+Withdrawn: resolutions an earlier revision sealed and a later one dropped:
+  floor-l1: reached by probe:madelon-2026-11-15-1#step-18, rev-1 to rev-2: no reason recorded in the data; see that revision's reason
+  floor-forest: reached by probe:madelon-2026-11-15-2#step-19, rev-1 to rev-2: no reason recorded in the data; see that revision's reason
+  floor-search: reached by probe:madelon-2026-11-15-1#step-18, rev-2 to rev-6: no reason recorded in the data; see that revision's reason
+  screen: reached by probe:madelon-route-screened-forest#step-15, rev-3 to rev-6: no reason recorded in the data; see that revision's reason
 
 Next, the most shared first:
   compact-boost: next on boost; on 1 route

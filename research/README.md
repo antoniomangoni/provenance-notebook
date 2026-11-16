@@ -41,6 +41,21 @@ scripts/fleet.sh research/madelon-reanalysis/map madelon-fleet boost stable-fore
   input, whether that read was traced live or found on re-execution. Otherwise one agent's
   held-out score could steer another's design.
 
+[Spec 8](../docs/specs/08-rests-on.md) closes three gaps that sharing opened:
+
+- **A credit rests on what its trail built on.** In a version 2 revision, `check` looks for sealed
+  reads in every step a credit rests on, through `builds_on` and `triggered_by` links into other
+  trails, and refuses the credit unless the revision excuses each read. `view` and the page show
+  what each credit rests on.
+- **Withdrawals are recorded.** A version 2 revision lists each resolution it drops in
+  `withdrawn`, with why. The page has a table of revisions, and `serve` shows any one at
+  `/rev/N`.
+- **What agents tell each other is fenced.** `project_map` marks each sibling's text with its
+  writer, as text and not instructions. Measures stay outside the fence, as the runner's.
+- **Withholding is enforced outside the agent.** `fleet.sh` runs every command in a bwrap
+  sandbox. The repository, the trails, the map and the other workspaces are hidden in it, so an
+  agent sees its siblings only through `project_map`.
+
 ## What a map claims, and what is checked
 
 A map is a chain of revisions, `map/rev-N.json`. Each revision is a whole snapshot, written once

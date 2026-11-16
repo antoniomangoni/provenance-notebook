@@ -3,15 +3,17 @@
 This map covers the demo task (`demo/`). An inherited analysis reports a cross-validated AUC of
 0.76, and on 2200 held-out samples it scores 0.56.
 
-It has ten revisions over eleven trails:
+It has eleven revisions over eleven trails:
 - two from 15 November, written before the map existed;
 - three runs that the map steered one at a time on 16 November;
 - two fleets of three agents that ran at the same time and shared the map as they worked.
 
+The last revision checked every credit again across agents ([below](#checked-across-agents)).
+
 Every run used `zai-org/GLM-5.3-Flash` through Pi under capture.
 
 ```sh
-uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 10 revisions, 15 resolutions, 11 trails
+uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 11 revisions, 15 resolutions, 11 trails
 uv run python project.py view   research/madelon-reanalysis/map --live live   # view.txt
 uv run python project.py shared research/madelon-reanalysis/map --live live   # shared.txt
 uv run python project.py page   research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/map.html
@@ -45,6 +47,7 @@ page.
 | 7 | **Three routes for agents running at once:** boost, stable-forest and vote, all through `screen`. They were declared before any run toward them. |
 | 8 | **The first fleet reached nothing.** No run wrote its measures, and each agent read the map once, at its start, so none built on another. |
 | 9 | **The second fleet reached compact twice.** The agents built on each other as they ran. Each credit excuses one row count of the held-out file, named and explained in the revision. The revision also discloses one leak of a held-out result between agents, now closed. |
+| 10 | **Checked across agents.** The first version 2 revision ([spec 8](../../docs/specs/08-rests-on.md)). Every rev-9 credit rested, through `builds_on`, on sibling runs that had opened the held-out file. Each such read is excused, with why. Nothing is withdrawn. |
 
 ## What the shared milestones did
 
@@ -90,11 +93,41 @@ boost reached `screen`, then the wall clock stopped it before its held-out score
 - **A held-out result shown to a sibling.** `project_map` withheld vote's number, but it showed
   stable-forest that vote had met `compact-vote`. That fact is itself held-out information.
   Agents are no longer shown such results.
-- **Reads outside the workspace.** Agents are not sandboxed. In fleet 2, vote copied code from
-  fleet 1's vote workspace, and stable-forest read that workspace's outputs. Fleet 1 had scored
+- **Reads outside the workspace.** Fleets 1 and 2 ran without a sandbox. In fleet 2, vote copied
+  code from fleet 1's vote workspace, and stable-forest read that workspace's outputs. Fleet 1 had scored
   nothing on the held-out file, and no command read the model key, the Pi configuration, or
   another fleet 2 agent's workspace. A trace keeps only reads inside the agent's own workspace,
   so these reads are known from the command lines alone.
+
+## Checked across agents
+
+rev-9 passed `check`, which then looked for sealed reads only in the cited trail. But a plan that
+builds on a sibling's step rests on everything that step rested on. All five of rev-9's holding
+credits rested, through `builds_on` links, on runs in other trails that had opened
+`data/heldout.csv`:
+
+| Credit | Rests on (other trails) | Their captured held-out reads |
+| --- | --- | --- |
+| `screen`, boost step-25 | vote to step-22, stable-forest to step-56, both fleet-1 trails, live-2 | fleet2-vote step-5, fleet2-stable-forest step-3, fleet-vote step-5, fleet-stable-forest step-5 |
+| `screen`, stable-forest step-56 | fleet-1 stable-forest to step-14, live-2 | fleet-stable-forest step-5 |
+| `compact-stable-forest`, stable-forest step-59 | vote to step-22, both fleet-1 trails, live-2 | fleet2-vote step-5, fleet-vote step-5, fleet-stable-forest step-5 |
+| `screen`, vote step-22 | fleet-1 vote to step-21, live-2 | fleet-vote step-5 |
+| `compact-vote`, vote step-26 | fleet-1 vote to step-21, live-2 | fleet-vote step-5 |
+
+Four distinct runs. Each was the agent looking around before any design, and each counted the
+file's rows with `wc -l`. Two also looked at its header line (`head -1`):
+- fleet-2 vote step-5 counted its columns;
+- fleet-1 stable-forest step-5 printed its last two column names.
+
+None printed a value of the file. rev-10 excuses each read in every credit that rests on it, so
+the credits stand, and the judgment is in the revision rather than in the checker. On the page,
+each such credit has an amber mark, and its hover text names the reads and the excuses.
+
+The fleets also show why reads outside the workspace mattered. Agents are not sandboxed by
+capture alone, and fleet 2's agents read fleet 1's workspaces. From spec 8 on, `fleet.sh` runs
+every command in a bwrap sandbox that hides the repository, the trails, the map and the other
+workspaces. The sandbox has been tested with the scripted provider, and on one scripted agent
+running a real brief. No model has run in it yet.
 
 ## Checked, not judged
 
