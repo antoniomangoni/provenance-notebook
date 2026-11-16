@@ -63,6 +63,11 @@ svg .muted{fill:var(--ink2)}svg .small{font-size:11px}svg .head{font-weight:600}
 .cx{fill:none;stroke-width:1.2;opacity:.18}.cx.holds{stroke:var(--good)}.cx.refutes{stroke:var(--critical)}.cx.prov{stroke-dasharray:4 3;opacity:.5}
 .arc{fill:none;stroke:var(--ink2);stroke-width:1.5;opacity:.6;marker-end:url(#arrow)}
 .arc.about{stroke-dasharray:3 3;opacity:.22;stroke-width:1;marker-end:none}
+.arc.suggested{stroke-dasharray:7 4}
+.k-run.unsettled{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+.judged{fill:var(--warning);stroke:var(--surface);stroke-width:1.5}
+nav.revs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px;font-size:13px}nav.revs a,nav.revs span{padding:1px 7px;border:1px solid var(--ring);border-radius:10px;text-decoration:none}
+nav.revs span{background:var(--ink);color:var(--surface)}
 .arc:hover{opacity:1}
 .newest{fill:none;stroke:var(--ink);stroke-width:1.5;animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.15}}
@@ -153,11 +158,13 @@ def stations_svg(live: dict, stations: dict) -> list[str]:
             f"{'sealed' if res['sealed'] else 'provisional'}, {'reached' if res['holds'] else 'refuted'} by {res['cites'].split('@')[0]} {res['step']}: {res['summary']}"
             for res in node["resolutions"] + node["provisional"]
         ]
-        tip += [
-            f"  excused by the revision: {x['run']} opened a sealed input before it: {x['why']}"
-            for res in node["resolutions"]
-            for x in res.get("excused", [])
-        ]
+        for res in node["resolutions"]:
+            if res.get("rests_on"):
+                tip.append(f"  {res['step']} rests on {', '.join(res['rests_on'])}")
+            tip += [
+                f"  {x['run']} opened a sealed input ({x['how']})" + (f"; excused by the revision: {x['why']}" if x["why"] else "")
+                for x in res.get("reads", [])
+            ]
         shape = (
             f'<rect class="station {e(node["state"])}" x="{x - r:.1f}" y="{y - r - 8:.1f}" width="{2 * r}" height="{2 * r + 16}" rx="{r}"/>'
             if node["shared"]
@@ -168,9 +175,15 @@ def stations_svg(live: dict, stations: dict) -> list[str]:
             if node["state"] == "open" and any(p["holds"] for p in node["provisional"])
             else ""
         )
+        # A credit that stands only because the revision excused a read: a judgment, marked as one.
+        judged = (
+            f'<circle class="judged" cx="{x + r * 0.75:.1f}" cy="{y - r * 0.75 - (8 if node["shared"] else 0):.1f}" r="4"/>'
+            if any(res["holds"] and any(read["why"] for read in res.get("reads", [])) for res in node["resolutions"])
+            else ""
+        )
         glyph = STATE_GLYPH[node["state"]]
         out.append(
-            f'<g class="node" id="st-{e(node["id"])}"><title>{e(chr(10).join(tip))}</title>{shape}{ring}'
+            f'<g class="node" id="st-{e(node["id"])}"><title>{e(chr(10).join(tip))}</title>{shape}{ring}{judged}'
             + (f'<text class="glyph" x="{x:.1f}" y="{y + 4:.1f}" text-anchor="middle">{glyph}</text>' if glyph else "")
             + f'<text class="small" x="{x:.1f}" y="{y + r + (22 if node["shared"] else 14):.1f}" text-anchor="middle">{e(node["id"])}</text></g>'
         )
@@ -215,6 +228,10 @@ def lanes_svg(live: dict, top: float, clock: datetime, links: bool) -> tuple[lis
                 tip += "\n" + ", ".join(f"{k} {view.number(v)}" for k, v in step["measures"].items())
             if "sealed_read" in step:
                 tip += f"\nopened a sealed input ({step['sealed_read']})"
+            if step.get("unsettled"):
+                tip += "\nno observation: still running, or it never ended"
+            if step.get("by"):
+                tip += f"\nwritten by {step['by']}"
             title = f"<title>{e(tip)}</title>"
             if step["kind"] == "observation":
                 cls = "withheld" if step.get("withheld") else f"o-{e(step['outcome'])}"
@@ -224,7 +241,8 @@ def lanes_svg(live: dict, top: float, clock: datetime, links: bool) -> tuple[lis
                     f'<path class="step k-plan" d="M{x:.1f},{y - 6:.1f} L{x + 5:.1f},{y:.1f} L{x:.1f},{y + 6:.1f} L{x - 5:.1f},{y:.1f}Z">{title}</path>'
                 )
             elif step["kind"] == "run":
-                out.append(f'<rect class="step k-run" x="{x - 4:.1f}" y="{y - 4:.1f}" width="8" height="8" rx="1">{title}</rect>')
+                hollow = " unsettled" if step.get("unsettled") else ""
+                out.append(f'<rect class="step k-run{hollow}" x="{x - 4:.1f}" y="{y - 4:.1f}" width="8" height="8" rx="1">{title}</rect>')
                 if how := step.get("sealed_read"):
                     kind = {"read": "", "read on re-execution": " re", "names": " names"}[how]
                     out.append(f'<circle class="sealed-read{kind}" cx="{x:.1f}" cy="{y:.1f}" r="7.5"/>')
@@ -268,10 +286,11 @@ def arcs(live: dict, at: dict) -> list[str]:
                     continue
                 (x1, y1), (x2, y2) = source, target
                 bend = -28 if y2 < y1 else 28
-                cls = "arc about" if link["relation"] == "about" else "arc"
+                cls = "arc about" if link["relation"] == "about" else ("arc suggested" if link.get("status") == "suggested" else "arc")
                 out.append(
                     f'<path class="{cls}" d="M{x1:.1f},{y1:.1f} C{x1 - 30:.1f},{y1 + bend:.1f} {x2 + 30:.1f},{y2 - bend:.1f} {x2:.1f},{y2:.1f}">'
-                    f"<title>{e(lane['trail'])} {e(step['id'])} {e(link['relation'])} {e(link['ref'])}</title></path>"
+                    f"<title>{e(lane['trail'])} {e(step['id'])} {e(link['relation'])} {e(link['ref'])}"
+                    f" ({'the agent says so' if link.get('status') == 'suggested' else 'the runner or a person wrote it'})</title></path>"
                 )
     return out
 
@@ -327,7 +346,10 @@ def legend() -> str:
         (swatch('<circle class="sealed-read" cx="11" cy="8" r="6"/>'), "opened a sealed input (traced)"),
         (swatch('<circle class="sealed-read re" cx="11" cy="8" r="6"/>'), "… on re-execution"),
         (swatch('<circle class="sealed-read names" cx="11" cy="8" r="6"/>'), "… named on its command line"),
-        (swatch('<path class="arc" d="M2,8 L18,8"/>'), "builds on another trail's step"),
+        (swatch('<rect class="step k-run unsettled" x="7" y="4" width="8" height="8"/>'), "run with no observation"),
+        (swatch('<circle class="judged" cx="11" cy="8" r="4"/>'), "credit that stands on an excused read"),
+        (swatch('<path class="arc" d="M2,8 L18,8"/>'), "builds on another trail's step (a person or the runner)"),
+        (swatch('<path class="arc suggested" d="M2,8 L18,8"/>'), "… as the agent says"),
         (swatch('<path class="arc about" style="opacity:.6" d="M2,8 L18,8"/>'), "read the map while that trail stood here"),
     ]
     return '<ul class="legend">' + "".join(f"<li>{mark}{e(text)}</li>" for mark, text in items) + "</ul>"
@@ -349,6 +371,16 @@ def tables(live: dict, clock: datetime) -> str:
         f"<td class='num'>{int(project.age(t['last_at'], clock))} s</td><td>{'reading' if t['reading'] else ('ok' if not t['problems'] else e('; '.join(t['problems'][:3])))}</td></tr>"
         for t in live["trails"]
     )
+    revisions = "".join(
+        f"<tr><td class='num'>{r['rev']}</td><td>{e(r['at'])}</td><td>{e(r['by'])}</td><td class='num'>{r['version']}</td>"
+        f"<td class='num'>{r['sealed']}</td><td class='num'>{r['dropped']}</td><td>{e(r['reason'][:240] + ('…' if len(r['reason']) > 240 else ''))}</td></tr>"
+        for r in live["revisions"]
+    )
+    withdrawn = "".join(
+        f"<tr><td>{e(h['node'])}</td><td>{'reached' if h['holds'] else 'refuted'}</td><td>{e(h['cites'])}</td>"
+        f"<td class='num'>rev-{h['from']} to rev-{h['dropped']}</td><td>{e(h['why'] or 'no reason recorded in the data; see that revision')}</td></tr>"
+        for h in live["withdrawn"]
+    )
     return (
         "<h2>Routes</h2><div class='wrap'><table><tr><th>Route</th><th>Goal</th><th>State</th><th>Path</th><th>Method</th></tr>"
         f"{rows}</table></div>"
@@ -356,15 +388,41 @@ def tables(live: dict, clock: datetime) -> str:
         f"{resolved}</table></div>"
         "<h2>Trails</h2><div class='wrap'><table><tr><th>Trail</th><th>Route</th><th>Agent</th><th>Steps</th><th>Since last step</th><th>Check</th></tr>"
         f"{lanes}</table></div>"
+        + (
+            "<h2>Withdrawn</h2><div class='wrap'><table><tr><th>Milestone</th><th></th><th>Cited</th><th>Stood</th><th>Why</th></tr>"
+            f"{withdrawn}</table></div>"
+            if withdrawn
+            else ""
+        )
+        + "<h2>Revisions</h2><div class='wrap'><table><tr><th>Rev</th><th>Sealed</th><th>By</th><th>Version</th><th>Resolutions sealed</th><th>Dropped</th><th>Reason</th></tr>"
+        f"{revisions}</table></div>"
     )
 
 
+def nav(live: dict) -> str:
+    """Every revision, each a link to the map as it sealed it; the newest is the live page."""
+    last = live["revisions"][-1]["rev"]
+    marks = [
+        f"<span>rev-{r['rev']}</span>"
+        if r["rev"] == live["rev"]
+        else f'<a href="{"/" if r["rev"] == last else f"/rev/{r['rev']}"}">rev-{r["rev"]}</a>'
+        for r in live["revisions"]
+    ]
+    return f"<nav class='revs' aria-label='Revisions'>{''.join(marks)}</nav>"
+
+
 def content(live: dict, clock: datetime, links: bool = False) -> str:
+    then = (
+        ""
+        if live["latest"]
+        else f" This is the map as revision {live['rev']} sealed it, of {live['revisions'][-1]['rev']}; the trails are drawn as they stand now, and nothing provisional is."
+    )
     return (
         f"<h1>Research map: {e(live['project'])}</h1>"
-        f"<p class='sub'>Revision {live['rev']}, sealed {e(live['at'])} by {e(live['by'])}. "
-        f"{len(live['trails'])} trails, drawn {clock.strftime('%Y-%m-%d %H:%M:%S')} UTC."
-        f"{'<span class=live>live</span>' if links else ''}</p>"
+        + (nav(live) if links else "")
+        + f"<p class='sub'>Revision {live['rev']}, sealed {e(live['at'])} by {e(live['by'])}. "
+        f"{len(live['trails'])} trails, drawn {clock.strftime('%Y-%m-%d %H:%M:%S')} UTC.{e(then)}"
+        f"{'<span class=live>live</span>' if links and live['latest'] else ''}</p>"
         + (
             f"<p class='sub'>⚠ project.py check finds {len(live['problems'])} problems. The first: {e(live['problems'][0])}</p>"
             if live["problems"]
@@ -388,10 +446,12 @@ setTimeout(poll, 2000);
 
 
 def page(live: dict, clock: datetime, served: bool = False, etag: str = "") -> str:
+    """The static page (no script), or the served one: the newest revision polls for changes, an earlier one does not."""
+    poll = served and live["latest"]
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         f"<title>{e(live['project'])} map</title><style>{CSS}</style></head>"
-        f'<body data-etag="{e(etag)}"><main>{content(live, clock, served)}</main>{POLL if served else ""}</body></html>\n'
+        f'<body data-etag="{e(etag)}"><main>{content(live, clock, served)}</main>{POLL if poll else ""}</body></html>\n'
     )
 
 
@@ -404,7 +464,7 @@ class State:
 
     def __init__(self, directory: Path, live_dir: str | None, paths: list[Path], retraced: list[Path]):
         self.directory, self.live_dir, self.paths, self.retraced = directory, live_dir, paths, retraced
-        self.seen, self.live = None, None
+        self.seen, self.live, self.inputs = None, None, None
 
     def fingerprint(self) -> tuple:
         revs = sorted((p.name, p.stat().st_mtime_ns) for p in self.directory.glob("rev-*.json"))
@@ -424,8 +484,15 @@ class State:
             paths = list(self.paths)
             if self.live_dir:
                 paths += [p for p in project.discover(Path(self.live_dir), revs[-1]["project"]) if p not in paths]
-            self.live, self.seen = project.live_state(revs, project.Trails(paths, self.retraced, self.directory.parent)), seen
+            self.inputs = (revs, project.Trails(paths, self.retraced, self.directory.parent))
+            self.live, self.seen = project.live_state(*self.inputs), seen
         return self.live
+
+    def at(self, rev: int) -> dict | None:
+        """The map as revision `rev` sealed it, beside the trails as they stand now."""
+        self.now()
+        revs, trails = self.inputs
+        return project.live_state(revs, trails, upto=rev) if 0 <= rev < len(revs) else None
 
     def trail_page(self, name: str) -> str | None:
         live = self.now()
@@ -479,6 +546,8 @@ def handler(state: State):
                 self.send(200, json.dumps(live, ensure_ascii=False), "application/json")
             elif path.startswith("/trail/") and (found := state.trail_page(path.removeprefix("/trail/"))):
                 self.send(200, found)
+            elif path.startswith("/rev/") and path[5:].isdigit() and (then := state.at(int(path[5:]))):
+                self.send(200, page(then, clock, served=True))
             else:
                 self.send(404, "<p>not found</p>")
 

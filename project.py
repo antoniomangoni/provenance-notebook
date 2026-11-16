@@ -969,14 +969,26 @@ def cross_links(step: dict, project: str, trails: Trails) -> list[dict]:
             at = cites["step"]
             if at is None and (seq := trails.heads.get(probe, {}).get(cites["head"])) is not None:
                 at = trails.steps[probe][seq]["id"]
-            found.append({"relation": link["relation"], "probe": probe, "step": at, "head": cites["head"], "ref": link["target"]})
+            found.append(
+                {
+                    "relation": link["relation"],
+                    "probe": probe,
+                    "step": at,
+                    "head": cites["head"],
+                    "ref": link["target"],
+                    "status": link["status"],
+                }
+            )
     return found
 
 
-def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -> dict:
+def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None, upto: int | None = None) -> dict:
     """The map's latest sealed revision with its derived states, what `propose` would draft now (never
     sealed), and every trail as it stands. For an agent (`for_probe`), a sibling's observation whose run
-    opened a sealed input is shown without its numbers."""
+    opened a sealed input is shown without its numbers. With `upto`, the map as that revision sealed it,
+    beside the trails as they stand now, with nothing provisional."""
+    every, latest = revs, upto is None or upto == len(revs) - 1
+    revs = revs if latest else revs[: upto + 1]
     last = revs[-1]
     project, now, common = last["project"], state(last), shared_nodes(last)
     sealed_inputs = last.get("sealed_inputs", [])
@@ -1005,7 +1017,7 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
             **extra,
         }
 
-    candidates = propose(revs, trails)["candidates"]
+    candidates = propose(revs, trails)["candidates"] if latest else []
 
     def quiet_candidate(candidate: dict) -> bool:
         """For an agent, a sibling's unsealed result from a run that opened a sealed input is left out
@@ -1024,7 +1036,19 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
                 "routes": [route["id"] for route in last["routes"] if node["id"] in route["path"]],
                 "shared": node["id"] in common,
                 "resolutions": [
-                    resolution(r["cites"], r["holds"], True, {"excused": r.get("excused", [])})
+                    resolution(
+                        r["cites"],
+                        r["holds"],
+                        True,
+                        {
+                            "excused": r.get("excused", []),
+                            "rests_on": rests_on(last, trails, r) if r["holds"] else [],
+                            "reads": [
+                                {"run": run, "how": how, "why": next((x["why"] for x in r.get("excused", []) if x["run"] == run), None)}
+                                for run, how in (peeks(last, trails, r) if r["holds"] else [])
+                            ],
+                        },
+                    )
                     for r in last["resolutions"]
                     if r["node"] == node["id"]
                 ],
@@ -1043,6 +1067,7 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
     lanes = []
     for probe, steps in trails.steps.items():
         tag = ROUTE_TAG.match(steps[0]["summary"])
+        settled = {trail.observed(s) for s in steps if s["kind"] == "observation"}
         shown = []
         for step in steps:
             entry = {
@@ -1067,8 +1092,10 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
                     "by": None if quiet else step["by"],
                     "withheld": quiet,
                 }
-            elif step["kind"] == "run" and (how := opened(probe, step)):
-                entry["sealed_read"] = how
+            elif step["kind"] == "run":
+                entry["unsettled"] = step["id"] not in settled
+                if how := opened(probe, step):
+                    entry["sealed_read"] = how
             shown.append(entry)
         lanes.append(
             {
@@ -1087,9 +1114,24 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
     marker = trail.digest(
         trail.canonical({"rev": digest(last), "heads": sorted((lane["probe"], lane["head"], lane["reading"]) for lane in lanes)})
     )
+    lives = history(every)
     return {
         "project": project,
         "problems": check(revs, trails),
+        "latest": latest,
+        "revisions": [
+            {
+                "rev": r["rev"],
+                "at": r["at"],
+                "by": r["by"],
+                "version": r["version"],
+                "sealed": sum(h["from"] == r["rev"] for h in lives),
+                "dropped": sum(h["dropped"] == r["rev"] for h in lives),
+                "reason": r["reason"],
+            }
+            for r in every
+        ],
+        "withdrawn": [h for h in lives if h["dropped"] is not None and h["dropped"] <= last["rev"]],
         "rev": last["rev"],
         "rev_digest": digest(last),
         "at": last["at"],
