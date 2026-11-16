@@ -400,3 +400,36 @@ def test_a_step_a_revision_has_judged_is_not_proposed_again():
     assert not [c for c in proposed if c["cites"].split("@")[0] + "#" + c["cites"].split("#")[1] in judged]
     # floor-search, withdrawn in rev-6, cited live-1 step-18; it stays withdrawn.
     assert not [c for c in proposed if c["node"] == "floor-search"]
+
+
+def test_a_captured_sealed_read_passes_check_only_when_the_revision_excuses_it_and_says_why(tmp_path):
+    copy_of = tmp_path / "route"
+    steps = trail.load(ROUTE1)
+    next(s for s in steps if s["id"] == "step-39")["reads"] = [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]
+    tamper.rechain(steps, 40)
+    tamper.write(copy_of, steps)
+    given = trails(LIVE1, LIVE2, copy_of)
+    ref = head_ref(copy_of, "step-45")
+    excused = {"node": "compact-forest", "cites": ref, "holds": True, "excused": [{"run": "step-38", "why": "It counted rows."}]}
+    assert project.check(alone(sealed(first_two()[1], excused)), given) == []
+    idle = excused | {"excused": [*excused["excused"], {"run": "step-41", "why": "Nothing."}]}
+    assert project.check(alone(sealed(first_two()[1], idle)), given) == [
+        "rev-0: resolution of compact-forest: excuses step-41, which did not read a sealed input before step-45's run"
+    ]
+    unsaid = excused | {"excused": [{"run": "step-38", "why": ""}]}
+    assert "excused is a list of runs" in project.check(alone(sealed(first_two()[1], unsaid)), given)[0]
+    view_lines = "\n".join(project.show(sealed(first_two()[1], excused), given))
+    assert "step-38 read (excused: It counted rows.)" in view_lines
+
+
+def test_an_agent_is_not_shown_that_a_sibling_met_a_milestone_by_a_run_that_opened_a_sealed_input(tmp_path):
+    copy_of = tmp_path / "madelon-route-screened-forest"
+    steps = trail.load(ROUTE1)
+    next(s for s in steps if s["id"] == "step-15")["reads"] = [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]
+    tamper.rechain(steps, 16)
+    tamper.write(copy_of, steps)
+    revs = [sealed(r) for r in first_two()]
+    everyone = project.live_state(revs, trails(LIVE2, copy_of))
+    assert any(r["step"] == "step-15" for n in everyone["nodes"] for r in n["provisional"])
+    agent = project.live_state(revs, trails(LIVE2, copy_of), for_probe=trail.probe_id(trail.load(LIVE2)))
+    assert not any(r["step"] == "step-15" for n in agent["nodes"] for r in n["provisional"])

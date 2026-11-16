@@ -153,6 +153,11 @@ def stations_svg(live: dict, stations: dict) -> list[str]:
             f"{'sealed' if res['sealed'] else 'provisional'}, {'reached' if res['holds'] else 'refuted'} by {res['cites'].split('@')[0]} {res['step']}: {res['summary']}"
             for res in node["resolutions"] + node["provisional"]
         ]
+        tip += [
+            f"  excused by the revision: {x['run']} opened a sealed input before it: {x['why']}"
+            for res in node["resolutions"]
+            for x in res.get("excused", [])
+        ]
         shape = (
             f'<rect class="station {e(node["state"])}" x="{x - r:.1f}" y="{y - r - 8:.1f}" width="{2 * r}" height="{2 * r + 16}" rx="{r}"/>'
             if node["shared"]

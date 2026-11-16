@@ -277,8 +277,21 @@ def check_revision(revision: dict, trails: Trails) -> list[str]:
     seen = set()
     for resolution in revision["resolutions"]:
         here = f"{where}: resolution of {resolution.get('node')}"
-        if set(resolution) != {"node", "cites", "holds"} or not isinstance(resolution["holds"], bool):
-            errors.append(f"{here} is a node, the observation it cites and whether it holds")
+        if not {"node", "cites", "holds"} <= set(resolution) <= {"node", "cites", "holds", "excused"} or not isinstance(
+            resolution["holds"], bool
+        ):
+            errors.append(f"{here} is a node, the observation it cites and whether it holds, and may excuse reads")
+            continue
+        excused = resolution.get("excused", [])
+        if not isinstance(excused, list) or not all(
+            isinstance(e, dict)
+            and set(e) == {"run", "why"}
+            and isinstance(e["run"], str)
+            and isinstance(e["why"], str)
+            and 1 <= len(e["why"]) <= 500
+            for e in excused
+        ):
+            errors.append(f"{here}: excused is a list of runs, each with why, in at most 500 characters")
             continue
         if resolution["node"] not in by_id:
             errors.append(f"{here}: no such node")
@@ -303,9 +316,16 @@ def check_revision(revision: dict, trails: Trails) -> list[str]:
             errors.append(f"{here} says it {said}, but {step['id']}'s measures say otherwise")
         if resolution["holds"]:
             # Only a traced observation is the run itself; a re-execution or a command line is a lead.
+            # A captured read the revision excuses, saying why, is a judgment in the revision, shown wherever
+            # the read is; an excuse for a run that read no sealed input is refused, so none is decorative.
             caught = [run for run, how in peeks(revision, trails, resolution) if how == "read"]
-            if caught:
-                errors.append(f"{here}: {', '.join(caught)} read a sealed input before {step['id']}'s run")
+            pardoned = {e["run"] for e in excused}
+            if unexcused := [run for run in caught if run not in pardoned]:
+                errors.append(f"{here}: {', '.join(unexcused)} read a sealed input before {step['id']}'s run")
+            if idle := sorted(pardoned - set(caught)):
+                errors.append(f"{here}: excuses {', '.join(idle)}, which did not read a sealed input before {step['id']}'s run")
+        elif excused:
+            errors.append(f"{here}: only a holding resolution excuses reads")
     return errors
 
 
@@ -789,7 +809,9 @@ def show(revision: dict, trails: Trails) -> list[str]:
                 name = resolution["cites"].split("@")[0]
                 lines.append(f"      {'reached' if resolution['holds'] else 'refuted'} by {name} {step['id']}: {step['summary']}")
                 if peeked := peeks(revision, trails, resolution):
-                    lines.append(f"        before it, a sealed input: {', '.join(f'{run} {how}' for run, how in peeked)}")
+                    why = {e["run"]: e["why"] for e in resolution.get("excused", [])}
+                    shown = ", ".join(f"{run} {how}" + (f" (excused: {why[run]})" if run in why else "") for run, how in peeked)
+                    lines.append(f"        before it, a sealed input: {shown}")
     lines += ["", "Next, the most shared first:"]
     for row in ranked(revision) or []:
         goals = f"; goals not yet reached: {', '.join(row['open_goals'])}" if row["open_goals"] else ""
@@ -852,6 +874,13 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
         }
 
     candidates = propose(revs, trails)["candidates"]
+
+    def quiet_candidate(candidate: dict) -> bool:
+        """For an agent, a sibling's unsealed result from a run that opened a sealed input is left out
+        altogether: that it met a milestone judged on the sealed input is itself a held-out result."""
+        found = trails.cite(candidate["cites"], project)
+        return not isinstance(found, str) and hidden(*found)
+
     nodes = []
     for node in last["nodes"]:
         nodes.append(
@@ -862,7 +891,11 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
                 "state": node_state(node["id"], now),
                 "routes": [route["id"] for route in last["routes"] if node["id"] in route["path"]],
                 "shared": node["id"] in common,
-                "resolutions": [resolution(r["cites"], r["holds"], True, {}) for r in last["resolutions"] if r["node"] == node["id"]],
+                "resolutions": [
+                    resolution(r["cites"], r["holds"], True, {"excused": r.get("excused", [])})
+                    for r in last["resolutions"]
+                    if r["node"] == node["id"]
+                ],
                 "provisional": [
                     resolution(
                         c["cites"],
@@ -871,7 +904,7 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
                         {"routes": c["routes"], **({"after_misses": c["after_misses"]} if "after_misses" in c else {})},
                     )
                     for c in candidates
-                    if c["node"] == node["id"]
+                    if c["node"] == node["id"] and not quiet_candidate(c)
                 ],
             }
         )
@@ -971,6 +1004,8 @@ def status_text(live: dict, clock: datetime, refs_per_trail: int = 3) -> list[st
         for r in node["resolutions"] + node["provisional"]:
             kind = "sealed" if r["sealed"] else "provisional"
             lines.append(f"      {kind}, {'reached' if r['holds'] else 'refuted'} by {r['cites']}: {r['summary']}")
+            for e in r.get("excused", []):
+                lines.append(f"        excused by the revision: {e['run']} opened a sealed input before it: {e['why']}")
     lines += ["", "Trails (each reference is pinned at the trail's present head):"]
     for lane in live["trails"]:
         if lane["probe"] == live["for"]:
