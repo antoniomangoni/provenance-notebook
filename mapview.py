@@ -358,7 +358,11 @@ def content(live: dict, clock: datetime, links: bool = False) -> str:
         f"<p class='sub'>Revision {live['rev']}, sealed {e(live['at'])} by {e(live['by'])}. "
         f"{len(live['trails'])} trails, drawn {clock.strftime('%Y-%m-%d %H:%M:%S')} UTC."
         f"{'<span class=live>live</span>' if links else ''}</p>"
-        + (f"<p class='sub'>⚠ project.py check finds {len(live['problems'])} problems. The first: {e(live['problems'][0])}</p>" if live["problems"] else "")
+        + (
+            f"<p class='sub'>⚠ project.py check finds {len(live['problems'])} problems. The first: {e(live['problems'][0])}</p>"
+            if live["problems"]
+            else ""
+        )
         + f"<div class='frame'>{picture(live, clock, links)}</div>{legend()}{tables(live, clock)}"
     )
 

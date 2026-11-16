@@ -11,7 +11,8 @@ every one from the trails, so the map claims nothing the trails do not show.
   propose [--out FILE]       a draft of the next revision, from what the trails reached
   seal DRAFT --by ACTOR      appends the draft as the next revision
   next                       the open routes' next milestones, the most shared first
-  brief ROUTE --out DIR [--demo DIR]   a demo directory for scripts/live.sh, starting where the map stands
+  brief ROUTE --out DIR [--demo DIR] [--with ROUTE,...]   a demo directory for scripts/live.sh, starting
+                             where the map stands; --with names the routes run alongside it
   shared                     milestones, files, code and computation that trails have in common
   graph --out DIR [--csv]    the merged trails' tables with the map's nodes and edges added
   view                       the map as text
@@ -473,9 +474,10 @@ def unbundle(bundle: Path, into: Path) -> Path:
     return into
 
 
-def brief(revision: dict, route_id: str, trails: Trails, demo: Path, out: Path) -> dict:
+def brief(revision: dict, route_id: str, trails: Trails, demo: Path, out: Path, alongside: list[str] = ()) -> dict:
     """Writes a demo directory for one open route. The task cites the results already reached on
-    its path, and the workspace is the code of the last of them, so the agent starts there."""
+    its path, and the workspace is the code of the last of them, so the agent starts there. With
+    routes `alongside`, the prompt says agents run them at the same time and how to use their work."""
     now, project = state(revision), revision["project"]
     route = next((r for r in revision["routes"] if r["id"] == route_id), None)
     if route is None or now["routes"][route_id]["status"] != "open":
@@ -539,6 +541,18 @@ def brief(revision: dict, route_id: str, trails: Trails, demo: Path, out: Path) 
             said = ", ".join(f"{name} {view.number(value)}" for name, value in measures(step).items())
             lines.append(f"- {'; '.join(statements)}: {said} ({step['id']} of {ref.split('@')[0]})")
         lines += ["", f"The workspace is the code that produced the last of these: {source}."]
+    if alongside:
+        lines += [
+            "",
+            "## Working alongside other agents",
+            "",
+            (
+                f"Other agents are working on this map at the same time, on routes {', '.join(alongside)}. The `project_map` tool shows "
+                "the map and what every trail has found so far. Read it before each new plan. When a result of theirs serves your "
+                "route, put its step reference, copied whole from `project_map`, in `propose_plan`'s `builds_on`, and say in the "
+                "reasoning how you use it. Numbers from a run that opened a sealed input are withheld from you; do not look for them."
+            ),
+        ]
     if revision.get("instructions"):
         lines += ["", "Rules for every route of this map:", revision["instructions"]]
     lines += ["", "What your route must reach, in order:"]
@@ -561,6 +575,7 @@ def brief(revision: dict, route_id: str, trails: Trails, demo: Path, out: Path) 
         "builds_on": builds_on,
         "workspace_from": source,
         "workspace": files,
+        **({"alongside": list(alongside)} if alongside else {}),
     }
     (out / "brief.json").write_text(json.dumps(record, indent=2) + "\n")
     return record
@@ -782,19 +797,17 @@ WITHHELD = "scored a sealed input; numbers withheld"
 ACTIVE_S = 300
 
 
-def cross_links(step: dict, project: str) -> list[dict]:
+def cross_links(step: dict, project: str, trails: Trails) -> list[dict]:
+    """A step's links to other probes. One that cites a head and no step points at the step that head
+    ended at, when the trail is given: what a project_map note saw of a sibling."""
     found = []
     for link in step.get("links", []):
         if cites := trail.PROBE_REF.fullmatch(link["target"]):
-            found.append(
-                {
-                    "relation": link["relation"],
-                    "probe": f"{cites['project'] or project}/probe:{cites['trail']}",
-                    "step": cites["step"],
-                    "head": cites["head"],
-                    "ref": link["target"],
-                }
-            )
+            probe = f"{cites['project'] or project}/probe:{cites['trail']}"
+            at = cites["step"]
+            if at is None and (seq := trails.heads.get(probe, {}).get(cites["head"])) is not None:
+                at = trails.steps[probe][seq]["id"]
+            found.append({"relation": link["relation"], "probe": probe, "step": at, "head": cites["head"], "ref": link["target"]})
     return found
 
 
@@ -863,7 +876,7 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
                 "kind": step["kind"],
                 "at": step["at"],
                 "summary": step["summary"],
-                "links": cross_links(step, project),
+                "links": cross_links(step, project, trails),
             }
             if step["kind"] == "observation":
                 quiet = hidden(probe, step)
@@ -962,7 +975,7 @@ def status_text(live: dict, clock: datetime, refs_per_trail: int = 3) -> list[st
 # ---------------------------------------------------------------------------------------------
 # Command line
 
-OPTIONS = ("--trails", "--out", "--by", "--demo", "--at", "--live", "--for", "--port")
+OPTIONS = ("--trails", "--out", "--by", "--demo", "--at", "--live", "--for", "--port", "--with")
 FLAGS = ("--csv", "--json")
 
 
@@ -1039,7 +1052,8 @@ def main(argv: list[str]) -> int:
         elif command == "brief":
             if len(args) != 3 or "out" not in named:
                 raise Usage("usage: project.py brief MAP ROUTE --out DIR --trails TRAIL... [--demo DIR]")
-            record = brief(last, args[2], trails, Path(named.get("demo", "demo")), Path(named["out"]))
+            alongside = [route for route in named.get("with", "").split(",") if route and route != args[2]]
+            record = brief(last, args[2], trails, Path(named.get("demo", "demo")), Path(named["out"]), alongside)
             print(f"wrote {named['out']}: route {record['route']}, builds on {', '.join(record['builds_on']) or 'nothing'}")
         elif command == "shared":
             print("\n".join(shared(last, trails)))
