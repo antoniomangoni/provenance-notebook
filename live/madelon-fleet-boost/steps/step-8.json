@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-fleet-boost",
+  "at": "2026-11-16T14:26:22.697Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only: honest-vs-inflated CV across screen size k, stability of F vs bagged-ET screens",
+  "reasoning": "The exploration showed the fixed-pilot-screen estimate is inflated by ~+0.16 at k=40 (0.7787 leaky vs 0.6175 honest). Since compact-knn and compact-forest were both refuted (presumably on exactly this disagreement), the boost route must find a screen where selection is so stable that the fixed-screen CV is nearly honest. This run, still pilot-only, answers: (a) for k in {8,10,12,15,20,30} on F and bagged-ET screens, how large is the inflation (fixed-screen CV minus screen-refit-inside-fold CV) and how stable are the selected sets (Jaccard between the pilot screen and within-fold screens); (b) which selection method at 320 rows gives the higher honest CV for GB; (c) a first look at GB configs under honest screening. I expect small k to be near-perfectly stable (top F scores 25-33 vs noise <= ~3) and inflation to fall from +0.16 (k=40) to a few hundredths; the chosen configuration must have honest cv_auc comfortably >= 0.70. Selection of the final screen and k happens on pilot data alone; heldout stays untouched.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:312f4a37f34fdd00845898b2664f25bb91d4c7502cc4be96f025fc260725dab2"
+}

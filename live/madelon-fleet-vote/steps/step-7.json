@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:16:35.900Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only diagnostics: F-statistic elbow, bootstrap stability of top-F, redundancy among top features; output to out/diag_screen.json.",
+  "reasoning": "Before the route's milestone runs I need pilot-only diagnostics: (1) the F-statistic distribution to see how many features separate signal from probes on 400 samples, (2) bootstrap stability of top-F features (a spurious probe won't survive resamples), (3) correlation/redundancy groups among top features. These decide the screen. All on data/pilot.csv only; nothing touches heldout.csv, and no route measures are recorded yet - diagnostics go to a separate file.",
+  "expectations": [
+    {
+      "name": "diag-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:3dedccb81de0ac7fb3de604e2bb3d4af979e23318c645a43b50cd3d41c7aa87f"
+}

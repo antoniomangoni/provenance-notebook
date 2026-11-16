@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:16:41.968Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "mkdir -p out && uv run python diag1.py > out/diag1.txt 2>&1; head -25 out/diag1.txt; echo ...; sed -n '26,32p' out/diag1.txt",
+  "command": {
+    "shown": "mkdir -p out && uv run python diag1.py > out/diag1.txt 2>&1; head -25 out/diag1.txt; echo ...; sed -n '26,32p' out/diag1.txt",
+    "digest": "sha256:6abd2f81051b72a006fe4ff34df553ffc88e0a57f512dc4acd6255802e3f3ae8"
+  },
+  "code": {
+    "ref": "commit:569b2213fd0fd720c45506e9c0a28d71565fb9cd"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:c41f1f69e8b62e7033fc919d1cebd8c274f746069466cc17f6978add96995cb8"
+}

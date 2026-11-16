@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-fleet-stable-forest",
+  "at": "2026-11-16T14:17:53.000Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "nproc; free -g | head -2; uv run python -c \"import sklearn, numpy; print(sklearn.__version__, numpy.__version__)\"",
+  "command": {
+    "shown": "nproc; free -g | head -2; uv run python -c \"import sklearn, numpy; print(sklearn.__version__, numpy.__version__)\"",
+    "digest": "sha256:5a0345040f42102a3f27691448166287eea6f738cf3b7bed9baa48bc473b5c9f"
+  },
+  "code": {
+    "ref": "commit:ecee59fba647f79107508db5b5b15c83e09f65b2"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:97a6a9b26c8472733469f5413368f8f27709c45fe992112b016d6836f26c3b80"
+}

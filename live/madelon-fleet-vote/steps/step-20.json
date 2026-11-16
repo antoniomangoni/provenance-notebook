@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:21:10.911Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 138129,
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:exp1.py",
+      "digest": "sha256:5487dbb5f644ff2a090edc2fc54cffd1742edc2b4aa40d90f7156e79c2149759"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+    },
+    {
+      "ref": "file:vote_lib.py",
+      "digest": "sha256:df1c94f14eb407f2dca4d4b415a8817df1eb7baf8e483f187a048af7c5e37ef9"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "screen-explore-exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-19",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-14",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:4dcfd47ef28c2ba8b2f978586ab44ee9576c77241bde6c6bb348fc2afa68e168"
+}

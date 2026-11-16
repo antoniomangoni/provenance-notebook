@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-fleet-stable-forest",
+  "at": "2026-11-16T14:17:41.658Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only diagnostics: bootstrap F-score selection frequencies, screen stability across seeds, and nested-CV AUC of an RF on majority-kept features.",
+  "reasoning": "The sibling screened-forest route was refuted twice (RF on pilot-screened features missed the floor) while selection inside CV with 30 features cleared it, so I must not assume the first screen works. This run measures, strictly on the 400-row pilot: the frequency landscape of bootstrap top-k selection, how repeatable the majority set is across screen seeds, and an honest nested-CV (screen refit inside every outer fold, small inner grid for RF max_features/min_samples_leaf) to see whether the design clears cv_auc 0.70 and how many features majority voting keeps. No heldout access. Numbers here are diagnostics; the locked estimate will be a separate run writing out/metrics.json.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:a2cc79156a89dcac39d13cedf51ad6eede9ef9c674a5687f31d94b750bcac2f5"
+}

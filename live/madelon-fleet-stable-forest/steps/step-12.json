@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "madelon-fleet-stable-forest",
+  "at": "2026-11-16T14:21:21.149Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Search pilot-only screen variants (bootstrap-F with k in 30/40/60, thresholds 0.5/0.4, plus RF-importance bootstrap screen) by nested-CV AUC; pick best for locking.",
+  "reasoning": "The first design (k=25, thresh 0.5) is seed-stable but keeps only 11 weak-marginal features and its repeated nested CV lands at 0.694, below the 0.70 floor. All knobs are chosen on pilot data alone. I compare: bootstrap-F screens with larger k per resample and majority threshold 0.5/0.4 (more true features survive the vote; RF tolerates redundancy), and a multivariate screen where each bootstrap resample is scored by RF Gini importances (captures interaction signal that F misses). Each variant is scored by the same honest protocol: screen refit inside every outer fold, inner 3-fold grid over RF max_features/min_samples_leaf. Heldout remains untouched. Expectation: at least one variant's nested-CV AUC reaches >= 0.70; I select the variant with the best AUC (ties: fewer features) for the locked estimate run.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:f7c36c54eb1750b4b85c37790f315497d4cb77bf2e7f98f8d415c088bc7fb2bd"
+}

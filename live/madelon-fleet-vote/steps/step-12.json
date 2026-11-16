@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:16:48.830Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "sed -n '15,60p' out/diag1.txt",
+  "command": {
+    "shown": "sed -n '15,60p' out/diag1.txt",
+    "digest": "sha256:b45520316de9e825cfd8318fa055990a813b5952e3b51eea3d922c6b37b6a7de"
+  },
+  "code": {
+    "ref": "commit:943b5d8c58a12ce064cd8ebbe2c964bc571b99cb"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d0c24d4f45a28c700557c0316853a60fa6080e8c992df15cbcd7cae82b05aaf5"
+}

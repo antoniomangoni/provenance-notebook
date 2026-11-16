@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-2",
+  "seq": 2,
+  "trail": "madelon-fleet-stable-forest",
+  "at": "2026-11-16T14:16:42.124Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Inspect inherited analysis code, pilot/heldout data shapes, and workspace notes before designing the bootstrap-stable screen.",
+  "reasoning": "Before building the pilot-only bootstrap screen I need the facts on the ground: what analysis.py does, the pilot sample size and label column, dependency setup, and any notes left by prior trails (this workspace is the snapshot that produced the cited cv 0.761 / holdout 0.5639 result). Only shapes, schemas and code are inspected; heldout.csv is never opened beyond its header/column names, which is needed to know how to score it later.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:79307cdc339bdb1f7aed63ab7de3795f37b87ee2b54c9020f01d551b71dd99d2"
+}

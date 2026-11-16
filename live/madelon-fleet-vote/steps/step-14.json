@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-14",
+  "seq": 14,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:17:22.263Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Compare candidate pilot-only screens by honest nested CV of RF, KNN and their soft vote on pilot data.",
+  "reasoning": "Diagnosis so far (pilot only, out/diag1.txt): F-statistic separates 4 very strong features (F 25-33), a mid tier around F 10-13 (x445, x159, x339, x129, x360, x414, x106), and a spurious tail below F 7 that keeps only 0.25-0.45 of bootstrap resamples. A raw F top-K screen (likely what the refuted compact-knn/compact-forest routes used) pulls in many probes; that plausibly is why KNN and RF on screened features missed the floor. Plan: check correlation structure, build stability-based screens (>=0.5, >=0.3 of bootstrap resamples) versus raw F top-K, and run one honest nested-CV comparison (screen refit inside each outer fold, hyperparameters tuned inside inner folds) of RF, KNN and their soft vote on each candidate screen. All on data/pilot.csv. The winner decides the locked procedure for the single held-out scoring run; no heldout.csv read yet and no route metrics written.",
+  "expectations": [
+    {
+      "name": "screen-explore-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:62f8b15f056569706056d354ed8d6a8ce6d4b70faf6424019d661360f7cbb715"
+}

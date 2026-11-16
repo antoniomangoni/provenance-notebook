@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:16:40.280Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 1",
+  "exit_code": 1,
+  "duration_ms": 25,
+  "reads": [],
+  "checks": [
+    {
+      "expectation": "diag-exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-8",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:826b05b7e471cbf6ae3b55581505f67121dd0ec8860dd442fdd7c49de5927449"
+}

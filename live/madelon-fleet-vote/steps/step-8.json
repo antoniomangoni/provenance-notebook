@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-fleet-vote",
+  "at": "2026-11-16T14:16:40.252Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat > diag1.py <<'EOF' import numpy as np from sklearn.feature_selection import f_classif rng = np.random.default_rng(0) tab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1) X, y = (tab[:, :-",
+  "command": {
+    "shown": "cat > diag1.py <<'EOF'\nimport numpy as np\nfrom sklearn.feature_selection import f_classif\n\nrng = np.random.default_rng(0)\ntab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = (tab[:, :-1], tab[:, -1])\nn, p = X.shape\nprint(\"pilot shape\", X.shape, \"labels\", np.bincount((y > 0).astype(int)))\n\nF, _ = f_classif(X, y)\norder = np.argsort(-F)\nprint(\"top-60 F:\")\nfor i in range(60):\n    print(f\"  x{order[i]+1:<4d} F={F[order[i]]:8.2f}\", end=\"\")\n    if i % 4 == 3:\n        print()\nprint()\n# elbow: F values sorted\nprint(\"sorted top-80 F:\", np.round(np.sort(F)[-80:][::-1], 1))\nprint(\"quantiles of F:\", np.percentile(F, [50, 75, 90, 95, 99]).round(2))\n\n# bootstrap stability of top-K membership (K=30), subsample 50% without replacement\nB = 200\ntop = order[:60]\ncounts = np.zeros(p)\nrank_sums = np.zeros(p)\nfor b in range(B):\n    idx = rng.choice(n, size=n // 2, replace=False)\n    Fb, _ = f_classif(X[idx], y[idx])\n    ob = np.argsort(-Fb)\n    rank_sums[ob] += np.arange(1, p + 1)\n    counts[ob[:30]] += 1\nprint(\"\\nstability of top-60 by full-pilot F (freq in top-30 across 200 half-samples):\")\nfor i in top:\n    print(f\"  x{i+1:<4d} F={F[i]:8.2f} freq={counts[i]:.3f} mean_rank={rank_sums[i]/B:8.1f}\")\nnp.save(\"out_F.npy\", F)\nEOF\nuv run python diag1.py > out/diag1.txt 2>&1; tail -30 out/diag1.txt",
+    "digest": "sha256:2a5ba798d38abc90ced8b39f29b730738141700ef4fc4d1ab93a98ecf8cd376c"
+  },
+  "code": {
+    "ref": "commit:cc59dc96b0407f8cff9c5d4076eb7f6aacfc5c6d"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:17da2c14940bfbbc28adbe73adbbba252f80be4cc755c05c165a95a881b52d19"
+}
