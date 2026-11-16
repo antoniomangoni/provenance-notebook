@@ -353,6 +353,9 @@ export function receipt(run: Step, observation: Step, plan: Step): string {
 	return `[notebook] run ${run.id}, observation ${observation.id}: ${observation.outcome}` + (detail ? ` (${detail})` : "");
 }
 
+const NO_USAGE = "The provider reported no token usage for a turn, so the token ceiling cannot stop this session. "
+	+ "The ceilings on runs and on the wall clock still apply.";
+
 export function noteStep(about: Step, hook: string, summary: string, text: string): Step {
 	return { kind: "note", by: RUNNER, hook, summary: clip(summary, 200), text, links: [{ relation: "about", target: about.id, status: "confirmed" }] };
 }
@@ -567,9 +570,17 @@ export default function (pi: ExtensionAPI) {
 		return reason;
 	}
 
+	// A turn with no usage, or with zeros where Pi filled in what the provider left out, is unknown, not
+	// free. The token ceiling cannot count it, so the trail says once that the ceiling does not hold.
+	let unmetered = false;
 	pi.on("turn_end", async (event) => {
 		const usage = (event.message as any)?.usage ?? {};
-		for (const part of ["input", "output", "cacheRead", "cacheWrite"]) if (Number.isFinite(usage[part])) tokens += usage[part];
+		let turn = 0;
+		for (const part of ["input", "output", "cacheRead", "cacheWrite"]) if (Number.isFinite(usage[part])) turn += usage[part];
+		tokens += turn;
+		if (turn > 0 || unmetered || !trail.steps.length) return;
+		unmetered = true;
+		await trail.write(noteStep(trail.steps[0], "pi:turn_end", "The provider reported no token usage", NO_USAGE));
 	});
 
 	pi.registerTool({

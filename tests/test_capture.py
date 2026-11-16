@@ -309,6 +309,17 @@ def test_the_token_ceiling_stops_the_session(tmp_path):
     stopped(session, "320 of at most 300 tokens")
 
 
+def test_a_provider_that_reports_no_usage_is_said_once_and_not_counted_as_zero(tmp_path):
+    session = live(
+        tmp_path, [[plan()], [bash("touch first.txt")], [bash("touch second.txt")]], NOTEBOOK_MAX_TOKENS="300", NOTEBOOK_SCRIPT_NO_USAGE="1"
+    )
+    notes = [step for step in session.of("note") if step["summary"] == "The provider reported no token usage"]
+    assert len(notes) == 1 and notes[0]["by"] == "runner:capture" or len(notes) == 1 and notes[0]["by"].startswith("runner")
+    assert "the token ceiling cannot stop this session" in notes[0]["text"]
+    # Both commands ran: nothing was stopped by a count that was never reported.
+    assert len(session.of("run")) == 2 and not any("ceiling:" in step["summary"] for step in session.of("note"))
+
+
 def test_the_wall_clock_stops_a_command_that_does_not_return(tmp_path):
     session = live(tmp_path, [[plan()], [bash("sleep 20")]], NOTEBOOK_WALL="3")
     assert session.seconds < 15 and "stopped at the wall clock of 3 seconds" in session.done.stdout

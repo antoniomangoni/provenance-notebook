@@ -39,10 +39,11 @@ export default function (pi: ExtensionAPI) {
 		const turn = context.messages.filter((message: any) => message.role === "assistant").length;
 		const refs = latestRefs(context.messages);
 		const calls = (turns[turn] ?? []).map(([name, args]) => [name, fill(args, refs)] as Call);
-		const input = 100 * (turn + 1);
+		// NOTEBOOK_SCRIPT_NO_USAGE=1 replays a provider that reports no usage, which Pi passes on as zeros.
+		const input = process.env.NOTEBOOK_SCRIPT_NO_USAGE === "1" ? 0 : 100 * (turn + 1);
 		const output = {
 			role: "assistant", content: [], api: model.api, provider: model.provider, model: model.id,
-			usage: { input, output: 10, cacheRead: 0, cacheWrite: 0, totalTokens: input + 10,
+			usage: { input, output: input && 10, cacheRead: 0, cacheWrite: 0, totalTokens: input && input + 10,
 				cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
 			stopReason: calls.length ? "toolUse" : "stop", timestamp: Date.now(),
 		} as AssistantMessage;

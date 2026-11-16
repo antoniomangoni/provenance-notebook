@@ -311,3 +311,49 @@ def test_builds_on_is_accepted_on_a_plan_and_refused_on_a_run():
     run = next(step for step in steps if step["kind"] == "run")
     run["links"].append({"relation": "builds_on", "target": cited, "status": "confirmed"})
     assert any("a run step cannot hold builds_on" in error for error in trail.check(steps))
+
+
+LIVE_1 = ROOT / "live" / "madelon-2026-11-15-1"
+RETRACED = ROOT / "research" / "madelon-reanalysis" / "retrace"
+HELDOUT = ("data/heldout.csv",)
+
+
+def test_facts_name_the_runs_that_had_opened_a_sealed_input_before_a_plan():
+    steps = trail.load(LIVE_1)
+    reads = trail.opened(steps, trail.retraced(RETRACED / "madelon-2026-11-15-1.json", steps))
+    facts = trail.facts(steps, reads, HELDOUT)
+    line = next(fact for fact in facts if fact.startswith("step-14: proposed after"))
+    # step-12 is `diagnose.py`, which the plan at step-14 followed; the fact says it ran first, not that it mattered.
+    assert "5 runs had opened data/heldout.csv" in line and "step-12 (measured)" in line and line.endswith("; known on re-execution")
+    assert [fact for fact in facts if ": proposed " not in fact] == trail.facts(steps)
+
+
+def test_a_sealed_input_in_a_trail_that_was_not_traced_is_said_to_be_unknown():
+    steps = trail.load(LIVE_1)
+    assert trail.opened(steps) == {}
+    assert "data/heldout.csv: no run of this trail was traced, so which runs opened it is not known" in trail.facts(steps, {}, HELDOUT)
+
+
+def test_a_run_traced_as_it_ran_outranks_its_re_execution():
+    steps = trail.load(ROOT / "live" / "madelon-fleet2-vote")
+    traced = trail.opened(steps)
+    again = {"runs": [{"run": rid, "reads": []} for rid in traced]}
+    assert traced and trail.opened(steps, again) == traced
+    assert all(how == trail.TRACED for how, _ in traced.values())
+
+
+def test_a_re_execution_of_another_trail_or_another_head_is_refused(tmp_path):
+    other = trail.load(ROOT / "live" / "madelon-2026-11-15-2")
+    with pytest.raises(ValueError, match="re-executes madelon-reanalysis/probe:madelon-2026-11-15-1, not"):
+        trail.retraced(RETRACED / "madelon-2026-11-15-1.json", other)
+    kept = json.loads((RETRACED / "madelon-2026-11-15-1.json").read_text()) | {"head": "sha256:" + "0" * 64}
+    (tmp_path / "again.json").write_text(json.dumps(kept))
+    with pytest.raises(ValueError, match="at a head it never had"):
+        trail.retraced(tmp_path / "again.json", trail.load(LIVE_1))
+    assert cli("facts", ROOT / "live" / "madelon-2026-11-15-2", "--reads", RETRACED / "madelon-2026-11-15-1.json").returncode == 2
+
+
+def test_the_command_line_takes_reads_and_sealed_paths():
+    done = cli("facts", LIVE_1, "--store", ROOT / "live" / "store", "--reads", RETRACED / "madelon-2026-11-15-1.json", "--sealed", "data/heldout.csv")
+    assert done.returncode == 0 and "step-14: proposed after 5 runs had opened data/heldout.csv" in done.stdout
+    assert ": proposed " not in cli("facts", LIVE_1, "--store", ROOT / "live" / "store").stdout

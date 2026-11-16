@@ -1,14 +1,14 @@
 """Check a provenance trail, write the example ones, or export checked trails as a graph.
 
     python trail.py check TRAIL_DIR [--store STORE_DIR]
-    python trail.py facts TRAIL_DIR [--store STORE_DIR]
+    python trail.py facts TRAIL_DIR [--store STORE_DIR] [--reads FILE] [--sealed PATH]...
     python trail.py head TRAIL_DIR
     python trail.py verify TRAIL_DIR HEAD
     python trail.py examples DIR
     python trail.py graph TRAIL_DIR [--csv]
     python trail.py merge OUT_DIR TRAIL_DIR... [--csv]
     python trail.py why TRAIL_DIR [STEP]
-    python trail.py view TRAIL_DIR [--store STORE_DIR] [--code REPO] [--out FILE]
+    python trail.py view TRAIL_DIR [--store STORE_DIR] [--code REPO] [--out FILE] [--reads FILE] [--sealed PATH]...
     python trail.py review TRAIL_DIR STEP --verdict confirms|disputes --text TEXT --by NAME
     python trail.py note TRAIL_DIR STEP --text TEXT --by NAME
 
@@ -298,10 +298,65 @@ def observed(step: dict) -> str:
     return next(link["target"] for link in step["links"] if link["relation"] == "observes")
 
 
-def facts(steps: list[dict]) -> list[str]:
+TRACED, RERUN = "traced as it ran", "on re-execution"
+
+
+def retraced(path: Path, steps: list[dict]) -> dict:
+    """A retrace.py file of this trail. It is refused for another trail, or at a head this trail never
+    had: a re-execution of other steps says nothing about these."""
+    kept = json.loads(Path(path).read_text())
+    if kept.get("trail") != probe_id(steps):
+        raise ValueError(f"{path} re-executes {kept.get('trail')}, not {probe_id(steps)}")
+    if kept.get("head") not in heads(steps):
+        raise ValueError(f"{path} re-executes {probe_id(steps)} at a head it never had")
+    return kept
+
+
+def opened(steps: list[dict], again: dict | None = None) -> dict[str, tuple[str, list[str]]]:
+    """For each run whose reads are known, how they are known and the files it opened: traced as it ran,
+    when its observation carries `reads`, or on re-execution, when only a retrace.py file does. A run in
+    neither is absent. It was not traced, and nothing is claimed about it."""
+    found = {run["run"]: (RERUN, [r["ref"] for r in run["reads"]]) for run in (again or {}).get("runs", []) if run.get("reads") is not None}
+    found |= {observed(step): (TRACED, [r["ref"] for r in step["reads"]]) for step in steps if step["kind"] == "observation" and "reads" in step}
+    return found
+
+
+def before(steps: list[dict], reads: dict, sealed: tuple[str, ...]) -> list[dict]:
+    """For each plan and each sealed path: the earlier runs known to have opened the path, whether each
+    wrote metrics, and how many earlier runs were not traced. It says a file was opened before a plan was
+    proposed, never that the plan used what was read."""
+    settlement = {observed(step): step for step in steps if step["kind"] == "observation"}
+    found, runs = [], []
+    for step in steps:
+        if step["kind"] == "run":
+            runs.append(step["id"])
+        if step["kind"] == "plan":
+            for path in sealed:
+                hits = [rid for rid in runs if rid in reads and f"file:{path}" in reads[rid][1]]
+                found.append({"plan": step["id"], "path": path, "earlier": len(runs), "untraced": sum(rid not in reads for rid in runs),
+                              "runs": [{"id": rid, "measured": bool(settlement.get(rid, {}).get("measures_source")), "how": reads[rid][0]} for rid in hits]})
+    return found
+
+
+def opened_before(entry: dict, most: int = 8) -> str:
+    """One `before` entry in words, the same in `facts`, `why` and the page."""
+    runs, untraced = entry["runs"], entry["untraced"]
+    rest = f"; {untraced} earlier run{'s were' if untraced != 1 else ' was'} not traced" if untraced else ""
+    if not runs:
+        return f"no traced run had opened {entry['path']}{rest}"
+    hows = {run["how"] for run in runs}
+    shown = ", ".join(f"{run['id']} ({'measured' if run['measured'] else 'wrote no metrics'}" + (f", {run['how']}" if len(hows) > 1 else "") + ")"
+                      for run in runs[:most]) + (f" and {len(runs) - most} more" if len(runs) > most else "")
+    known = "" if len(hows) > 1 else "; known on re-execution" if hows == {RERUN} else f"; traced as {'it' if len(runs) == 1 else 'they'} ran"
+    return f"{len(runs)} run{'s' * (len(runs) != 1)} had opened {entry['path']}: {shown}{known}{rest}"
+
+
+def facts(steps: list[dict], reads: dict | None = None, sealed: tuple[str, ...] = ()) -> list[str]:
     """What a checked trail shows without judging it: how many attempts each plan took and how they
-    came out, runs that never settled, and runs that repeated an earlier run or its outputs. None of
-    these is an error; they are what a reviewer asks about, and only the steps can say why."""
+    came out, runs that never settled, and runs that repeated an earlier run or its outputs. With
+    `sealed` paths, which runs had opened one before each plan with a measured run was proposed, from
+    `reads` (see `opened`). None of these is an error; they are what a reviewer asks about, and only the
+    steps can say why."""
     runs = {step["id"]: step for step in steps if step["kind"] == "run"}
     settlement = {observed(step): step for step in steps if step["kind"] == "observation"}
     by_id = {step["id"]: step for step in steps}
@@ -356,6 +411,13 @@ def facts(steps: list[dict]) -> list[str]:
         declared = {kept["ref"] for kept in run.get("inputs", [])}
         if rid in settlement and (beyond := [r["ref"] for r in settlement[rid].get("reads", []) if r["ref"] not in declared]):
             found.append(f"{rid}: read {len(beyond)} file{'s' * (len(beyond) != 1)} beyond its declared inputs: " + ", ".join(beyond[:5]))
+    if sealed and not reads:
+        found += [f"{path}: no run of this trail was traced, so which runs opened it is not known" for path in sealed]
+    elif sealed:
+        scored = {link["target"] for rid, run in runs.items() if settlement.get(rid, {}).get("measures_source")
+                  for link in run["links"] if link["relation"] == "implements"}
+        found += [f"{entry['plan']}: proposed {'after' if entry['runs'] else 'when'} {opened_before(entry)}"
+                  for entry in before(steps, reads, sealed) if entry["plan"] in scored and entry["earlier"]]
     calls, results = {}, {}
     for rid, run in runs.items():
         if rid not in settlement:
@@ -719,7 +781,7 @@ def write_graph(directory: Path, nodes: list[dict], edges: list[dict], suffix: s
     print(f"{len(nodes)} nodes, {len(edges)} edges in {directory}")
 
 
-OPTIONS = ("--store", "--code", "--out", "--verdict", "--text", "--by")
+OPTIONS = ("--store", "--code", "--out", "--verdict", "--text", "--by", "--reads", "--sealed")
 
 
 def usage(message: str) -> None:
@@ -747,8 +809,12 @@ if __name__ == "__main__":
     store = Path(kept) if (kept := option(args, "--store")) else None
     code, out = option(args, "--code"), option(args, "--out")
     verdict, text, by = option(args, "--verdict"), option(args, "--text"), option(args, "--by")
+    again, sealed = option(args, "--reads"), []
+    while "--sealed" in args:
+        sealed.append(option(args, "--sealed"))
+    sealed = tuple(sealed)
     if len(args) < 2:
-        usage("usage: trail.py COMMAND DIR [STEP or HEAD] [--store DIR] [--code REPO] [--out FILE] [--csv]")
+        usage("usage: trail.py COMMAND DIR [STEP or HEAD] [--store DIR] [--code REPO] [--out FILE] [--reads FILE] [--sealed PATH]... [--csv]")
     command, directory = args[0], Path(args[1])
     if command == "verify" and len(args) < 3:
         usage("usage: trail.py verify DIR HEAD")
@@ -773,10 +839,16 @@ if __name__ == "__main__":
         print(f"{path}: " + ("; ".join(found) or f"{len(steps)} steps, no problems"))
         problems += found
         loaded.append(steps)
+        reads = {}
+        if command in ("facts", "why", "view") and not found:
+            try:
+                reads = opened(steps, retraced(Path(again), steps) if again else None)
+            except (OSError, ValueError) as error:
+                usage(f"trail.py: {error}")
         if command == "graph" and not found:
             write_graph(path / "graph", *graph(steps), suffix)
         if command == "facts" and not found:
-            print("\n".join(f"  {fact}" for fact in facts(steps)))
+            print("\n".join(f"  {fact}" for fact in facts(steps, reads, sealed)))
         if command == "head" and not found:
             print(digest(canonical(steps[-1])))
         if command == "verify" and not found:
@@ -787,7 +859,7 @@ if __name__ == "__main__":
             import view
 
             try:
-                print("\n".join(view.why(steps, args[2] if len(args) > 2 else None)))
+                print("\n".join(view.why(steps, args[2] if len(args) > 2 else None, reads, sealed)))
             except LookupError as error:
                 print(error.args[0])
                 problems.append(error.args[0])
@@ -796,7 +868,7 @@ if __name__ == "__main__":
 
             written = Path(out) if out else path / "view.html"
             written.parent.mkdir(parents=True, exist_ok=True)
-            written.write_text(view.page(steps, Path(code) if code else None), encoding="utf-8")
+            written.write_text(view.page(steps, Path(code) if code else None, reads, sealed), encoding="utf-8")
             print(f"wrote {written}")
         if command in ("review", "note") and not found:
             # The new step is checked with the whole trail before anything is written, so a review of a
