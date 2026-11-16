@@ -21,7 +21,7 @@ every one from the trails, so the map claims nothing the trails do not show.
   serve [--port N]           the same page, redrawn as trails grow (127.0.0.1 only)
 
 --live DIR adds every trail under DIR whose task names the map's project. --reads FILE... adds
-re-executions by retrace.py. With --for TRAIL, a sibling's observation whose run opened a sealed
+re-executions by retrace.py; without it, those in retrace/ beside MAP are used for the trails given. With --for TRAIL, a sibling's observation whose run opened a sealed
 input is shown without its numbers: what an agent's project_map tool is shown.
 
 docs/specs/05-research-map.md is the specification.
@@ -103,7 +103,7 @@ def discover(directory: Path, project: str) -> list[Path]:
 class Trails:
     """The trails a map cites, by probe id, with the head after each step and where they live."""
 
-    def __init__(self, paths: list[Path], retraced: list[Path] = ()):
+    def __init__(self, paths: list[Path], retraced: list[Path] = (), beside: Path | None = None):
         self.steps, self.heads, self.paths, self.reading = {}, {}, {}, set()
         for path in paths:
             steps, partial = readable(path)
@@ -122,6 +122,11 @@ class Trails:
             elif kept.get("head") not in self.heads[kept["trail"]]:
                 self.problems.append(f"{path}: re-executes {kept['trail']} at a head it never had")
             else:
+                self.retraced[kept["trail"]] = {run["run"]: run for run in kept["runs"]}
+        # A map's own re-executions, kept beside it in retrace/: used for the trails given, without asking.
+        for path in sorted((beside / "retrace").glob("*.json")) if beside and not retraced else []:
+            kept = json.loads(path.read_text())
+            if kept.get("trail") in self.steps and kept.get("head") in self.heads[kept["trail"]]:
                 self.retraced[kept["trail"]] = {run["run"]: run for run in kept["runs"]}
 
     def read(self, probe: str, run: dict, paths: list[str]) -> str | None:
@@ -880,7 +885,10 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
             }
             if step["kind"] == "observation":
                 quiet = hidden(probe, step)
+                tested = view.linked(step, "tests")
+                plan = next((s for s in steps if s["id"] in tested), None)
                 entry |= {
+                    "plan": None if quiet or plan is None else plan["summary"],
                     "observes": trail.observed(step),
                     "outcome": step["outcome"],
                     "measures": {} if quiet else measures(step),
@@ -968,7 +976,12 @@ def status_text(live: dict, clock: datetime, refs_per_trail: int = 3) -> list[st
         lines.append(f"  {lane['trail']} (route {lane['route'] or 'none'}, {lane['count']} steps, {doing}, last step {int(idle)} s ago)")
         name = lane["probe"].split("/", 1)[1] if lane["probe"].startswith(live["project"] + "/") else lane["probe"]
         for step in [s for s in lane["steps"] if s["kind"] == "observation"][-refs_per_trail:]:
-            lines.append(f"      {name}@{lane['head']}#{step['id']}: {step['summary']}")
+            said = ", ".join(f"{k} {view.number(v)}" for k, v in step["measures"].items())
+            lines.append(
+                f"      {name}@{lane['head']}#{step['id']}: {step['summary']}"
+                + (f"; {said}" if said and said not in step["summary"] else "")
+                + (f" (under the plan: {step['plan']})" if step.get("plan") else "")
+            )
     return lines
 
 
@@ -1016,7 +1029,7 @@ def main(argv: list[str]) -> int:
             return mapview.serve(directory, named.get("live"), paths, retraced, int(named.get("port", 8077)))
         if "live" in named and revs:
             paths = [*paths, *(found for found in discover(Path(named["live"]), revs[-1]["project"]) if found not in paths)]
-        trails = Trails(paths, retraced)
+        trails = Trails(paths, retraced, directory.parent)
         if command == "seal":
             if len(args) != 3 or "by" not in named:
                 raise Usage("usage: project.py seal MAP DRAFT --by ACTOR --trails TRAIL...")

@@ -417,7 +417,7 @@ class State:
             paths = list(self.paths)
             if self.live_dir:
                 paths += [p for p in project.discover(Path(self.live_dir), revs[-1]["project"]) if p not in paths]
-            self.live, self.seen = project.live_state(revs, project.Trails(paths, self.retraced)), seen
+            self.live, self.seen = project.live_state(revs, project.Trails(paths, self.retraced, self.directory.parent)), seen
         return self.live
 
     def trail_page(self, name: str) -> str | None:
