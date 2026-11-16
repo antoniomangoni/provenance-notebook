@@ -504,3 +504,11 @@ def test_two_agents_at_once_read_the_map_cite_each_other_and_both_trails_check(t
         (cited,) = [link["target"] for link in built["links"] if link["relation"] == "builds_on"]
         assert cited.startswith(f"probe:{other.steps[0]['trail']}@")
     assert trail.merge([a.steps, b.steps])[2] == []
+
+
+def test_an_agent_is_told_when_others_found_something_since_it_last_read_the_map(tmp_path):
+    live(tmp_path, [[plan(FLOOR)], [bash("python3 fit.py --auc 0.8")]], name="sibling-a")
+    session = live(tmp_path, [[plan()], [READ_MAP], [plan(LOOK, summary="After reading")]], name="agent-b", **mapped(tmp_path))
+    first, _, after = session.results
+    assert "1 new observation since you last read the project map" in first[2]
+    assert "[notebook]" not in after[2]

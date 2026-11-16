@@ -8,7 +8,7 @@
 // adapter for another host is new wiring. The Trail writes steps one at a time. The default
 // export gathers data from Pi's hooks and calls the two.
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve, sep } from "node:path";
 import { Type } from "typebox";
@@ -467,6 +467,25 @@ export default function (pi: ExtensionAPI) {
 	const pending = new Map<string, Pending>();
 	// Every sibling step reference project_map has shown in this session: what a plan may build on.
 	const citable = new Set<string>();
+	// How many observations the other trails of this project had when the agent last read the map.
+	let seenAtRead = 0;
+	function siblingObservations(): number {
+		const root = dirname(config.trail);
+		let count = 0;
+		for (const name of existsSync(root) ? readdirSync(root) : []) {
+			const steps = join(root, name, "steps");
+			if (name === trail.name || !existsSync(join(steps, "step-0.json"))) continue;
+			try {
+				if (JSON.parse(readFileSync(join(steps, "step-0.json"), "utf8")).project !== task.project) continue;
+				for (const file of readdirSync(steps)) {
+					try {
+						if (JSON.parse(readFileSync(join(steps, file), "utf8")).kind === "observation") count++;
+					} catch { /* a step being written: counted next time */ }
+				}
+			} catch { /* not a trail */ }
+		}
+		return count;
+	}
 
 	pi.on("session_start", async (_event, ctx) => {
 		if (trail.steps.length) return;
@@ -504,7 +523,15 @@ export default function (pi: ExtensionAPI) {
 			const over = await ceiling();
 			if (over) throw new Refusal(over);
 			const step = await trail.write(planStep(params as PlanInput, task, trail.steps, agent, citable));
-			return { content: [{ type: "text", text: `recorded as ${step.id}` }], details: {} };
+			// An agent that has not read the map since its siblings found something is told so: the prompt
+			// asks it to read the map before each plan, and a model forgets.
+			let text = `recorded as ${step.id}`;
+			if (config.map) {
+				const fresh = siblingObservations() - seenAtRead;
+				if (fresh > 0) text += `\n[notebook] Other agents' trails have ${fresh} new observation${fresh === 1 ? "" : "s"} since you last `
+					+ "read the project map. Call project_map before your next plan, and build on what serves your route.";
+			}
+			return { content: [{ type: "text", text }], details: {} };
 		},
 	});
 
@@ -528,6 +555,7 @@ export default function (pi: ExtensionAPI) {
 			} catch (error: any) {
 				throw new Refusal(`The project map could not be read: ${clip(String(error?.stderr || error?.message || error), 500)}`);
 			}
+			seenAtRead = siblingObservations();
 			const own = new RegExp(`(^|/)probe:${trail.name}@`);
 			const refs = [...new Set(text.match(SHOWN_REF) ?? [])].filter((ref) => !own.test(ref));
 			for (const ref of refs) citable.add(ref);

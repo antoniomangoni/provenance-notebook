@@ -62,7 +62,8 @@ svg .muted{fill:var(--ink2)}svg .small{font-size:11px}svg .head{font-weight:600}
 .withheld{fill:var(--axis)!important}
 .cx{fill:none;stroke-width:1.2;opacity:.18}.cx.holds{stroke:var(--good)}.cx.refutes{stroke:var(--critical)}.cx.prov{stroke-dasharray:4 3;opacity:.5}
 .arc{fill:none;stroke:var(--ink2);stroke-width:1.5;opacity:.6;marker-end:url(#arrow)}
-.arc.about{stroke-dasharray:3 3}
+.arc.about{stroke-dasharray:3 3;opacity:.22;stroke-width:1;marker-end:none}
+.arc:hover{opacity:1}
 .newest{fill:none;stroke:var(--ink);stroke-width:1.5;animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.15}}
 @media (prefers-reduced-motion:reduce){.newest{animation:none}}
@@ -321,7 +322,8 @@ def legend() -> str:
         (swatch('<circle class="sealed-read" cx="11" cy="8" r="6"/>'), "opened a sealed input (traced)"),
         (swatch('<circle class="sealed-read re" cx="11" cy="8" r="6"/>'), "… on re-execution"),
         (swatch('<circle class="sealed-read names" cx="11" cy="8" r="6"/>'), "… named on its command line"),
-        (swatch('<path class="arc" d="M2,8 L18,8"/>'), "cites another trail"),
+        (swatch('<path class="arc" d="M2,8 L18,8"/>'), "builds on another trail's step"),
+        (swatch('<path class="arc about" style="opacity:.6" d="M2,8 L18,8"/>'), "read the map while that trail stood here"),
     ]
     return '<ul class="legend">' + "".join(f"<li>{mark}{e(text)}</li>" for mark, text in items) + "</ul>"
 

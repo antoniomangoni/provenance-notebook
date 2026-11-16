@@ -391,3 +391,12 @@ def test_a_second_seal_of_the_same_revision_fails(tmp_path, monkeypatch, capsys)
     assert project.main(argv) == 0
     assert project.main(argv) == 1
     assert "rev-2 was sealed meanwhile; propose again" in capsys.readouterr().out
+
+
+def test_a_step_a_revision_has_judged_is_not_proposed_again():
+    revs = project.revisions(MAP)
+    judged = {r["cites"].split("@")[0] + "#" + r["cites"].split("#")[1] for rev in revs for r in rev["resolutions"]}
+    proposed = project.propose(revs, trails(*ALL))["candidates"]
+    assert not [c for c in proposed if c["cites"].split("@")[0] + "#" + c["cites"].split("#")[1] in judged]
+    # floor-search, withdrawn in rev-6, cited live-1 step-18; it stays withdrawn.
+    assert not [c for c in proposed if c["node"] == "floor-search"]

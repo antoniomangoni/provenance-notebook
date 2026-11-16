@@ -415,7 +415,9 @@ def propose(revs: list[dict], trails: Trails) -> dict:
     project, now = last["project"], state(last)
     nodes = {node["id"]: node for node in last["nodes"]}
     draft = {key: value for key, value in sealed(last).items() if key not in SEALED}
-    cited = {r["cites"].split("#")[0].split("@")[0] + "#" + r["cites"].split("#")[1] for r in last["resolutions"]}
+    # A step any revision has judged is not proposed again: a credit withdrawn stays withdrawn until a
+    # revision says otherwise.
+    cited = {r["cites"].split("#")[0].split("@")[0] + "#" + r["cites"].split("#")[1] for rev in revs for r in rev["resolutions"]}
     candidates, notes = {}, []
     for probe, steps in trails.steps.items():
         tag = ROUTE_TAG.match(steps[0]["summary"])
@@ -555,7 +557,9 @@ def brief(revision: dict, route_id: str, trails: Trails, demo: Path, out: Path, 
                 f"Other agents are working on this map at the same time, on routes {', '.join(alongside)}. The `project_map` tool shows "
                 "the map and what every trail has found so far. Read it before each new plan. When a result of theirs serves your "
                 "route, put its step reference, copied whole from `project_map`, in `propose_plan`'s `builds_on`, and say in the "
-                "reasoning how you use it. Numbers from a run that opened a sealed input are withheld from you; do not look for them."
+                "reasoning how you use it. Numbers from a run that opened a sealed input are withheld from you; do not look for them. "
+                "A milestone counts only when a run writes its measures to `out/metrics.json`, so write them in the run that reaches "
+                "it, the first shared milestone above all: then the map shows it and the others can build on it."
             ),
         ]
     if revision.get("instructions"):
@@ -975,7 +979,11 @@ def status_text(live: dict, clock: datetime, refs_per_trail: int = 3) -> list[st
         doing = "running" if idle < ACTIVE_S else "idle"
         lines.append(f"  {lane['trail']} (route {lane['route'] or 'none'}, {lane['count']} steps, {doing}, last step {int(idle)} s ago)")
         name = lane["probe"].split("/", 1)[1] if lane["probe"].startswith(live["project"] + "/") else lane["probe"]
-        for step in [s for s in lane["steps"] if s["kind"] == "observation"][-refs_per_trail:]:
+        shown = [s for s in lane["steps"] if s["kind"] == "observation"][-refs_per_trail:]
+        last = lane["steps"][-1] if lane["steps"] else None
+        if last is not None and last not in shown:
+            lines.append(f"      latest {name}@{lane['head']}#{last['id']} ({last['kind']}): {last['summary']}")
+        for step in shown:
             said = ", ".join(f"{k} {view.number(v)}" for k, v in step["measures"].items())
             lines.append(
                 f"      {name}@{lane['head']}#{step['id']}: {step['summary']}"
