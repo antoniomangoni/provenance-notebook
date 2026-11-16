@@ -51,6 +51,9 @@ review that confirmed it.
    pass a redactor first, and `redactions` counts what it replaced; a redacted command's digest is
    keyed too, since a plain hash of it hides only the redacted part. Errors are a class plus a digest of
    stderr. Raw payloads, when kept, live in a content-addressed store outside the trail.
+   **Capture does not do this yet.** The checker enforces the rule and the examples follow it, but
+   `capture.ts` has no redactor and writes no keyed digest: a live trail shows each command as it was
+   typed, absolute paths included, and its demo task makes every parameter public.
 4. **Capture outside the build.** The trail is produced by hooks around the agent, which the agent
    cannot write to; plans enter only through a tool the agent calls, and its messages and thinking are
    never parsed. Anything reading the trail (Almanaque included) imports it with a preview.

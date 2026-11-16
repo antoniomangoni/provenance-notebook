@@ -45,8 +45,11 @@ against a 0.75 floor), the plan it supersedes, and the review that confirmed it.
   and reads the measures again from the file the run wrote. The agent does not grade its own run.
 - **What failed stays.** Runs are recorded before they execute, so a crash or an abandoned
   attempt cannot drop out. `trail.py facts` lists what a reviewer would ask about: a plan that
-  held only after earlier runs contradicted it, an exact repeat, a run that never settled, and
-  (planned this week) a replacement plan that lowers the bar the first one missed.
+  held only after earlier runs contradicted it, an exact repeat, a run that never settled, and a
+  replacement plan that lowers the bar the first one missed.
+- **What a run opened is recorded.** Each command is traced as it runs, so reading a held-out file
+  is a fact of the trail. A reader names a file as sealed, and the page says which runs had
+  opened it before each plan was proposed.
 - **A citation of a trail is stable.** Each step holds the hash of the one before, and a trail
   is cited at the hash of its last step. A trail rewritten and re-chained still checks, but it no
   longer has the head it was cited at.
@@ -70,26 +73,31 @@ must be outside the agent's reach. A researcher who controls that host can still
 trail from the start; what they cannot do is revise one that has been cited. The plan's reasoning
 is the agent's own statement, which is why its links are marked `suggested`.
 
-## How it will be evaluated
+## How it was evaluated
 
 The brief's criterion can be checked, so the entry checks it three ways.
-[PLAN.md](../PLAN.md#evidence) has the questions and the protocol.
+[PLAN.md](../PLAN.md#evidence) has the questions and the protocol, and
+[evidence/](../evidence/README.md) the results.
 
-- `trail.py why TRAIL STEP` prints the answer to the brief's question from the links alone, and
-  a test pins it on the worked example.
-- A model that has not seen the task answers four fixed questions, once from the generated view
-  and once from what a reviewer has today, the agent's raw session transcript and the git log.
-  The answers are graded against a key taken from the step files.
+- `trail.py why TRAIL STEP` prints the answer to the brief's question from the links alone. A
+  test pins it on the worked example, and it answers for step 14 of the live trail.
+- Models that had not seen the task answered fixed questions, once from the generated view and
+  once from what a reviewer has today, the agent's raw session transcript and the git log. The
+  answers were graded against a key taken from the step files. **The view was not needed:** a
+  model answers as well from the transcript. The view's measured advantage is its length, a
+  tenth of the transcript's.
 - A person who did not see the task answers the brief's question from the view, in the video.
 
-Every live attempt at the task is committed, and the write-up says how many there were.
+Every live attempt is committed: twelve trails. Two were the task itself, three were steered one
+at a time by a research map, six ran as two fleets of three agents sharing that map, and one ran
+in a sandbox.
 
-## What exists, and what the week is for
+## What was built
 
-Exists and tested: the step schema, the cross-step checker, `facts`, `head` and `verify`, three
+Before the week: the step schema, the cross-step checker, `facts`, `head` and `verify`, three
 worked example trails, and the graph export in [GRAPH.md](GRAPH.md).
 
-Built during the week:
+Built during the week, as planned:
 
 1. **The reviewer view.** One self-contained page that leads with the decision path and answers
    the step-4 question on one screen, and `trail.py why`, which answers it in text. It is what a
@@ -102,9 +110,22 @@ Built during the week:
    changes approach. The tamper demonstration runs on its trail.
 4. **The evidence** above.
 
-One task type, one agent, one runner. Left out of the week, and said so: redaction and keyed
-digests for hidden values, the read-only sandbox around the trail, multi-trail merge in the demo,
-PROV-O export and the Almanaque port.
+Built during the week, beyond the plan:
+
+5. **Traced reads.** Each command runs under a file trace, and `retrace.py` re-executes past
+   trails the same way, so opening a held-out file is recorded, not judged from the code.
+6. **A research map.** Many trails toward shared goals ([research/](../research/README.md)).
+   `project.py check` recomputes every credit from the step files, follows what each credit rests
+   on across trails, and records every withdrawal with its reason.
+7. **Agents sharing a map.** Up to three agents run at once, read each other's progress through
+   one tool, and build on each other's steps. Numbers from a held-out file are withheld, what one
+   agent wrote reaches another marked as text and not instructions, and each command runs in a
+   sandbox that hides the map and the other trails.
+
+One task type, one agent host, one model. Left out, and said so: redaction and keyed digests for
+hidden values in capture, signing by the capture host, resuming a trail in a second session,
+PROV-O export and the Almanaque port. The sandbox hides named places and does not close the
+network, and a single run is not sandboxed unless asked.
 
 ## Relation to the other tasks, and to Almanaque
 

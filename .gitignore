@@ -13,3 +13,5 @@ view.html
 
 # A brief's workspace data is the demo's; brief.json records its digests.
 research/*/briefs/*/workspace/data/
+# Built by scripts/site.sh.
+site/
