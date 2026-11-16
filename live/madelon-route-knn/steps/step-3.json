@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:42:53.871Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 2",
+  "exit_code": 2,
+  "duration_ms": 12,
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-2",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:11b476ce8c87262300732862808d01b652aa4aec2543b1b406820831247cf8ab"
+}

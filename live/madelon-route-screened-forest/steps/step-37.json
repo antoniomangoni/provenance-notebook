@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-37",
+  "seq": 37,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:35:19.303Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Map 400-sample holdout landscape and test sample-efficient forest variants",
+  "reasoning": "step-35/36 contradicted step-34: the tuned-grid procedure still lands holdout 0.6989 (cv 0.7251, gap 0.026, n_features 50 — only the 0.71 floor fails). The 320↔1760-sample gap (cv ~0.73 vs 0.84 within-heldout) points to RF sample efficiency, not screens or estimation bias. Diagnostic: map the final-fit (400-train) holdout landscape over K and tree shapes, and test on pilot CV three sample-efficiency levers — ExtraTrees (sklearn's other randomized-forest family, built for small samples), small-K screens, and screen-bagged sub-forest ensembles — hunting for a lever worth ≥ +0.01 at 400 samples. No metrics written by this diagnostic.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-34",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-36",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:ae1fecea8a9ed2aa4ab9571875e54a8c42030afa742065dc5fe24c3c7d9939a9"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-2",
+  "seq": 2,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:54:34.395Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ls -la && echo === && ls -la data out 2>&1 && echo === && wc -l data/*.csv && echo === && head -2 data/pilot.csv | cut -c1-400 && echo === && cat pyproject.toml 2>/dev/null && echo === && ls *.py 2>/d",
+  "command": {
+    "shown": "ls -la && echo === && ls -la data out 2>&1 && echo === && wc -l data/*.csv && echo === && head -2 data/pilot.csv | cut -c1-400 && echo === && cat pyproject.toml 2>/dev/null && echo === && ls *.py 2>/dev/null && echo === && ls *.lock 2>/dev/null",
+    "digest": "sha256:ad92d9da001b01936a89e9903f1522d9c45e6956efd453b017c74d6d766775a5"
+  },
+  "code": {
+    "ref": "commit:63b0b7f2ad221c91a034e68c1f77caeb34a5414f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:35eaa09d6339e739fce1e2cf120745d008e17d704cd1765e0d6fa4bdf7fe9e35"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-42",
+  "seq": 42,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:50:30.814Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cd /tmp/notebook-madelon-route-knn.DWzGi3 && grep -ln \"heldout\" *.py && echo ---- && git add -A && git -c user.name=agent -c user.email=agent@local commit -q -m \"kNN route: pilot-fitted soft F screen ",
+  "command": {
+    "shown": "cd /tmp/notebook-madelon-route-knn.DWzGi3 && grep -ln \"heldout\" *.py && echo ---- && git add -A && git -c user.name=agent -c user.email=agent@local commit -q -m \"kNN route: pilot-fitted soft F screen (K=50, alpha=1) + Manhattan k-NN (nn=7); cv 0.7349, holdout 0.7196, gap 0.0153, 50 features\" && git log --oneline | head -3 && echo ---- && cat out/metrics.json",
+    "digest": "sha256:26bcb7826f9109fdbf044aa4aa276f10b2b169ab167ffd115f80e99ae3c1fa19"
+  },
+  "code": {
+    "ref": "commit:0e3a2cdf4aee77e0accbc0f5239f2e9a42479c8a"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-41",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8afe91226e3342260f78cf9bddfc5492368dd7d58a2d620e38ff65cf151988e1"
+}

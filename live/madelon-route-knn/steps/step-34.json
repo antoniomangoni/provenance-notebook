@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-34",
+  "seq": 34,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:49:47.074Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Multi-seed pilot CV shortlist on the alpha=1 ridge",
+  "reasoning": "Pilot-only: deepen evidence on the alpha=1 ridge before a second heldout read. Multi-seed CV (4 repeat seeds x 5 folds = 20 folds per config) over shortlist: (K,nn) in {(40,11),(45,7),(45,9),(45,11),(50,7),(50,9),(50,11),(30,11),(50,15)}. Selection rule fixed in advance: highest seed-averaged cv mean. If the winner's multi-seed mean is <= the previous fixed spec's ~0.723, the revision does not strengthen the route and I rethink before scoring.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:f08482f24247e24f7a91c071d01a726ef28addfd3afe49c68efe2703026eff8d"
+}

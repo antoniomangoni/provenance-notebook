@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-32",
+  "seq": 32,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:20:39.304Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/shallow.py\" <<'EOF' import numpy as np, itertools, time from sklearn.feature_selection import SelectKBest, f_classif from sklearn.ensemble import RandomForestClassifier",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/shallow.py\" <<'EOF'\nimport numpy as np, itertools, time\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\nX, y = load(\"data/pilot.csv\")\nfolds = StratifiedKFold(5, shuffle=True, random_state=0)\n\ndef pipe(k, depth, msl, mf):\n    return make_pipeline(SelectKBest(f_classif, k=k),\n                         RandomForestClassifier(n_estimators=500, max_depth=depth,\n                                                min_samples_leaf=msl, max_features=mf,\n                                                random_state=0, n_jobs=-1))\nt0 = time.time(); rows = []\nfor k, depth, msl, mf in itertools.product((25, 50), (2, 3, 4, 6), (1, 2), (0.5, 0.7, 1.0)):\n    s = cross_val_score(pipe(k, depth, msl, mf), X, y, cv=folds, scoring=\"roc_auc\")\n    rows.append((s.mean(), k, depth, msl, mf, np.round(s, 3)))\nrows.sort(key=lambda r: -r[0])\nprint(f\"shallow×wide grid on pilot ({time.time()-t0:.0f}s), top 15:\")\nfor m, k, d, msl, mf, s in rows[:15]:\n    print(f\"  cv {m:.4f}  K={k:2} depth={d} msl={msl} mf={mf}  folds {s}\")\nprint(\"worst 3:\")\nfor m, k, d, msl, mf, s in rows[-3:]:\n    print(f\"  cv {m:.4f}  K={k:2} depth={d} msl={msl} mf={mf}\")\nEOF\nuv run python \"$tmp/shallow.py\"",
+    "digest": "sha256:a5b0bdf8e3da8aff499b918492fc137067134589948e4205a46617e501ac019d"
+  },
+  "code": {
+    "ref": "commit:933c5bbe8838e53354c7b9a5bd48775b45e556d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-31",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:f56c9885d1f3bf45dbe88bdb2ac00a9f2b6744d0565a329a41028a80f0bbc6d5"
+}

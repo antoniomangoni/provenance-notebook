@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-31",
+  "seq": 31,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:20:36.709Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot CV grid: shallow depth × high max_features region for sample-efficient RF",
+  "reasoning": "step-29/30: pilot screen's features support 0.8393 at 1760 train samples but only ~0.7056 at 400 — RF sample efficiency is the lever, not the screen. Unexplored region: shallow depth (2-4) with high max_features (0.5-1.0), which finds informative split directions from few samples on XOR-like labels. Pilot 5-fold CV grid (screen inside folds) identifies the sample-efficient config; no metrics written. If the winner clearly exceeds 0.73, the full nested analysis nests over the whole grid.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-16",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:de70ee456fa86f30acb943575ff18e835263e2cf50ee49457fa61d81243bfc3c"
+}

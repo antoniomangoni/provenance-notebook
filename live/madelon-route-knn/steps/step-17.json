@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:47:03.351Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only soft-F-weighted screened kNN grid",
+  "reasoning": "Pilot-only batch 4: SoftScreen transformer (per-fold F scores, top-K kept, each scaled by F^alpha) -> StandardScaler -> distance-weighted manhattan kNN; grid K {20,30,40,50} x alpha {0,0.5,1,1.5} x nn {7,11,15}, 10 CV folds; a few extra uniform-weight and euclidean probes. alpha=0 rows should reproduce the ~0.71 baseline as a sanity anchor. Bar: soft-weighted configs >= ~0.74 pilot CV to proceed to the final nested run of the route.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:974ddf08fa5c7587efabce6cfb330f3ec3826ded9024d3115b542f859aee8804"
+}

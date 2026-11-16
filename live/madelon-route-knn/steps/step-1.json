@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-1",
+  "seq": 1,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:42:50.638Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Survey workspace: analysis.py, screening code, data shapes",
+  "reasoning": "Need to see what the inherited screened-forest route left in place (screen fit on pilot alone, ≤50 features) before fitting a kNN on top of it. All choices must come from pilot.csv only.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:16dd5c0c615c602fb9433bf8f0bfb3f04d712e83196aa246316d4eadd29bb6fa"
+}

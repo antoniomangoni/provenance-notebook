@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-28",
+  "seq": 28,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:20:02.646Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Probe ceiling: feature coverage, pair interactions, and heldout-trained RF bound",
+  "reasoning": "step-25/26/27: depth knobs neutral, honest product-LR collapses (overfit), RF still pilot-ceiling ~0.735. Open question decides the final design: (1) are heldout-top features within pilot top-50 (screen contains them; limit is sample efficiency)? (2) do pairs among top features give large AUC gains on heldout (interaction structure)? (3) what is the RF ceiling trained mid-data on heldout (upper bound for any pilot-trained model)? Diagnosis only; no metrics written.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-16",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:e00534dc8dd2ebb4337f868596ee4c93a052f8f2a6500e155911b995e28d22c6"
+}

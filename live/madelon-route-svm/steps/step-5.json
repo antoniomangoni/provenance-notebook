@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:55:20.827Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat pyproject.toml; echo ===; cat README.md; echo ===; echo \"pilot:\"; wc -l data/pilot.csv; echo \"heldout:\"; wc -l data/heldout.csv; echo ===; head -2 data/pilot.csv | cut -c1-200; echo ===; head -1 d",
+  "command": {
+    "shown": "cat pyproject.toml; echo ===; cat README.md; echo ===; echo \"pilot:\"; wc -l data/pilot.csv; echo \"heldout:\"; wc -l data/heldout.csv; echo ===; head -2 data/pilot.csv | cut -c1-200; echo ===; head -1 data/heldout.csv | cut -c1-200; echo ===; uv run python -c \"import sklearn, numpy, scipy; print(sklearn.__version__, numpy.__version__, scipy.__version__)\"",
+    "digest": "sha256:048895c409eb64f089e80dd34049de74dec5be834f4286a8dc974d19383b9394"
+  },
+  "code": {
+    "ref": "commit:63b0b7f2ad221c91a034e68c1f77caeb34a5414f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:2134ba2e25106c69287eee5df8d7a9afec5b9f995666d8a6828b9e441e14d1d5"
+}

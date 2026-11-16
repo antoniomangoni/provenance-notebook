@@ -1,0 +1,6 @@
+{
+  "cv_auc": 0.7145,
+  "holdout_auc": 0.709,
+  "gap": 0.0055,
+  "n_features": 50
+}

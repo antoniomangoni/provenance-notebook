@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-21",
+  "seq": 21,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:47:33.688Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Corrected pilot-only soft-screen kNN grid (weights after scaling)",
+  "reasoning": "Batch 4's flat rows exposed the order bug: StandardScaler after SoftScreen cancels per-feature weights (std scales with w). Corrected pipeline: StandardScaler -> SoftScreen(F^alpha on training fold, top-K) -> kNN(manhattan, distance). Same grid K {20,30,40,50} x alpha {0,0.5,1,2} x nn {7,11,15}, 10 pilot CV folds. Sanity: alpha=0 must reproduce ~0.716 at K=20 nn=11. Bar: soft configs >= ~0.74.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:6d4e36ad6be9e9c916e8f044395c83da575bdbef7824f830cfa51944928b0937"
+}

@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "id": "step-43",
+  "seq": 43,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:39:48.389Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Write and run final analysis: K=25 pilot screen, default RF, nested screen-in-folds CV",
+  "reasoning": "step-41/42 verified seed robustness of the fixed procedure: pilot cv 0.7252-0.7563 across 5 fold seeds (>= 0.70 floor with margin), holdout 0.7300-0.7320 across 3 tree seeds (>= 0.71 floor with margin). K=25 fixed is justified by pilot-only evidence (consistent CV preference over alternatives in four independent grid scans); default tree shape because pilot tuning gains are <= 0.005 (noise) and full-grown trees transfer best to the 400-row final fit. Expect seed-0 metrics: cv_auc ~0.725, holdout_auc ~0.731, gap ~-0.006, n_features=25 — passing all four route conditions.",
+  "expectations": [
+    {
+      "name": "n-features-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    },
+    {
+      "name": "cv-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-agreement",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-not-negative",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-34",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-36",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:42f75978b073febf3b85ff1a77c57fc3cfa052079735d7ccd76da03cf64e570b"
+}

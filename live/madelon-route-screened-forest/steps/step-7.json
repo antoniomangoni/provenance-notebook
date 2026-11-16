@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:12:33.280Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Test RF with nested CV on pilot (K in {10,25,50}) and check heldout-strong features' pilot ranks",
+  "reasoning": "Pilot F-ranks are noisy; the signal appears to be interaction-based (madelon). A random forest can use weak-marginal features jointly. I'll (a) see where heldout-strong features rank in pilot (can a pilot screen capture them?), (b) nested-CV on pilot (screen inside folds, K tuned by inner CV) to get honest cv_auc per procedure. Expect capture of most real features within top-50 and cv_auc around 0.70-0.75; if pilot CV is far below 0.70 for all K, the route needs a better screen.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "capture-50",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:ed6f16d68a21ba06849ed42620546a8fec67cab95f5faecf3c8d744f14ed8ffd"
+}

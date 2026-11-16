@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-23",
+  "seq": 23,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:15:30.230Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Diag4: stability-selection, L1/linear-SVM screens, robust transforms, small-k SVM planes",
+  "reasoning": "Step-22 contradicted step-20 (0.6766 < 0.70): dedup, unions, rank/minmax/balanced variants cannot lift the RBF SVM past ~0.677 vs the forest's 0.7267. The docstring of the snapshot says F-ranks are noisy at 400 samples, so the next hypotheses target screen stability (inclusion-frequency over subsamples), joint (multivariate) sparse screens (L1-logistic, linear SVC), tail-robust transforms (RobustScaler, QuantileTransformer), and very small k. Bar to proceed: some fold-refit-screen config reaches plain-CV seed-0 mean AUC >= 0.70; else I conclude the single-RBF-SVM class tops out near 0.68 and pick the best procedure for the nested estimate. Reading only data/pilot.csv.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "svm-config",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-20",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-22",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:96d9c435ee6514aeeb61ecad3bf9fe88dfbebe683542be82a6cd4ea27c73a98b"
+}

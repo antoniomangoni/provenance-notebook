@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-23",
+  "seq": 23,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:17:47.957Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/screen.py\" <<'EOF' import numpy as np, time from sklearn.feature_selection import SelectKBest, f_classif from sklearn.ensemble import RandomForestClassifier from sklear",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/screen.py\" <<'EOF'\nimport numpy as np, time\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import StratifiedKFold\nfrom sklearn.metrics import roc_auc_score\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\nX, y = load(\"data/pilot.csv\")\n\n# correlation structure of pilot F-top30\nF, _ = f_classif(X, y)\ntop = np.argsort(-F)[:30]\nC = np.abs(np.corrcoef(X[:, top], rowvar=False))\nC = np.nan_to_num(C)\nprint(\"pilot F-top30: pairs with |r|>0.7:\", int((np.triu(C,1)>0.7).sum()), \"of\", 30*29//2)\n\ndef rf_auc(feats_fn, n_estimators=500, mf=0.3, msl=1, folds=5, seed=0):\n    \"\"\"cv AUC with the whole feature-choice fn applied inside each fold's training part\"\"\"\n    skf = StratifiedKFold(folds, shuffle=True, random_state=seed)\n    aucs = []\n    for tr, te in skf.split(X, y):\n        feats = feats_fn(X[tr], y[tr])\n        m = RandomForestClassifier(n_estimators=n_estimators, max_features=mf,\n                                   min_samples_leaf=msl, random_state=seed, n_jobs=-1)\n        m.fit(X[tr][:, feats], y[tr])\n        aucs.append(roc_auc_score(y[te], m.predict_proba(X[te][:, feats])[:, 1]))\n    return np.mean(aucs), np.array(aucs)\n\ndef f_top(Xt, yt, k=25):\n    return np.argsort(-f_classif(Xt, yt)[0])[:k]\n\ndef mrmr(Xt, yt, k=25, cand=80):\n    F, _ = f_classif(Xt, yt)\n    cand_idx = np.argsort(-F)[:cand]\n    picked = [int(cand_idx[0])]\n    while len(picked) < k:\n        best, best_score = None, -np.inf\n        for j in cand_idx:\n            if j in picked: continue\n            red = np.mean([abs(np.corrcoef(Xt[:, j], Xt[:, p])[0, 1]) for p in picked])\n            score = F[j] / (1 + red)\n            if score > best_score: best_score, best = score, j\n        picked.append(int(best))\n    return picked\n\ndef two_stage(Xt, yt, k1=50, k2=25):\n    f1 = np.argsort(-f_classif(Xt, yt)[0])[:k1]\n    imp = RandomForestClassifier",
+    "digest": "sha256:78cad6e6c11b99e92ed0954f0de8983f6a652eb0ba4b02cdea4f3cca63bf972f"
+  },
+  "code": {
+    "ref": "commit:933c5bbe8838e53354c7b9a5bd48775b45e556d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-22",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:57191478237c8ac9d01da7838d2b6d673ba07de3e888110a56980bb26da23e29"
+}

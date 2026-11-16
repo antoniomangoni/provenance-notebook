@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-22",
+  "seq": 22,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:17:42.761Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Compare pilot-only screens (mRMR, RF-importance re-screen) by 5-fold CV on pilot",
+  "reasoning": "step-20/21 leaderboard shows RF knobs gain ~+0.005 only. The lever left within the route is the screen itself: mRMR or RF-importance re-screening may pack more independent directions into ≤50 features. This diagnostic compares candidate pilot-only screens by 5-fold CV (screen inside folds) and inspects correlation structure; it writes no metrics. If one screen beats F-top-25's 0.7316 by ≥~0.015 on pilot, it becomes the procedure of the next full run.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-16",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:7ea1d0f897828a897146445449487878bf5ea973156447703db1db38578e9607"
+}

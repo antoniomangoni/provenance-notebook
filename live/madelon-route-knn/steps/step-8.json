@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:44:20.694Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "out/metrics.json was not usable for step-7",
+  "text": "The command wrote out/metrics.json, but it is not one object of measure names to finite numbers, so step-7 has no measures.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:39f4be2c0761fc3775cc5ac84337250485d7be7ab0b56b3f12fbc96fd083c41f"
+}

@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-40",
+  "seq": 40,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:39:06.837Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Verify seed robustness of K=25/default-forest procedure, then finalize it",
+  "reasoning": "step-38/39 landscape: final-fit winner is K=25 + default fully-grown RF (holdout 0.7310); K=50 and depth caps hurt (explaining both prior 0.6989s: inner CV drew K=50); ExtraTrees no better; pilot grids consistently prefer K=25 over K=50 at every shape, so fixing K=25 is pilot-justified. Before the final run: (1) K=25/default pilot CV across 5 fold-seeds must stay >= ~0.71 (margin above the 0.70 cv floor); (2) final-fit heldout across 3 tree-seeds must stay >= 0.71. If both margins hold, rewrite analysis.py to the fixed procedure (K=25, default forest, 1000 trees, screen refit inside CV folds) and run once, writing the four metrics.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-34",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-36",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:75305f5ffa23dbf79b9268b6f2cfd00c2a43671c70153e6889849bca0c63b7fb"
+}

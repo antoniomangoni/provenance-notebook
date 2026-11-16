@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:12:39.051Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/diag2.py\" <<'EOF' import numpy as np from sklearn.feature_selection import f_classif, SelectKBest from sklearn.ensemble import RandomForestClassifier from sklearn.metri",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/diag2.py\" <<'EOF'\nimport numpy as np\nfrom sklearn.feature_selection import f_classif, SelectKBest\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import roc_auc_score\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\n\nXp, yp = load(\"data/pilot.csv\")\nXh, yh = load(\"data/heldout.csv\")\nrng = np.random.RandomState(0)\n\n# (a) Pilot ranks of heldout-strong features\nFp, _ = f_classif(Xp, yp); rank_p = np.argsort(np.argsort(-Fp))\nFh, _ = f_classif(Xh, yh); rank_h = np.argsort(np.argsort(-Fh))\nstrong = [j for j in range(500) if (lambda a: max(a,1-a))(roc_auc_score(yh, Xh[:, j])) >= 0.57]\nstrong.sort(key=lambda j: -max(roc_auc_score(yh, Xh[:, j]), 1-roc_auc_score(yh, Xh[:, j])))\nprint(\"heldout-strong features (single AUC>=0.57, top 15):\")\nfor j in strong[:15]:\n    a_h = max(roc_auc_score(yh, Xh[:, j]), 1-roc_auc_score(yh, Xh[:, j]))\n    a_p = max(roc_auc_score(yp, Xp[:, j]), 1-roc_auc_score(yp, Xp[:, j]))\n    print(f\"  x{j+1}: heldout AUC {a_h:.3f}  pilot AUC {a_p:.3f}  pilot F-rank {int(rank_p[j])+1}  in pilot top50: {rank_p[j] < 50}\")\n\n# (b) Honest nested CV on pilot: outer 5-fold, inner 4-fold picks K in {10,25,50}, screen inside every fold\nfor K in (10, 25, 50):\n    pipe = make_pipeline(SelectKBest(f_classif, k=K),\n                         RandomForestClassifier(n_estimators=300, random_state=0, n_jobs=-1))\n    outer = StratifiedKFold(5, shuffle=True, random_state=0)\n    scores = cross_val_score(pipe, Xp, yp, cv=outer, scoring=\"roc_auc\")\n    print(f\"K={K} RF300 nested-CV cv_auc {scores.mean():.4f} +- {scores.std():.3f}  folds {np.round(scores,3)}\")\nEOF\nuv run python \"$tmp/diag2.py\"",
+    "digest": "sha256:c9102af8cbcb6acf946b0bb96459ccd6d73bf5aec5e91e8d38da75231c3e5fa8"
+  },
+  "code": {
+    "ref": "commit:5719c219805378bb7938e10c0007f09e2def35d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:106b378637ff8492418d1e4fa1c2ddfe618d2a2d7e5026dae91e58a56311994d"
+}

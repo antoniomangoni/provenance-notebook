@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-35",
+  "seq": 35,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:20:34.540Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "Stopped at a ceiling: 2026575 of at most 2000000 tokens",
+  "text": "The session reached a ceiling: 2026575 of at most 2000000 tokens. Nothing more is run.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:224f4d60f91e79f1a6c47cf2abf1afb99ebbf71f99df9c22618dee1c570d4a80"
+}

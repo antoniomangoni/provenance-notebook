@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-31",
+  "seq": 31,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:19:25.094Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Estimate run: locked F25+RBF-SVM procedure, repeated nested CV, pilot only",
+  "reasoning": "Step-30 contradicted step-26 (products/stacking ≤0.6614). The model class is capped: no fold-refit RBF-SVM configuration exceeded ~0.675 honest CV across a broad search, below the forest's 0.7267 and short of what a 0.71-holdout route needs. Proceeding with the procedure-level plan: screen = F-statistic top-25 (fitted on pilot data by protocol; fold refits inside CV), model = StandardScaler + RBF SVC with C in {0.25, 0.5}, gamma in {0.15, 0.2, 0.3} tuned by inner 4-fold CV; cv_auc = mean over 30 outer folds of stratified 10-fold CV repeated for seeds 0, 1, 2 — all computed on data/pilot.csv only. Expectations: clean exit; the estimate lands at or above 0.66 (my realistic belief given ~0.675 at 5 folds and a slight up-lift from 360-sample fold fits); n_features <= 50. The repeated-nested estimate then freezes before the single final run that alone touches data/heldout.csv.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "estimate-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.66
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-26",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-30",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:72c81a85285208f0b1bcce3bc10727e4dc7c925344b6b7103204d1c429984011"
+}

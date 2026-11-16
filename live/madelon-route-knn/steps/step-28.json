@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-28",
+  "seq": 28,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:48:43.521Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final analysis.py run: nested CV + one held-out score",
+  "reasoning": "Single held-out scoring of the finished route. Pilot basis: soft-screened kNN plateau 0.732-0.745 over 10 pilot CV folds (batch 5), preflight nested cv_auc 0.7183-0.7320 across outer seeds, and the leaky diagnostic implying full-pilot fits generalize near their（better) stable-screen level ~0.75. Expect holdout_auc >= 0.71 with |cv_auc - holdout_auc| <= 0.05 and n_features <= 50.",
+  "expectations": [
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "feature-budget",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "prev": "sha256:6fe79c260e0162f40eac90ce2113f04de21cf2682e14f72b6458f23c077ef4ce"
+}

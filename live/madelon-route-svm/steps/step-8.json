@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:56:21.439Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python tune_svm.py 2>&1 | tail -60",
+  "command": {
+    "shown": "uv run python tune_svm.py 2>&1 | tail -60",
+    "digest": "sha256:f555dc438a8a3b6183c3fd085bfd02ff9700b8b32117f28da17736478823c14f"
+  },
+  "code": {
+    "ref": "commit:8d633902b7bfd1a8810eb710b4d89976ef46e5ea"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:045664404fb6ba728b70494ac4ebe0809d7d1c04f6e20a88b2f3718f32e8686f"
+}

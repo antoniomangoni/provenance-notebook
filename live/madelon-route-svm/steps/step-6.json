@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:55:23.010Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 2182,
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-5",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:15009197af235c22524a2bff64068f956bc25c120b0a9c202fc396b98e3ecfa6"
+}

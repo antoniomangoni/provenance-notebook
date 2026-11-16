@@ -355,3 +355,42 @@ def test_a_task_file_the_schema_would_refuse_stops_capture_at_load(tmp_path):
                                "TMPDIR": str(tmp_path), "PI_CODING_AGENT_DIR": str(tmp_path / "pi"), "PI_OFFLINE": "1"})
     assert done.returncode == 1 and "the task file needs by as human:NAME" in done.stderr
     assert not (tmp_path / "live" / "bad-task" / "steps").exists()
+
+
+def launch(tmp_path: Path, task_change: dict, name: str) -> subprocess.CompletedProcess:
+    """The launcher on a copy of the fixture whose task file has these fields changed, with no turns."""
+    demo = tmp_path / f"demo-{name}"
+    shutil.copytree(FIXTURE, demo)
+    task = json.loads((demo / "task.json").read_text())
+    (demo / "task.json").write_text(json.dumps({**task, **task_change}))
+    (tmp_path / "turns.json").write_text("[]")
+    return subprocess.run(
+        [str(ROOT / "scripts" / "live.sh"), str(demo), name, "-e", "capture/scripted.ts", "--provider", "script", "--model", "scripted-1"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        env={
+            **os.environ,
+            "NOTEBOOK_LIVE": str(tmp_path / "live"),
+            "NOTEBOOK_SCRIPT": str(tmp_path / "turns.json"),
+            "TMPDIR": str(tmp_path),
+            "PI_CODING_AGENT_DIR": str(tmp_path / "pi"),
+            "PI_OFFLINE": "1",
+        },
+    )
+
+
+def test_a_task_file_s_builds_on_becomes_step_0_s_links(tmp_path):
+    cited = "madelon-reanalysis/probe:madelon-2026-11-15-2@sha256:" + "a" * 64 + "#step-7"
+    done = launch(tmp_path, {"builds_on": [cited]}, "builds-on")
+    assert done.returncode == 0, done.stdout + done.stderr
+    (task,) = trail.load(tmp_path / "live" / "builds-on")
+    assert task["links"] == [{"relation": "builds_on", "target": cited, "status": "confirmed"}]
+
+
+def test_a_malformed_builds_on_stops_capture_at_load(tmp_path):
+    done = launch(tmp_path, {"builds_on": ["probe:madelon-2026-11-15-2#step-7"]}, "bad-builds-on")
+    assert done.returncode == 1 and "the task file needs builds_on" in done.stderr
+    assert not (tmp_path / "live" / "bad-builds-on" / "steps").exists()

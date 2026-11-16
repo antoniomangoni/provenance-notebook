@@ -1,0 +1,16 @@
+Milestones on more than one route, and the trails that reached them:
+  miss: on explain, l1, forest, search, selected-forest, knn, screened-forest; reached by probe:madelon-2026-11-15-1#step-8, probe:madelon-2026-11-15-2#step-7
+  nested: on explain, l1, search, selected-forest; reached by probe:madelon-2026-11-15-1#step-13, probe:madelon-2026-11-15-2#step-11
+  reproduce: on explain, l1, forest, search, selected-forest, knn, screened-forest; reached by probe:madelon-2026-11-15-1#step-8, probe:madelon-2026-11-15-2#step-7
+  screen: on knn, screened-forest; reached by probe:madelon-route-screened-forest#step-15
+
+Files more than one trail used at the same digest:
+  file:data/heldout.csv sha256:e0b31cbc8eed…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
+  file:data/pilot.csv sha256:11bd022d3a3b…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
+
+Code more than one trail ran, by tree (a commit differs between repositories, its tree does not):
+  tree 0a8c069: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-route-screened-forest
+  tree f68ad08: madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
+
+Computation repeated across trails: the same command, code tree and inputs:
+  uv run python analysis.py: madelon-2026-11-15-1 step-7, madelon-2026-11-15-2 step-6

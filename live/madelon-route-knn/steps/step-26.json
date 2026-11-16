@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-26",
+  "seq": 26,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:48:33.133Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cd /tmp/notebook-madelon-route-knn.DWzGi3 && uv run python preflight.py 2>&1 | tail -16",
+  "command": {
+    "shown": "cd /tmp/notebook-madelon-route-knn.DWzGi3 && uv run python preflight.py 2>&1 | tail -16",
+    "digest": "sha256:5aacad2aafa3efe0ab9bdd08df7953fd5566e457218460a3d665cba629a200b8"
+  },
+  "code": {
+    "ref": "commit:283493c5854af628b5583d845ef399bfede65db3"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-25",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8f9cb1c132dde054fade078943a073ecfff92e1d5cc3f5ef4b483de26942f136"
+}

@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:58:21.168Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Replace F-screen SVM plan: diagnose screens (F vs RF-importance vs MI) on pilot only",
+  "reasoning": "The tuning run (observation step-9) contradicted the plan: fully nested CV of F-screen + RBF SVM gives cv_auc 0.673 (< 0.71 expected) and logreg on the same screen 0.573, while the established screened-forest sits at 0.7267 — so the marginal F-statistic screen is the bottleneck for a kernel model; the SVM needs features chosen for joint usefulness. New pilot-only plan: (a) calibrate my harness by re-running the snapshot's nested forest (expect ~0.72), (b) compare F vs random-forest-importance vs MI screens inside folds with a small SVM grid (plus an all-500-feature point for information), writing the best pilot-side cv to out/metrics.json as cv_auc with its n_features. Expectation: some screen reaches pilot CV >= 0.72, which is the loose bar for proceeding to a full repeated-nested retune; n_features must stay <= 50. All of this reads only data/pilot.csv.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "screen-signal",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.72
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-7",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-9",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:b836ae01668d970952d2ceb403f8a1f7fef900688c295af773fe96dc6e502a88"
+}

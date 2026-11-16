@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:15:52.475Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "contradicted: cv_auc 0.6716, expected >= 0.7",
+  "exit_code": 0,
+  "duration_ms": 6706,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:bb87aef5a88bfb1ac2e6849cf123d045f032cabc85cfe074229c893bc8ea5572"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:bb87aef5a88bfb1ac2e6849cf123d045f032cabc85cfe074229c893bc8ea5572"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.6716
+    },
+    {
+      "name": "n_features",
+      "value": 25
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    },
+    {
+      "expectation": "svm-config",
+      "measured": 0.6716,
+      "held": false
+    },
+    {
+      "expectation": "feature-cap",
+      "measured": 25,
+      "held": true
+    }
+  ],
+  "outcome": "contradicted",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-24",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8dc58691583dc5e55cdd54f9701c2bda98ead12dec1333679c7436dc8cf0b448"
+}

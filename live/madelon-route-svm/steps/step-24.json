@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-24",
+  "seq": 24,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:15:45.767Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python diag4_stability.py 2>&1 | tail -70",
+  "command": {
+    "shown": "uv run python diag4_stability.py 2>&1 | tail -70",
+    "digest": "sha256:5976485a09118002cfdf015045deef9674bc5e0e38c5b962a7a1ac1c9e037eea"
+  },
+  "code": {
+    "ref": "commit:8e7d62bdd6038884b6d4c35222df12aee5ab565f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a001949071333b92ed40934b57978b3d220790d0ee8cf8d3d3ded590fc61e752"
+}

@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-34",
+  "seq": 34,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:20:32.444Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final one-shot: uv run analysis.py scores heldout once with the frozen procedure",
+  "reasoning": "The procedure and its estimate protocol are frozen (step-32: cv_auc 0.6622 over 30 nested folds, pilot only); analysis.py now reproduces that estimate, tunes the final C/gamma on the whole pilot, and reads data/heldout.csv exactly once at the end. Pilot-only evidence (est. 0.6622; best fold-refit SVM configs ~0.675 vs forest 0.7267, whose own holdout was 0.6989) says the RBF-SVM route most likely lands around 0.67-0.70 holdout, so I do not expect the route's 0.71 floor to be reached; the gap condition should hold because the nested estimate is if anything conservative (360-sample fold fits vs 400-sample final fit). Expectations: clean exit; holdout_auc >= 0.66 (my belief, below the 0.71 route floor); gap within +/-0.05; n_features = 25 <= 50. If holdout lands >= 0.71 the route goal is met; otherwise the honest estimate stands as the answer I would defend.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "heldout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.66
+    },
+    {
+      "name": "gap-not-too-optimistic",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-not-too-pessimistic",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "prev": "sha256:d510b372a08818f30644eb5d774687d558bc9c2b76dc83e8adf0d4ff367ab296"
+}

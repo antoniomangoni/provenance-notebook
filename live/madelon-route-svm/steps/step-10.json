@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:56:52.569Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "out/metrics.json was not usable for step-9",
+  "text": "The command wrote out/metrics.json, but it is not one object of measure names to finite numbers, so step-9 has no measures.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-9",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:23400ea2f197a4506218a95df9faa67bb3735326549c383d25df46556f3802a8"
+}

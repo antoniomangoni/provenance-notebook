@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:15:35.224Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/grid.py\" <<'EOF' import numpy as np, itertools, time from sklearn.feature_selection import SelectKBest, f_classif from sklearn.ensemble import RandomForestClassifier fr",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/grid.py\" <<'EOF'\nimport numpy as np, itertools, time\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\n\nt0 = time.time()\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\nX, y = load(\"data/pilot.csv\")\n\nK_GRID = (10, 25, 50)\nMF_GRID = (\"sqrt\", 0.3, 0.5)\nMSL_GRID = (1, 3)\n\ndef make_model(k, mf, msl, seed=0):\n    return make_pipeline(SelectKBest(f_classif, k=k),\n                         RandomForestClassifier(n_estimators=500, max_features=mf,\n                                                min_samples_leaf=msl, random_state=seed, n_jobs=-1))\n\n# leaderboard: same inner scheme the selector uses, run on the whole pilot\nfolds = StratifiedKFold(5, shuffle=True, random_state=0)\nrows = []\nfor k, mf, msl in itertools.product(K_GRID, MF_GRID, MSL_GRID):\n    s = cross_val_score(make_model(k, mf, msl), X, y, cv=folds, scoring=\"roc_auc\")\n    rows.append((s.mean(), k, mf, msl, np.round(s, 3)))\nrows.sort(reverse=True)\nprint(f\"5-fold CV on pilot ({time.time()-t0:.0f}s), leaderboard:\")\nfor m, k, mf, msl, s in rows:\n    print(f\"  cv {m:.4f}  K={k:2} max_features={mf!r:6} min_samples_leaf={msl}  folds {s}\")\nEOF\nuv run python \"$tmp/grid.py\"",
+    "digest": "sha256:cf8b16db60b6a2e63d9ced47bb260fcec47b58c0675b58469052bf05ba1d5de4"
+  },
+  "code": {
+    "ref": "commit:933c5bbe8838e53354c7b9a5bd48775b45e556d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-16",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:c2eae8d787d32251416b772c9f5ce835be7e9a369a078441b3a94c0bbbaece77"
+}
