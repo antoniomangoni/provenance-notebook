@@ -19,8 +19,12 @@ The spec is [docs/specs/04-evidence.md](../docs/specs/04-evidence.md).
 | `madelon-2026-11-15-1/view.txt` | the first presentation: the text of the reviewer's page | `readers.py texts` |
 | `madelon-2026-11-15-1/baseline.txt` | the second presentation: Pi's transcript and the agent's git log | `readers.py texts` |
 | `madelon-2026-11-15-1/git-log.txt` | the agent's own `git log --stat`, saved from the run's temporary workspace | hand, on 15 November |
-| `madelon-2026-11-15-1/answers.jsonl` | every reply of every call, 20 lines | `readers.py ask` |
-| `madelon-2026-11-15-1/table.md` | the scores | `readers.py grade` |
+| `madelon-2026-11-15-1/answers.jsonl` | every reply to questions 1 to 4: the first comparison's 20 lines, then the second's 25 | `readers.py ask` |
+| `madelon-2026-11-15-1/table.md` | the first comparison's scores | `readers.py grade` |
+| `heldout.json`, `comparison-2.json` | the second comparison's fifth question and its list of neutral items | hand, from the step files; tests derive them again |
+| `madelon-2026-11-15-1/plain.txt` | the third presentation: the transcript without the notebook's words | `readers.py texts` |
+| `madelon-2026-11-15-1/answers-heldout.jsonl` | every reply to the fifth question, 45 lines | `readers.py ask` |
+| `madelon-2026-11-15-1/table-2.md` | the second comparison's scores | `readers.py grade --compare` |
 
 ## The tamper sequence
 
@@ -86,6 +90,75 @@ Limits of the comparison, which a reader of the table needs:
 - **Grading is by exact value.** A step id must be the id, a number must be within 0.0005, and
   an answer that is right in words but names no accepted value scores 0 on that item.
 
+## Second comparison, added after the first result
+
+The first comparison could not show what the roadmap asks. Its baseline holds the notebook's
+own words, half its key needs step ids that only the notebook makes, and none of its questions
+asks about the held-out data. This comparison was designed **after** reading the first table,
+in [spec 4b](../docs/specs/04b-second-comparison.md). Its presentation, its fifth question and
+its list of items were committed before its first call (`169991c`). The first table is unchanged.
+
+What it adds:
+
+- **`plain.txt`, what Pi alone records.** The transcript without the 6 `propose_plan` calls and
+  their results, without capture's receipts, and with every step id replaced.
+- **A fifth question.** "Before the analysis that gave the final result was designed, did the
+  agent measure anything on the held-out samples other than the inherited analysis's own
+  score?" The answer is yes: `uv run python diagnose.py`, step 12.
+- **Scores on the 9 items any presentation can answer:** no step id and no snapshot commit.
+- **A third reader from another family:** Mistral Small 3.2 24B.
+
+That made 70 calls; 24 failed. The scores, in [table-2.md](madelon-2026-11-15-1/table-2.md),
+count a failed call as 0. GLM's and Gemma's answers to questions 1 to 4 from the view and the
+full transcript are the first comparison's calls, graded again on the neutral items; every other
+call is new. Over the calls that answered, on the neutral items:
+
+| Reader | View | Full transcript | Plain transcript |
+| --- | --- | --- | --- |
+| GLM-5.3-Flash | every item right, 10 calls of 10 | every item right, 10 of 10 | every item right in the 6 calls that answered; 4 failed |
+| Gemma 4 31B | every item right except question 3, in all 10 calls | every item right, 10 of 10 | every item right except question 3, in all 10 calls |
+| Mistral Small | every item right, 10 of 10 | all 10 calls failed | all 10 calls failed |
+
+"Question 3" is the number of measured runs the final plan took: Gemma answered 2 for 1.
+
+What it shows:
+
+- **Without step ids, the transcript answers as well as the view.** Every reader that could read
+  the plain transcript got the measure, the numbers, the command, the abandoned result and the
+  held-out question as right as from the view.
+- **The fifth question is not the view's.** Every answer from every presentation said the
+  held-out samples were measured, and named `diagnose.py`. Neither the view nor the trail flags
+  it; a reader finds it in the command and its output.
+- **The view's measured advantage is its length.** Berget serves Mistral Small with a context of
+  32,768 tokens. The transcripts are about 55,000 tokens, the view about a tenth of that. Mistral could
+  answer only from the view, and from it answered every item right.
+- **Step ids are the notebook's.** On the whole key, the plain transcript loses every item that
+  asks for a step id. That shows the ids exist only in the trail, not that a reader understood less.
+
+Why the calls failed:
+
+- **Mistral, all 20 on the transcripts.** Pi exited 0 with no output, and `readers.py` recorded
+  "exit code 0: no output". One more call, made afterwards with Pi's JSON output to find the
+  cause, was refused with `context_length_exceeded`: "This model's maximum context length is
+  32768 tokens. However, your input is estimated at 54729 tokens". That call was not graded and
+  is not in an answer file.
+- **GLM-5.3-Flash, 4 of 10 on the plain transcript.** The same silent failure. The cause was not
+  found: GLM answered all 10 calls on the full transcript, which is longer, so the length is
+  not it. No failed call was made again.
+
+Limits of the second comparison:
+
+- **It was designed after the first result.** It tests what the first could not; it was not
+  planned before the live run.
+- **The plain transcript is a removal, not a run.** It may say too little: an agent without the
+  notebook might have written its plans' reasoning into its text. It also says too much: the
+  agent's thinking still names `propose_plan` 10 times and receipts 16 times, because it was
+  written under the notebook. A run without capture would settle this, and was not made.
+- **The fifth question leads.** It names the held-out data, so `measured_heldout` is easy to get
+  right by guessing. The `command` item is not.
+- **Five calls a cell, one trail, readers that are models.** As in the first comparison. Every
+  answered cell has the same score in all its calls.
+
 ## Measuring it again
 
 ```sh
@@ -109,4 +182,11 @@ repository does not hold:
 uv run python readers.py ask evidence/madelon-2026-11-15-1 --questions evidence/questions.json --repeats 5
 uv run python readers.py ask evidence/madelon-2026-11-15-1 --questions evidence/questions.json --repeats 5 \
   --model google/gemma-4-31B-it
+```
+
+The second comparison's calls are listed, in their order, in spec 4b. Its table:
+
+```sh
+uv run python readers.py grade evidence/madelon-2026-11-15-1 --questions evidence/questions.json \
+  --trail live/madelon-2026-11-15-1 --compare evidence/comparison-2.json --out evidence/madelon-2026-11-15-1/table-2.md
 ```
