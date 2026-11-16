@@ -3,7 +3,7 @@
 #
 #     scripts/fleet.sh MAP PREFIX ROUTE... [-- pi options]
 #
-# For each ROUTE it writes a brief into MAP/../briefs/ROUTE (project.py brief --with the others),
+# For each ROUTE it writes a brief into MAP/../briefs/PREFIX-ROUTE (project.py brief --with the others),
 # then starts scripts/live.sh on it as trail PREFIX-ROUTE with NOTEBOOK_MAP and NOTEBOOK_REPO set,
 # so capture gives the agent its project_map tool. It waits for every agent and prints each
 # trail's check. Watch it with: uv run python project.py serve MAP --live live
@@ -27,13 +27,13 @@ BRIEFS=$(dirname "$MAP")/briefs
 WITH=$(IFS=,; echo "${ROUTES[*]}")
 
 for route in "${ROUTES[@]}"; do
-	(cd "$REPO" && uv run --quiet python project.py brief "$MAP" "$route" --out "$BRIEFS/$route" --live "$LIVE" --with "$WITH" --demo "${NOTEBOOK_DEMO:-$REPO/demo}")
+	(cd "$REPO" && uv run --quiet python project.py brief "$MAP" "$route" --out "$BRIEFS/$PREFIX-$route" --live "$LIVE" --with "$WITH" --demo "${NOTEBOOK_DEMO:-$REPO/demo}")
 done
 
 PIDS=()
 for route in "${ROUTES[@]}"; do
 	log=${TMPDIR:-/tmp}/fleet-$PREFIX-$route.log
-	NOTEBOOK_MAP=$MAP NOTEBOOK_REPO=$REPO "$REPO/scripts/live.sh" "$BRIEFS/$route" "$PREFIX-$route" "$@" >"$log" 2>&1 &
+	NOTEBOOK_MAP=$MAP NOTEBOOK_REPO=$REPO "$REPO/scripts/live.sh" "$BRIEFS/$PREFIX-$route" "$PREFIX-$route" "$@" >"$log" 2>&1 &
 	PIDS+=($!)
 	echo "fleet.sh: $PREFIX-$route started (log $log)"
 done
