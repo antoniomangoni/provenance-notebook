@@ -1,0 +1,19 @@
+{
+  "trail": "madelon-2026-11-15-1",
+  "added": "after the first comparison's result was seen; see docs/specs/04b-second-comparison.md",
+  "sets": [
+    {"questions": "questions.json", "answers": "answers.jsonl"},
+    {"questions": "heldout.json", "answers": "answers-heldout.jsonl"}
+  ],
+  "neutral": [
+    {"question": 1, "fields": ["measure"]},
+    {"question": 1, "fields": ["measured"]},
+    {"question": 1, "fields": ["threshold"]},
+    {"question": 2, "fields": ["command"]},
+    {"question": 2, "fields": ["parameters"]},
+    {"question": 3, "fields": ["measured_runs"]},
+    {"question": 4, "fields": ["abandoned"], "accepted": [[{"result": ["number", 0.5639]}]]},
+    {"question": 5, "fields": ["measured_heldout"]},
+    {"question": 5, "fields": ["command"]}
+  ]
+}
