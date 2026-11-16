@@ -117,9 +117,10 @@ def involved(change: dict, steps: list[dict]) -> dict[str, list[str]]:
     return roles
 
 
-def why(steps: list[dict], step: str | None = None) -> list[str]:
+def why(steps: list[dict], step: str | None = None, reads: dict | None = None, sealed: tuple[str, ...] = ()) -> list[str]:
     """The answer to "why did the plan change at STEP?", from the links alone. With no step, one line per
-    change of approach. Raises LookupError for a step the trail does not have."""
+    change of approach. With `sealed` paths, it adds which runs had opened one before the new plan was
+    proposed (trail.before). Raises LookupError for a step the trail does not have."""
     by_id = {s["id"]: s for s in steps}
     found = changes(steps)
     if step is None:
@@ -143,6 +144,8 @@ def why(steps: list[dict], step: str | None = None) -> list[str]:
         lines.append(f"Trigger: {trigger['id']}, {OUTCOMES[trigger['outcome']]}")
         lines += [f"  {expected(miss)}" for miss in missed(trigger, by_id)]
     lines += [f"New plan: {plan['id']}, {plan['summary']}", "Reasoning:", plan["reasoning"]]
+    lines += [f"Before it was proposed: {trail.opened_before(entry)}"
+              for entry in trail.before(steps, reads or {}, sealed) if entry["plan"] == plan["id"] and entry["earlier"]]
     about = {plan["id"], *(old["id"] for old in change["replaced"]), *(t["id"] for t in change["triggers"] if isinstance(t, dict))}
     lines += [f"{s['id']}, {verdict(s)}: {s['text']}" for s in said(steps, about)]
     return lines
@@ -265,8 +268,9 @@ def remarks(kept: list[dict], anchored: bool = True) -> str:
 class Trail:
     """The lookups the page needs: each plan's runs, each run's observation, and where each review or note sits."""
 
-    def __init__(self, steps: list[dict], code: Path | None):
-        self.steps, self.code = steps, code
+    def __init__(self, steps: list[dict], code: Path | None, reads: dict | None = None, sealed: tuple[str, ...] = ()):
+        self.steps, self.code, self.reads, self.sealed = steps, code, reads or {}, tuple(sealed)
+        self.before = {(entry["plan"], entry["path"]): entry for entry in trail.before(steps, self.reads, self.sealed)}
         self.by_id = {step["id"]: step for step in steps}
         self.settlement = {trail.observed(step): step for step in steps if step["kind"] == "observation"}
         self.runs: dict[str, list[dict]] = {}
@@ -302,6 +306,25 @@ class Trail:
 
     def exploratory(self, run: dict) -> bool:
         return run["id"] in self.settlement and not self.measured(run)
+
+    def opens(self, run: dict) -> str:
+        """What the run is known to have opened, and how that is known; nothing for a run that was not
+        traced. The declared inputs and the sealed paths are named, the rest of the workspace counted."""
+        if run["id"] not in self.reads:
+            return ""
+        how, refs = self.reads[run["id"]]
+        names = [kept["ref"] for kept in run.get("inputs", []) if kept["ref"] in refs]
+        names += [f"file:{path}" for path in self.sealed if f"file:{path}" in refs and f"file:{path}" not in names]
+        others = len(set(refs) - set(names))
+        parts = [f"<code>{e(name.removeprefix('file:'))}</code>" + ' <span class="tag">sealed</span>' * (name.removeprefix("file:") in self.sealed)
+                 for name in names]
+        parts += [f"{others} other workspace file{'s' * (others != 1)}"] * bool(others)
+        return (", ".join(parts) or "no workspace file") + f' <span class="by">· {e(how)}</span>'
+
+    def earlier(self, plan: dict) -> str:
+        """For a plan, which runs had opened each sealed path before it was proposed."""
+        kept = [self.before[plan["id"], path] for path in self.sealed]
+        return "".join(f'<p class="by">Before this plan was proposed: {e(trail.opened_before(entry))}</p>' for entry in kept if entry["earlier"])
 
 
 def header(steps: list[dict]) -> str:
@@ -339,7 +362,7 @@ def card(change: dict, view: Trail) -> str:
                      f"<dt>Parameters</dt><dd>{parameters(run)}</dd></dl>"
                      + (f'<ul class="missed">{missed_items}</ul>' if missed_items else ""))
     parts.append(f'<h4>New plan</h4><p>{ref(plan["id"])} {e(plan["summary"])}</p>'
-                 f'<div class="reasoning">{e(plan["reasoning"])}</div>{promises(plan)}')
+                 f'<div class="reasoning">{e(plan["reasoning"])}</div>{promises(plan)}{view.earlier(plan)}')
     came = [f"<li>{ref(run['id'])} {outcome(view.settlement[run['id']])} {measures(view.settlement[run['id']])}</li>"
             for run in view.runs.get(plan["id"], []) if view.measured(run)]
     parts.append("<h4>How its measured runs came out</h4>" + (f'<ul class="came">{"".join(came)}</ul>' if came else "<p>No measured run.</p>"))
@@ -377,6 +400,8 @@ def run_item(run: dict, view: Trail) -> str:
     if observation and observation.get("measures"):
         rows.append(("Measures", measures(observation)))
     rows.append(("Outcome", result))
+    if opens := view.opens(run):
+        rows.append(("Opened", opens))
     change = view.code_changes.get(run["id"])
     return (f'<li class="run" id="{e(run["id"])}"><p>{ref(run["id"])} <code>{e(run["command"]["shown"])}</code></p>'
             '<dl class="kv">' + "".join(f"<dt>{name}</dt><dd>{value}</dd>" for name, value in rows) + "</dl>"
@@ -388,7 +413,8 @@ def command_item(run: dict, view: Trail) -> str:
     observation = view.settlement[run["id"]]
     return (f'<li class="run" id="{e(run["id"])}"><p>{ref(run["id"])} <code>{e(run["command"]["shown"])}</code></p>'
             f'<p><span id="{e(observation["id"])}">{ref(observation["id"])}</span> {outcome(observation)} '
-            f'exit code {e(observation["exit_code"])}</p>{remarks(view.under.get(run["id"], []))}</li>')
+            f'exit code {e(observation["exit_code"])}</p>' + (f'<p class="by">Opened {opens}</p>' if (opens := view.opens(run)) else "")
+            + f'{remarks(view.under.get(run["id"], []))}</li>')
 
 
 def plan_item(plan: dict, view: Trail) -> str:
@@ -401,7 +427,7 @@ def plan_item(plan: dict, view: Trail) -> str:
     tag = ' <span class="tag">exploration plan</span>' if exploration else ""
     parts = [f'<article class="plan" id="{e(plan["id"])}"><h3>{ref(plan["id"])} {e(plan["summary"])}{tag}</h3>',
              f'<p class="by">by {e(plan["by"])} · {e(plan["at"])}' + "".join(f" · {link}" for link in links) + "</p>",
-             f'<div class="reasoning">{e(plan["reasoning"])}</div>{promises(plan)}']
+             f'<div class="reasoning">{e(plan["reasoning"])}</div>{promises(plan)}{view.earlier(plan)}']
     if attempts:
         parts.append('<ol class="runs">' + "".join(run_item(run, view) for run in attempts) + "</ol>")
     if explored:
@@ -425,14 +451,42 @@ def timeline(view: Trail) -> str:
     return "".join(parts) + "</section>"
 
 
-def page(steps: list[dict], code: Path | None = None) -> str:
+def short(command: str, most: int = 120) -> str:
+    """A command cut for a list; the run it links to shows it whole."""
+    return command if len(command) <= most else command[:most].rstrip() + " …"
+
+
+def sealed_inputs(view: Trail) -> str:
+    """The runs that opened a path the reader named as sealed, in the order they ran. It reports the
+    reads; whether one fed a design is the reader's to judge."""
+    if not view.sealed:
+        return ""
+    runs = [step for step in view.steps if step["kind"] == "run"]
+    named = ", ".join(f"<code>{e(path)}</code>" for path in view.sealed)
+    parts = ['<section id="sealed"><h2>Sealed inputs</h2>',
+             (f"<p>The reader of this page named {named} as sealed: a file a design should not have seen before it was scored. "
+              "These runs opened it, in the order they ran. The page says that a file was opened, not what was done with it.</p>")]
+    hits = [run for run in runs if run["id"] in view.reads and any(f"file:{path}" in view.reads[run["id"]][1] for path in view.sealed)]
+    items = "".join(
+        f'<li><a href="#{e(run["id"])}">{e(run["id"])}</a> under {ref(linked(run, "implements")[0])} · '
+        f'{"measured" if view.measured(run) else "wrote no metrics" if run["id"] in view.settlement else "never settled"} · '
+        f'<code>{e(short(run["command"]["shown"]))}</code> <span class="by">· {e(view.reads[run["id"]][0])}</span></li>' for run in hits)
+    parts.append(f'<ol class="path">{items}</ol>' if items else "<p>No traced run opened one.</p>")
+    if untraced := sum(run["id"] not in view.reads for run in runs):
+        parts.append(f'<p class="by">{untraced} of {len(runs)} runs {"were" if untraced != 1 else "was"} not traced, so nothing is known of what {"they" if untraced != 1 else "it"} opened.</p>')
+    return "".join(parts) + "</section>"
+
+
+def page(steps: list[dict], code: Path | None = None, reads: dict | None = None, sealed: tuple[str, ...] = ()) -> str:
     """The reviewer's page of a checked trail. The same trail gives the same bytes: nothing in it depends
-    on the time, the machine or the paths it was given."""
-    view = Trail(steps, code)
+    on the time, the machine or the paths it was given. `reads` is what each run is known to have opened
+    (trail.opened), and `sealed` the paths the reader named; with neither, a trail that was not traced
+    renders as it did before either existed."""
+    view = Trail(steps, code, reads if reads is not None else trail.opened(steps), sealed)
     found = changes(steps)
     cards = "".join(card(change, view) for change in found)
-    facts = "".join(f"<li>{e(fact)}</li>" for fact in trail.facts(steps)) or "<li>None.</li>"
-    body = (header(steps) + path(found, view.by_id)
+    facts = "".join(f"<li>{e(fact)}</li>" for fact in trail.facts(steps, view.reads, view.sealed)) or "<li>None.</li>"
+    body = (header(steps) + path(found, view.by_id) + sealed_inputs(view)
             + (f'<section id="changes"><h2>Changes of approach</h2>{cards}</section>' if cards else "")
             + timeline(view) + f'<section id="facts"><h2>Facts</h2><ul class="facts">{facts}</ul></section>')
     return ('<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'

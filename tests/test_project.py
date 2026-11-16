@@ -4,6 +4,8 @@ trails they cite. Every test works on copies; nothing under research/ or live/ i
 import copy
 import json
 import shutil
+import subprocess
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -537,6 +539,15 @@ def test_editing_a_draft_does_not_change_the_revision_it_was_drafted_from():
 
 def test_the_committed_map_checks_with_every_trail_under_live():
     assert project.check(project.revisions(MAP), everything()) == []
+
+
+@pytest.mark.parametrize("command", ["view", "shared"])
+def test_a_committed_output_of_the_map_equals_a_rebuild(command):
+    """view.txt and shared.txt are derived from the revisions and the trails. A derived file that is
+    committed stays honest only while a test holds it equal to what the same sources give now."""
+    done = subprocess.run([sys.executable, str(ROOT / "project.py"), command, str(MAP), "--live", str(LIVE)],
+                          check=True, capture_output=True, text=True, cwd=ROOT)
+    assert done.stdout == (MAP.parent / f"{command}.txt").read_text()
 
 
 def test_what_a_sibling_wrote_reaches_an_agent_fenced_and_cannot_close_its_fence(tmp_path):

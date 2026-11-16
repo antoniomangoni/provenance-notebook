@@ -75,7 +75,9 @@ def test_the_server_is_local_and_answers_304_when_nothing_changed():
         except urllib.error.HTTPError as error:
             assert error.code == 304
         with urllib.request.urlopen(base + "/trail/madelon-route-knn") as response:
-            assert "madelon-route-knn" in response.read().decode()
+            trail_page = response.read().decode()
+        # The trail's page takes the map's sealed inputs and its re-executions, so it needs no options.
+        assert "madelon-route-knn" in trail_page and 'id="sealed"' in trail_page and "on re-execution" in trail_page
     finally:
         running.shutdown()
         running.server_close()

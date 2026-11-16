@@ -22,6 +22,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import project
+import trail
 import view
 
 # Route lines take their goal's colour: three validated slots (light, dark), then the fourth slot
@@ -504,7 +505,10 @@ class State:
         if directory is None:
             return None
         steps, _ = project.readable(directory)
-        return view.page(steps)
+        # What the map knows of this trail's reads, and the inputs its last revision sealed.
+        revs, trails = self.inputs
+        again = {"runs": list(trails.retraced.get(trail.probe_id(steps), {}).values())}
+        return view.page(steps, reads=trail.opened(steps, again), sealed=tuple(revs[-1].get("sealed_inputs", ())))
 
 
 def handler(state: State):

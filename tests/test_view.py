@@ -322,3 +322,51 @@ def test_a_captured_observation_shows_its_outcome_once():
 def test_a_summary_that_only_mentions_its_outcome_is_shown_whole(churn):
     churn[3]["summary"] = "contradicted the floor: AUC 0.58"
     assert ">contradicted</span> contradicted the floor: AUC 0.58<" in view.page(churn)
+
+
+TRAILS = ROOT / "live"
+RETRACED = ROOT / "research" / "madelon-reanalysis" / "retrace"
+HELDOUT = ("data/heldout.csv",)
+
+
+def test_a_trail_with_no_reads_and_no_options_renders_as_it_did(churn):
+    for steps in (churn, trail.load(TRAILS / "madelon-2026-11-15-1")):
+        page = view.page(steps)
+        assert page == view.page(steps, reads={}, sealed=())
+        assert "<dt>Opened</dt>" not in page and 'id="sealed"' not in page and "Before this plan" not in page
+
+
+def test_a_run_traced_as_it_ran_shows_what_it_opened_and_how_that_is_known():
+    steps = trail.load(TRAILS / "madelon-fleet2-vote")
+    page = view.page(steps, sealed=HELDOUT)
+    assert "<dt>Opened</dt>" in page and "traced as it ran" in page
+    sealed = page.split('<section id="sealed">')[1].split("</section>")[0]
+    assert 'href="#step-5"' in sealed and "wrote no metrics" in sealed
+    assert '<code>data/heldout.csv</code> <span class="tag">sealed</span>' in page
+    # Without a sealed path the reads are still shown, and nothing is called sealed.
+    plain = view.page(steps)
+    assert "<dt>Opened</dt>" in plain and 'id="sealed"' not in plain and ">sealed<" not in plain
+
+
+def test_the_page_and_why_say_what_was_opened_before_a_change_of_approach():
+    steps = trail.load(TRAILS / "madelon-2026-11-15-1")
+    reads = trail.opened(steps, trail.retraced(RETRACED / "madelon-2026-11-15-1.json", steps))
+    page = view.page(steps, reads=reads, sealed=HELDOUT)
+    assert "Before this plan was proposed: 5 runs had opened data/heldout.csv" in card(page, "step-14")
+    assert "on re-execution" in page and "traced as it ran" not in page
+    assert view.why(steps, "step-14", reads, HELDOUT)[-1].startswith("Before it was proposed: 5 runs had opened data/heldout.csv")
+    assert not any(line.startswith("Before it") for line in view.why(steps, "step-14"))
+
+
+def test_runs_that_were_not_traced_are_counted_not_guessed(churn):
+    run = next(step for step in churn if step["kind"] == "run")
+    page = view.page(churn, reads={run["id"]: (trail.TRACED, ["file:data/telco.csv"])}, sealed=("data/telco.csv",))
+    runs = sum(step["kind"] == "run" for step in churn)
+    assert f"{runs - 1} of {runs} runs" in page and "not traced" in page
+
+
+def test_an_opened_path_is_escaped(churn):
+    run = next(step for step in churn if step["kind"] == "run")
+    nasty = "<script>alert(1)</script>.csv"
+    page = view.page(churn, reads={run["id"]: (trail.TRACED, [f"file:{nasty}"])}, sealed=(nasty,))
+    assert "<script>" not in page and html.escape(nasty) in page
