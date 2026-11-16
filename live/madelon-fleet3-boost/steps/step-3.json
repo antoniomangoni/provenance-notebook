@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-fleet3-boost",
+  "at": "2026-11-16T17:17:14.279Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Survey workspace: existing screen/analysis code from vote-trail snapshot, env, pilot data only",
+  "reasoning": "Before designing the GBM route I need to see what the inherited snapshot (madelon-fleet2-vote step-21) contains: its pilot-only screen, tuning scripts, and how metrics were written. The sealed heldout.csv must not be read yet; I will only list files, never read/count heldout.csv.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:4bdacca36fcd416b7191c349ae654dd5644234ca6be33a5bf69a099409519350"
+}

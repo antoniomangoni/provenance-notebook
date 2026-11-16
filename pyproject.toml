@@ -18,7 +18,8 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 140
-extend-exclude = ["capture/node_modules"]
+# A brief's workspace is a snapshot of code an agent wrote in an earlier trail: it is kept as it was.
+extend-exclude = ["capture/node_modules", "research/*/briefs/*/workspace"]
 
 [tool.ruff.lint.per-file-ignores]
 # A dense demo script: several statements on a line are its style.

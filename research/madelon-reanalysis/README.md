@@ -3,17 +3,18 @@
 This map covers the demo task (`demo/`). An inherited analysis reports a cross-validated AUC of
 0.76, and on 2200 held-out samples it scores 0.56.
 
-It has eleven revisions over eleven trails:
+It has twelve revisions over twelve trails:
 - two from 15 November, written before the map existed;
 - three runs that the map steered one at a time on 16 November;
-- two fleets of three agents that ran at the same time and shared the map as they worked.
+- two fleets of three agents that ran at the same time and shared the map as they worked;
+- one agent that ran in a sandbox ([below](#the-sandboxed-run)).
 
-The last revision checked every credit again across agents ([below](#checked-across-agents)).
+Rev-10 checked every credit again across agents ([below](#checked-across-agents)).
 
 Every run used `zai-org/GLM-5.3-Flash` through Pi under capture.
 
 ```sh
-uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 11 revisions, 15 resolutions, 11 trails
+uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 12 revisions, 15 resolutions, 12 trails
 uv run python project.py view   research/madelon-reanalysis/map --live live   # view.txt
 uv run python project.py shared research/madelon-reanalysis/map --live live   # shared.txt
 uv run python project.py page   research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/map.html
@@ -48,6 +49,7 @@ page.
 | 8 | **The first fleet reached nothing.** No run wrote its measures, and each agent read the map once, at its start, so none built on another. |
 | 9 | **The second fleet reached compact twice.** The agents built on each other as they ran. Each credit excuses one row count of the held-out file, named and explained in the revision. The revision also discloses one leak of a held-out result between agents, now closed. |
 | 10 | **Checked across agents.** The first version 2 revision ([spec 8](../../docs/specs/08-rests-on.md)). Every rev-9 credit rested, through `builds_on`, on sibling runs that had opened the held-out file. Each such read is excused, with why. Nothing is withdrawn. |
+| 11 | **The sandboxed run reached nothing.** One agent on `boost`, every command in the sandbox. The wall clock stopped it inside its first search, which the file trace had slowed about thirteen times. `boost` stays open. |
 
 ## What the shared milestones did
 
@@ -126,8 +128,41 @@ each such credit has an amber mark, and its hover text names the reads and the e
 The fleets also show why reads outside the workspace mattered. Agents are not sandboxed by
 capture alone, and fleet 2's agents read fleet 1's workspaces. From spec 8 on, `fleet.sh` runs
 every command in a bwrap sandbox that hides the repository, the trails, the map and the other
-workspaces. The sandbox has been tested with the scripted provider, and on one scripted agent
-running a real brief. No model has run in it yet.
+workspaces.
+
+## The sandboxed run
+
+One agent ran on `boost` in that sandbox for 30 minutes (`live/madelon-fleet3-boost`, 13 steps,
+rev-11). It is the only run of a model in the sandbox.
+
+**What the sandbox did.**
+- `uv`, Python and git worked inside it, and the agent read the map through `project_map`.
+- The note at step-1 lists what was hidden: the repository, the directory of workspaces, and Pi's
+  two configuration directories.
+- No command names a path outside the workspace or reaches the network. That is a reading of all
+  four commands, because a trace keeps only reads inside the workspace.
+- No run opened `data/heldout.csv`, by the trace of the three runs that settled. It is the first
+  trail of this map that never opened the held-out file.
+- No process outlived the session.
+
+**What stopped it.** The agent's fourth command was a pilot-only search over four screens. The
+wall clock ended the session while it ran, so the run has no observation and nothing was reached.
+The file trace is why:
+
+| The first screen of that search | Time | Result |
+| --- | --- | --- |
+| under the trace, in the sandbox (the agent's run) | 701 s | nested AUC 0.6598 |
+| the same command without the trace, on a copy of the workspace | 52 s | nested AUC 0.6598 |
+
+`strace` stops a process at every system call, and a boosted model fitted on many threads makes a
+great many. A second measurement, a three-fold fit on random data on an idle machine, took 1.2 s
+without the trace and 4.6 s with it; `strace`'s seccomp filter brought that only to 3.9 s. The
+cost of knowing what a run opened is therefore large for this kind of work, and a wall clock set
+for untraced runs is too short.
+
+**What it does not show.** An agent trying to leave the sandbox, or a held-out score from a
+sandboxed run. The sandbox hides named places. The rest of the machine stays readable and the
+network open.
 
 ## Checked, not judged
 
@@ -172,12 +207,15 @@ puts the second look in front of whoever seals the revision.
   were wrong and passed.
 - **Who judged.** Not crediting the two second looks, and abandoning `svm`, were judgments,
   written in the revisions' reasons by the agent that sealed them
-  (`agent:claude-code/claude-opus-5-5`). A later revision can reverse either.
+  (`agent:claude-code/claude-opus-5-5`). A later revision can reverse either. Every revision so
+  far was sealed by an AI agent, named in its `by`. No person has yet confirmed or disputed one.
 - **Re-executed reads are leads, not proof.** They come from a replay, not the run itself. Only
   a read captured as the run happened fails `check`. For runs from before spec 6, the command
   line is the weakest lead, used only where there is no trace.
 - **The steering rule ranks by structure only.** The milestone that the most open routes wait on
   comes first. Live-1's printed per-family scores (forest 0.72, kNN 0.66, SVM 0.65) predicted the
   order the routes fared in, but they are not measures, so `next` does not use them.
-- **Scale.** One model, one task, three steered runs and two fleets of three agents: this demonstrates the mechanism, not a
-  study of it.
+- **The trace is slow.** It cost about thirteen times on the one command measured both ways
+  ([above](#the-sandboxed-run)), and it ended the sandboxed run before it scored anything.
+- **Scale.** One model, one task, three steered runs, two fleets of three agents and one sandboxed run: this demonstrates
+  the mechanism, not a study of it.

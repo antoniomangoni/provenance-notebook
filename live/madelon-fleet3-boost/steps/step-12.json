@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "madelon-fleet3-boost",
+  "at": "2026-11-16T17:19:24.989Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "mkdir -p out/search && for v in stab03 top20F stab05 top30F; do uv run python explore_boost.py $v 0; done",
+  "command": {
+    "shown": "mkdir -p out/search && for v in stab03 top20F stab05 top30F; do uv run python explore_boost.py $v 0; done",
+    "digest": "sha256:926e7b35fdd438ba5c2652121a1953eacd97522dda1df9c5588d2d50016ded5d"
+  },
+  "code": {
+    "ref": "commit:720574c3482ce12d8a77dd2d3a9df2054a485cfb"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-11",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:efd0dbe893ba7ddf93b7ebfadc3ca7e0bee7b18b41b1cfee5848ee15d6df1bec"
+}

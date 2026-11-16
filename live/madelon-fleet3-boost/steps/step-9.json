@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-fleet3-boost",
+  "at": "2026-11-16T17:18:18.183Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python - <<'EOF' import numpy as np from vote_lib import stab_screen, f_screen tab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1) X, y = tab[:, :-1], tab[:, -1] print(\"pilot shape:\",",
+  "command": {
+    "shown": "uv run python - <<'EOF'\nimport numpy as np\nfrom vote_lib import stab_screen, f_screen\n\ntab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = tab[:, :-1], tab[:, -1]\nprint(\"pilot shape:\", X.shape, \"label balance:\", np.bincount(y.astype(int) + 1))\n\nfor thr in (0.3, 0.4, 0.5):\n    feats = stab_screen(X, y, thr=thr)\n    print(f\"stab thr={thr}: keeps {len(feats)} features\")\nf20 = f_screen(X, y, 20)\nprint(\"top20F:\", f20+1)\nf30 = f_screen(X, y, 30)\nprint(\"top30F overlap with stab(0.3):\", len(set(f30) & set(stab_screen(X, y, 0.3))))\nEOF",
+    "digest": "sha256:3e899ea217989fcea2188202acc840c385ae7d28933da1bb39680cedce8c8e0b"
+  },
+  "code": {
+    "ref": "commit:d18b5185110e8f33ca6a4c7f9647bbff88c7c415"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-6",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:560a00d296a63f7810e0369fa4f0fff05883f92367babbe2178460af78b35d31"
+}
