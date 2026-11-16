@@ -512,3 +512,46 @@ def test_an_agent_is_told_when_others_found_something_since_it_last_read_the_map
     first, _, after = session.results
     assert "1 new observation since you last read the project map" in first[2]
     assert "[notebook]" not in after[2]
+
+
+# ---------------------------------------------------------------------------------------------
+# The sandbox (spec 8): what project_map withholds cannot be read from disk instead
+
+needs_bwrap = pytest.mark.skipif(shutil.which("bwrap") is None, reason="needs bwrap")
+
+
+@needs_bwrap
+def test_a_sandboxed_command_cannot_read_another_trail_the_map_or_another_workspace(tmp_path):
+    sibling = live(tmp_path, [[plan(FLOOR)], [bash("python3 fit.py --auc 0.8")]], name="sibling-a")
+    looks = [
+        f"cat {sibling.directory}/steps/step-0.json",
+        f"cat {tmp_path / 'map' / 'rev-0.json'}",
+        f"ls {ROOT / 'research'}",
+        f"ls {sibling.workspace}",
+    ]
+    turns = [[plan()], *[[bash(command)] for command in looks]]
+    turns += [[bash("echo kept > own.txt && cat own.txt && pwd")], [bash("cat data/telco.csv > /dev/null")]]
+    turns += [[bash("uv run --no-project python3 -c 'print(41 + 1)'")], [READ_MAP]]
+    session = live(tmp_path, turns, name="agent-b", NOTEBOOK_SANDBOX="1", **mapped(tmp_path))
+    note = session.of("note")[0]
+    assert note["hook"] == "pi:session_start" and note["summary"].startswith("Commands run in a sandbox")
+    for hidden in (ROOT, tmp_path / "live", tmp_path / "work"):
+        assert str(hidden.resolve()) in note["text"]
+    observations = session.of("observation")
+    assert [o["exit_code"] != 0 for o in observations] == [True] * len(looks) + [False, False, False]
+    outputs = [text for tool, _, text in session.results if tool == "bash"]
+    seen = "".join(outputs[: len(looks)])
+    assert "No such file or directory" in seen and '"kind"' not in seen and "A test map" not in seen and "fit.py" not in seen
+    assert outputs[len(looks)].split()[:2] == ["kept", str(session.workspace)] and "42" in outputs[-1]
+    # strace still sees through the sandbox: the read is recorded at the workspace's own path.
+    assert observations[len(looks) + 1]["reads"] == [
+        {"ref": "file:data/telco.csv", "digest": trail.digest((FIXTURE / "workspace" / "data" / "telco.csv").read_bytes())}
+    ]
+    # The map is read through the tool, outside the sandbox.
+    tool, error, text = session.results[-1]
+    assert (tool, error) == ("project_map", False) and "sibling-a" in text
+
+
+def test_a_sandbox_setting_capture_does_not_know_stops_it_before_anything_runs(tmp_path):
+    session = live(tmp_path, [[plan()]], expect=1, NOTEBOOK_SANDBOX="yes")
+    assert session.steps == [] and "NOTEBOOK_SANDBOX is 1" in session.done.stderr

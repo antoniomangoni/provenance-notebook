@@ -183,8 +183,56 @@ export function tracer(env: NodeJS.ProcessEnv = process.env): string | null {
 	return null;
 }
 
-export function tracedCommand(command: string, strace: string, trace: string): string {
-	return `${quote(strace)} -f -qq -y -e trace=open,openat,openat2 -e status=successful -o ${quote(trace)} -- bash -c ${quote(command)}`;
+export function tracedCommand(command: string, strace: string, trace: string, wrap: string[] = []): string {
+	return `${quote(strace)} -f -qq -y -e trace=open,openat,openat2 -e status=successful -o ${quote(trace)} -- ${sandboxedCommand(command, wrap)}`;
+}
+
+// The command as bash runs it, inside the sandbox's bwrap when there is one.
+export function sandboxedCommand(command: string, wrap: string[] = []): string {
+	return [...wrap, "bash", "-c", command].map(quote).join(" ");
+}
+
+// The sandbox (spec 8): with NOTEBOOK_SANDBOX=1 each command runs in bwrap, so what project_map withholds
+// cannot be read from disk instead. The filesystem is read-only; the repository (with the map, the briefs
+// and every output), the trails, the store, the map, the directory the workspaces share and Pi's
+// configuration are hidden under empty tmpfs; the workspace and uv's cache are bound back writable.
+export type Sandbox = { bwrap: string; hidden: string[]; writable: string[]; workspace: string };
+
+function onPath(name: string, env: NodeJS.ProcessEnv): string | null {
+	for (const dir of (env.PATH ?? "").split(":")) if (dir && existsSync(join(dir, name))) return join(dir, name);
+	return null;
+}
+
+function inside(path: string, root: string): boolean {
+	return path === root || path.startsWith(root.endsWith(sep) ? root : root + sep);
+}
+
+export function sandboxFor(config: Config, workspace: string, env: NodeJS.ProcessEnv = process.env): Sandbox | null {
+	if (!config.sandbox) return null;
+	const bwrap = onPath("bwrap", env);
+	if (!bwrap) throw new Error("NOTEBOOK_SANDBOX=1 needs bwrap on PATH; nothing runs unsandboxed when a sandbox was asked for");
+	const home = realpathSync(env.HOME ?? homedir()), own = realpathSync(workspace);
+	const wanted = [config.repo, dirname(config.trail), config.store, config.map, dirname(own), join(home, ".pi"), env.PI_CODING_AGENT_DIR]
+		.filter((path): path is string => !!path && existsSync(path)).map((path) => realpathSync(path));
+	for (const path of wanted) {
+		if (path === "/" || inside(home, path)) throw new Error(`the sandbox would hide ${path}, which holds the home directory`);
+		if (inside(own, path) && path !== dirname(own)) throw new Error(`the sandbox would hide ${path}, which holds the workspace`);
+	}
+	// Outermost first; a path inside one already hidden is hidden with it.
+	const hidden: string[] = [];
+	for (const path of [...new Set(wanted)].sort((a, b) => a.length - b.length)) if (!hidden.some((root) => inside(path, root))) hidden.push(path);
+	const cache = resolve(env.UV_CACHE_DIR ?? join(home, ".cache", "uv"));
+	const writable = existsSync(cache) && !hidden.some((root) => inside(cache, root)) ? [realpathSync(cache)] : [];
+	return { bwrap, hidden, writable, workspace: own };
+}
+
+export function sandboxArgs(box: Sandbox): string[] {
+	return [
+		box.bwrap, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc",
+		...box.hidden.flatMap((path) => ["--tmpfs", path]),
+		...box.writable.flatMap((path) => ["--bind", path, path]),
+		"--bind", box.workspace, box.workspace, "--die-with-parent", "--",
+	];
 }
 
 // The workspace files a trace shows opened for reading, workspace-relative, sorted, at their digest now.
@@ -394,7 +442,9 @@ export class Trail {
 // ---------------------------------------------------------------------------------------------
 // Configuration, from the environment. A missing or wrong value fails at load.
 
-export type Config = { task: string; trail: string; store: string; maxRuns: number; maxTokens: number; map?: string; repo?: string };
+export type Config = {
+	task: string; trail: string; store: string; maxRuns: number; maxTokens: number; sandbox: boolean; map?: string; repo?: string;
+};
 
 function positive(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
 	const value = env[name];
@@ -408,7 +458,10 @@ export function configure(env: NodeJS.ProcessEnv): Config {
 	const config = {
 		task: resolve(env.NOTEBOOK_TASK!), trail: resolve(env.NOTEBOOK_TRAIL!), store: resolve(env.NOTEBOOK_STORE!),
 		maxRuns: positive(env, "NOTEBOOK_MAX_RUNS", 40), maxTokens: positive(env, "NOTEBOOK_MAX_TOKENS", 2_000_000),
+		sandbox: env.NOTEBOOK_SANDBOX === "1",
 	};
+	if (![undefined, "", "0", "1"].includes(env.NOTEBOOK_SANDBOX)) throw new Error("NOTEBOOK_SANDBOX is 1 (commands run in bwrap) or 0");
+	if (config.sandbox && !onPath("bwrap", env)) throw new Error("NOTEBOOK_SANDBOX=1 needs bwrap on PATH; nothing runs unsandboxed when a sandbox was asked for");
 	if (!existsSync(config.task) || !statSync(config.task).isFile()) throw new Error("NOTEBOOK_TASK is not a file");
 	const name = basename(config.trail);
 	if (!TRAIL_NAME.test(name) || name.length > 100)
@@ -464,6 +517,7 @@ export default function (pi: ExtensionAPI) {
 		trace?: string; reads?: Step[];
 	};
 	const strace = tracer();
+	let box: Sandbox | null = null;
 	const pending = new Map<string, Pending>();
 	// Every sibling step reference project_map has shown in this session: what a plan may build on.
 	const citable = new Set<string>();
@@ -492,7 +546,11 @@ export default function (pi: ExtensionAPI) {
 		// Runs cite snapshots of the code, so the workspace has to be a repository.
 		if (git(ctx.cwd, ["rev-parse", "--is-inside-work-tree"]) !== "true") throw new Error("the workspace is not a git repository");
 		agent = agentName(ctx.model?.id ?? "unknown");
-		await trail.write(taskStep(task, VERSION, `${ctx.model?.provider ?? "unknown"}/${ctx.model?.id ?? "unknown"}`));
+		box = sandboxFor(config, ctx.cwd);
+		const first = await trail.write(taskStep(task, VERSION, `${ctx.model?.provider ?? "unknown"}/${ctx.model?.id ?? "unknown"}`));
+		if (box) await trail.write(noteStep(first, "pi:session_start", "Commands run in a sandbox that hides the map and the other trails",
+			`Every command runs in bwrap: the filesystem is read-only except the workspace${box.writable.length ? " and uv's cache" : ""}, `
+			+ `and these are hidden under empty tmpfs: ${box.hidden.join(", ")}. The project_map tool runs outside the sandbox.`));
 	});
 
 	// A model can loop, and a loop is paid for; past a ceiling nothing more runs. The note is written once.
@@ -581,10 +639,11 @@ export default function (pi: ExtensionAPI) {
 			const tool = createBashToolDefinition(ctx.cwd, { operations: { exec: async (command, cwd, options) => {
 				const kept = pending.get(id);
 				if (kept) Object.assign(kept, { before: stamp(join(kept.cwd, METRICS)), started: Date.now() });
-				let run = command;
+				const wrap = box ? sandboxArgs(box) : [];
+				let run = box ? sandboxedCommand(command, wrap) : command;
 				if (kept && strace) {
 					kept.trace = join(mkdtempSync(join(tmpdir(), "notebook-trace-")), "trace");
-					run = tracedCommand(command, strace, kept.trace);
+					run = tracedCommand(command, strace, kept.trace, wrap);
 				}
 				try {
 					const result = await local.exec(run, cwd, options);
