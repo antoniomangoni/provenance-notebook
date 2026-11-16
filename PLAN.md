@@ -22,6 +22,14 @@ The step schema, the checker, `facts`, `head`, `verify`, three example trails an
 export exist, with 15 passing tests. `capture/probe.ts` proved the capture assumptions against
 Pi 0.84.1. Not started: the view, capture, the demo task, the real-model test.
 
+## State on 16 November
+
+Slices 1 to 4 are merged, with two live runs of the task. Four more specs followed the first
+results: a research map over many trails (5), traced reads (6), a live map shared by agents
+running at once (7), and credits checked across trails with a sandboxed fleet (8). Spec 9 put
+what each run opened on the reviewer's page. Twelve live trails are committed. What remains is a
+person's: the video, the repository's visibility, and submitting.
+
 ## Slices
 
 A slice is done when its check passes, not when its code is written. Slices 1 to 3 share no
@@ -30,13 +38,13 @@ files and are built at the same time.
 | When | Slice | Built by | Done when | State |
 | --- | --- | --- | --- | --- |
 | Thu 12 | **R0 Roadmap.** This file, [AGENTS.md](AGENTS.md), CI, specs 1 to 3 | a session | `uv run pytest` passes; each spec has every section of the [meta-spec](docs/meta-spec.md) | done |
-| Fri 13 | **Smoke test.** A real model drives `capture/probe.ts` | a person | The model calls `propose_plan`, then `bash`, and `trail.py check` passes on what the probe wrote | |
-| Fri 13 | **1 Reviewer view.** [Spec](docs/specs/01-reviewer-view.md): `why`, `view`, two new facts, `review` and `note` | an agent | Tests assert that `why` and the page give step 4's trigger, 0.58 against 0.75, the plan it replaced and its review; the page loads nothing external | |
-| Fri 13 | **2 Capture.** [Spec](docs/specs/02-capture.md): `capture/capture.ts` and `scripts/live.sh` | an agent | A scripted run passes `check --store`; a later `ls` is not settled with earlier numbers; a replacement plan is accepted with an id taken from a receipt | |
-| Fri 13 | **3 Demo task.** [Spec](docs/specs/03-demo-task.md): `demo/` | an agent | A test shows the inherited analysis missing the floor and a corrected one meeting it, each in under a minute | |
-| Sat 14 | **Live run.** The demo task through Pi with a real model, on merged slices 1 to 3 | a person; defects go to agents | A trail under `live/` holds a contradicted observation and a replacement plan, passes `check --store`, and `why` answers for the replacement | |
-| Sun 15 | **4 Evidence.** Spec written from the live trail: the reader check, the tamper sequence, fixes to the view | an agent and a person | The reader check prints its table; editing a past step fails `check`; re-chaining it passes `check` and fails `verify` | |
-| Mon 16 | **Submission.** `README.md` as the landing page, the write-up, the video, the published view, licence and visibility | a person and an agent | A stranger sees the live trail's view from one link; the video is under three minutes | |
+| Fri 13 | **Smoke test.** A real model drives `capture/probe.ts` | a person | The model calls `propose_plan`, then `bash`, and `trail.py check` passes on what the probe wrote |done, 15 Nov |
+| Fri 13 | **1 Reviewer view.** [Spec](docs/specs/01-reviewer-view.md): `why`, `view`, two new facts, `review` and `note` | an agent | Tests assert that `why` and the page give step 4's trigger, 0.58 against 0.75, the plan it replaced and its review; the page loads nothing external |done |
+| Fri 13 | **2 Capture.** [Spec](docs/specs/02-capture.md): `capture/capture.ts` and `scripts/live.sh` | an agent | A scripted run passes `check --store`; a later `ls` is not settled with earlier numbers; a replacement plan is accepted with an id taken from a receipt |done |
+| Fri 13 | **3 Demo task.** [Spec](docs/specs/03-demo-task.md): `demo/` | an agent | A test shows the inherited analysis missing the floor and a corrected one meeting it, each in under a minute |done |
+| Sat 14 | **Live run.** The demo task through Pi with a real model, on merged slices 1 to 3 | a person; defects go to agents | A trail under `live/` holds a contradicted observation and a replacement plan, passes `check --store`, and `why` answers for the replacement |done, 15 Nov: two attempts, one with a replacement plan |
+| Sun 15 | **4 Evidence.** Spec written from the live trail: the reader check, the tamper sequence, fixes to the view | an agent and a person | The reader check prints its table; editing a past step fails `check`; re-chaining it passes `check` and fails `verify` |done; the reader check did not show the view is needed |
+| Mon 16 | **Submission.** `README.md` as the landing page, the write-up, the video, the published view, licence and visibility | a person and an agent | A stranger sees the live trail's view from one link; the video is under three minutes |README, licence (MIT) and pages built; video and visibility are a person's |
 | Tue 17 | Buffer; submit by 15:00 | a person | Submitted | |
 
 ### How a slice is built
@@ -240,3 +248,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 16 Nov | Commands are traced ([spec 6](docs/specs/06-traced-reads.md)): an observation records the files its run opened (`reads`), so reading a sealed input is a fact, not a reading of the code. `retrace.py` re-executes past trails to find the same |
 | 16 Nov | The map is drawn live, and agents running at once share it ([spec 7](docs/specs/07-live-map.md)): `project.py serve` redraws the map and every trail as steps arrive, and capture's `project_map` tool lets an agent read its siblings' progress (numbers from a sealed input withheld) and build a plan on their steps. A plan may now carry `builds_on` |
 | 16 Nov | A credit rests on what its trail built on ([spec 8](docs/specs/08-rests-on.md)): a version 2 revision judges sealed reads in every step a credit rests on, across trails, and records each withdrawal with why. What `project_map` relays from a sibling is fenced as text, not instructions, and fleet commands run in a sandbox that cannot see the map or the other trails |
+| 16 Nov | The licence is MIT and the repository is made public for the submission. `scripts/site.sh` builds the pages a stranger opens first, and a workflow run by hand publishes them. The committed trails keep the absolute paths their commands were typed with: they are evidence, and capture has no redactor |
