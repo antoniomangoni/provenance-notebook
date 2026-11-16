@@ -84,15 +84,21 @@ answer, unchanged.
 
 ### The sandbox (`capture/capture.ts`, `scripts/fleet.sh`)
 
-With `NOTEBOOK_SANDBOX=1`, each traced command runs as `strace … -- bwrap … -- bash -c COMMAND`:
-- `--ro-bind / /`, then the workspace, `TMPDIR` and uv's cache bound read-write;
-- a tmpfs over:
-  - the trail's parent directory (where the sibling trails live);
-  - `NOTEBOOK_MAP`;
-  - the directory the fleet's workspaces share, with the agent's own workspace bound back;
-  - `~/.pi`;
-- every `.env` under `NOTEBOOK_REPO` bound to `/dev/null`;
+With `NOTEBOOK_SANDBOX=1`, each command runs as `strace … -- bwrap … -- bash -c COMMAND`, or without
+strace when tracing is off:
+- `--ro-bind / /`, then the workspace and uv's cache bound back read-write;
+- an empty tmpfs over:
+  - `NOTEBOOK_REPO`, which holds the map, the briefs, every output and `.env`;
+  - the trail's parent directory (where the sibling trails live) and the store;
+  - `NOTEBOOK_MAP`, when it is outside the repository;
+  - the directory the workspaces share, with the agent's own workspace bound back;
+  - `~/.pi` and `PI_CODING_AGENT_DIR`;
 - `--dev /dev --proc /proc --die-with-parent`, with the network shared.
+
+A hidden directory reads as empty, so a command that looks for a sibling's file finds none.
+Capture refuses to start when a path it would hide holds the home directory, or holds the workspace
+other than as its parent. *Amended during the build: the spec first masked `.env` files one by one;
+hiding the whole repository covers them, and `view.txt`, which holds held-out numbers.*
 
 If `bwrap` is missing, capture refuses to start. When sandboxed, capture writes a note at the
 start listing what is hidden. `project_map` runs in capture's own process, outside the sandbox.

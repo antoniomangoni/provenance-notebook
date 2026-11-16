@@ -8,7 +8,9 @@
 # so capture gives the agent its project_map tool. It waits for every agent and prints each
 # trail's check. Watch it with: uv run python project.py serve MAP --live live
 # Each agent's launcher output goes to $TMPDIR/fleet-PREFIX-ROUTE.log. NOTEBOOK_DEMO is the demo
-# the briefs start from (demo/); NOTEBOOK_LIVE is where trails go (live/).
+# the briefs start from (demo/); NOTEBOOK_LIVE is where trails go (live/). Every command an agent runs is
+# sandboxed (NOTEBOOK_SANDBOX=1, spec 8), so the map and the other trails are seen only through project_map;
+# NOTEBOOK_SANDBOX=0 turns that off.
 set -euo pipefail
 
 die() { echo "fleet.sh: $*" >&2; exit 2; }
@@ -33,7 +35,7 @@ done
 PIDS=()
 for route in "${ROUTES[@]}"; do
 	log=${TMPDIR:-/tmp}/fleet-$PREFIX-$route.log
-	NOTEBOOK_MAP=$MAP NOTEBOOK_REPO=$REPO "$REPO/scripts/live.sh" "$BRIEFS/$PREFIX-$route" "$PREFIX-$route" "$@" >"$log" 2>&1 &
+	NOTEBOOK_SANDBOX=${NOTEBOOK_SANDBOX:-1} NOTEBOOK_MAP=$MAP NOTEBOOK_REPO=$REPO "$REPO/scripts/live.sh" "$BRIEFS/$PREFIX-$route" "$PREFIX-$route" "$@" >"$log" 2>&1 &
 	PIDS+=($!)
 	echo "fleet.sh: $PREFIX-$route started (log $log)"
 done
