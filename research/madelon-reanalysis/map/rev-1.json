@@ -1,0 +1,351 @@
+{
+  "version": 1,
+  "project": "madelon-reanalysis",
+  "reason": "What the two trails of 15 November reached, from project.py propose. Both trails reproduced the inherited cross-validated AUC and saw it miss the held-out floor (live-1 step-8, live-2 step-7: the same command on the same code tree and data), and both measured an estimate that agrees once selection is inside cross-validation (live-1 step-13 with diagnose.py, live-2 step-11). The floor was cleared twice, by different methods: live-1 step-18 with L1-penalised logistic regression, live-2 step-19 with a random forest. Each of those observations also meets the other floor node's criteria, since the criteria are the same; the plans that each trail ran say which method it was, so live-1 resolves floor-l1 only and live-2 floor-forest only. The goals explain and floor are reached. compact is open, and its three routes all pass screen next.",
+  "triggered_by": [
+    "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-13",
+    "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-18",
+    "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-8",
+    "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11",
+    "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-19",
+    "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7"
+  ],
+  "goals": [
+    {
+      "id": "explain",
+      "statement": "The inherited result does not hold, and selecting features before cross-validation accounts for it"
+    },
+    {
+      "id": "floor",
+      "statement": "An analysis chosen on pilot data alone reaches a held-out AUC of 0.71, and its own estimate agrees"
+    },
+    {
+      "id": "compact",
+      "statement": "An analysis chosen on pilot data alone reaches a held-out AUC of 0.71 with at most 50 features, and its own estimate agrees"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "reproduce",
+      "statement": "The inherited cross-validated AUC is reproduced",
+      "criteria": [
+        {
+          "name": "inherited-cv",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.75
+        }
+      ]
+    },
+    {
+      "id": "miss",
+      "statement": "The inherited analysis misses the held-out floor",
+      "criteria": [
+        {
+          "name": "below-floor",
+          "measure": "holdout_auc",
+          "comparison": "lt",
+          "threshold": 0.71
+        }
+      ]
+    },
+    {
+      "id": "nested",
+      "statement": "With feature selection inside cross-validation, the estimate agrees with the held-out AUC, which stays below the floor",
+      "criteria": [
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "still-below-floor",
+          "measure": "holdout_auc",
+          "comparison": "lt",
+          "threshold": 0.71
+        }
+      ]
+    },
+    {
+      "id": "floor-l1",
+      "statement": "An L1-penalised model tuned inside cross-validation clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "floor-forest",
+      "statement": "A random forest on all features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "screen",
+      "statement": "A screen fitted on pilot data alone keeps at most 50 features, and a model on them has a nested cross-validated AUC of at least 0.70",
+      "criteria": [
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        },
+        {
+          "name": "screen-cv",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.7
+        }
+      ]
+    },
+    {
+      "id": "compact-knn",
+      "statement": "k-nearest neighbours on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-forest",
+      "statement": "A random forest on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-svm",
+      "statement": "An RBF support vector machine on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "explain",
+      "goal": "explain",
+      "method": "move the feature selection inside cross-validation",
+      "path": [
+        "reproduce",
+        "miss",
+        "nested"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "l1",
+      "goal": "floor",
+      "method": "L1-penalised logistic regression, with selection and tuning inside cross-validation",
+      "path": [
+        "reproduce",
+        "miss",
+        "nested",
+        "floor-l1"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "forest",
+      "goal": "floor",
+      "method": "a random forest on all 500 features",
+      "path": [
+        "reproduce",
+        "miss",
+        "floor-forest"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "knn",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then k-nearest neighbours",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-knn"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "screened-forest",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then a random forest",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-forest"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "svm",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then an RBF support vector machine",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-svm"
+      ],
+      "status": "open"
+    }
+  ],
+  "resolutions": [
+    {
+      "node": "reproduce",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-8",
+      "holds": true
+    },
+    {
+      "node": "miss",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-8",
+      "holds": true
+    },
+    {
+      "node": "nested",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-13",
+      "holds": true
+    },
+    {
+      "node": "floor-l1",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-18",
+      "holds": true
+    },
+    {
+      "node": "reproduce",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "holds": true
+    },
+    {
+      "node": "miss",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "holds": true
+    },
+    {
+      "node": "nested",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11",
+      "holds": true
+    },
+    {
+      "node": "floor-forest",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-19",
+      "holds": true
+    }
+  ],
+  "rev": 1,
+  "at": "2026-11-16T11:06:43Z",
+  "by": "agent:claude-code/claude-opus-5-5",
+  "prev": "sha256:af0453e8a8118f7c321891c7fd0f3f46035ff6f2e32832e252375062b7740897"
+}

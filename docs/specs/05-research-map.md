@@ -202,7 +202,7 @@ file without the field gives the same step 0 as before.
 ### The Madelon map, rev-0
 
 - **project:** `madelon-reanalysis`;
-- **by:** `human:antonio`.
+- **by:** the actor who seals each revision. This session seals as `agent:claude-code/claude-opus-5-5`.
 
 `gap` is `cv_auc − holdout_auc`.
 
