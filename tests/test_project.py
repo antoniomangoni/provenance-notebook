@@ -237,13 +237,57 @@ def test_the_command_line_checks_and_refuses_what_it_does_not_know(tmp_path, cap
 ROUTE1 = ROOT / "live" / "madelon-route-screened-forest"
 
 
-def test_view_names_the_runs_that_read_a_sealed_input_before_a_resolution():
-    revision = copy.deepcopy(first_two()[1]) | {"sealed_inputs": ["data/heldout.csv"]}
+def head_ref(path: Path, step: str) -> str:
+    steps = trail.load(path)
+    return f"probe:{steps[0]['trail']}@{trail.digest(trail.canonical(steps[-1]))}#{step}"
+
+
+def sealed(revision: dict, *resolutions: dict) -> dict:
+    changed = copy.deepcopy(revision) | {"sealed_inputs": ["data/heldout.csv"]}
+    changed["resolutions"] = [*changed["resolutions"], *resolutions]
+    return changed
+
+
+def test_without_traces_the_command_line_is_the_only_lead():
+    hit = {"node": "compact-forest", "cites": head_ref(ROUTE1, "step-45"), "holds": True}
+    peeked = dict(project.peeks(sealed(first_two()[1], hit), trails(LIVE1, LIVE2, ROUTE1), hit))
+    # step-38 and step-41 name the held-out file in their heredoc scripts; step-44, the cited run, is left out.
+    assert peeked["step-38"] == peeked["step-41"] == "names" and "step-44" not in peeked
+
+
+def test_a_re_execution_replaces_the_command_line_and_is_labelled_as_such(tmp_path):
+    hit = {"node": "compact-forest", "cites": head_ref(ROUTE1, "step-45"), "holds": True}
     steps = trail.load(ROUTE1)
-    cites = f"probe:{steps[0]['trail']}@{trail.digest(trail.canonical(steps[-1]))}#step-45"
-    peeked = project.peeks(revision, trails(LIVE1, LIVE2, ROUTE1), {"node": "screen", "cites": cites, "holds": True})
-    # step-38 and step-41 scored candidate designs on the held-out file before step-45's run, step-44.
-    assert {"step-38", "step-41"} <= set(peeked) and "step-44" not in peeked
+    replay = {
+        "trail": trail.probe_id(steps),
+        "head": trail.digest(trail.canonical(steps[-1])),
+        "runs": [
+            {"run": "step-38", "reads": [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]},
+            {"run": "step-41", "reads": [{"ref": "file:data/pilot.csv", "digest": "sha256:" + "0" * 64}]},
+        ],
+    }
+    (tmp_path / "replay.json").write_text(json.dumps(replay))
+    given = project.Trails([LIVE1, LIVE2, ROUTE1], [tmp_path / "replay.json"])
+    peeked = dict(project.peeks(sealed(first_two()[1], hit), given, hit))
+    assert peeked["step-38"] == "read on re-execution" and "step-41" not in peeked
+    revision = alone(sealed(first_two()[1], hit))
+    assert project.check(revision, given) == []
+    (tmp_path / "other.json").write_text(json.dumps(replay | {"head": "sha256:" + "1" * 64}))
+    assert any(
+        "at a head it never had" in error
+        for error in project.check(revision, project.Trails([LIVE1, LIVE2, ROUTE1], [tmp_path / "other.json"]))
+    )
+
+
+def test_a_captured_read_of_a_sealed_input_before_a_holding_resolution_fails_check(tmp_path):
+    copy_of = tmp_path / "route"
+    steps = trail.load(ROUTE1)
+    next(s for s in steps if s["id"] == "step-39")["reads"] = [{"ref": "file:data/heldout.csv", "digest": "sha256:" + "0" * 64}]
+    tamper.rechain(steps, 40)
+    tamper.write(copy_of, steps)
+    hit = {"node": "compact-forest", "cites": head_ref(copy_of, "step-45"), "holds": True}
+    errors = project.check(alone(sealed(first_two()[1], hit)), trails(LIVE1, LIVE2, copy_of))
+    assert errors == ["rev-0: resolution of compact-forest: step-38 read a sealed input before step-45's run"]
 
 
 def test_a_revision_s_instructions_reach_every_brief_and_must_be_text(tmp_path):

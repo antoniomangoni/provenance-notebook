@@ -2,7 +2,7 @@ Milestones on more than one route, and the trails that reached them:
   miss: on explain, l1, forest, search, selected-forest, knn, screened-forest; reached by probe:madelon-2026-11-15-1#step-8, probe:madelon-2026-11-15-2#step-7
   nested: on explain, l1, search, selected-forest; reached by probe:madelon-2026-11-15-1#step-13, probe:madelon-2026-11-15-2#step-11
   reproduce: on explain, l1, forest, search, selected-forest, knn, screened-forest; reached by probe:madelon-2026-11-15-1#step-8, probe:madelon-2026-11-15-2#step-7
-  screen: on knn, screened-forest; reached by probe:madelon-route-screened-forest#step-15
+  screen: on knn, screened-forest; reached by none yet
 
 Files more than one trail used at the same digest:
   file:data/heldout.csv sha256:e0b31cbc8eed…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
@@ -14,3 +14,10 @@ Code more than one trail ran, by tree (a commit differs between repositories, it
 
 Computation repeated across trails: the same command, code tree and inputs:
   uv run python analysis.py: madelon-2026-11-15-1 step-7, madelon-2026-11-15-2 step-6
+
+Re-executed with retrace.py, from each run's code snapshot (a replay, not the run itself):
+  madelon-2026-11-15-1: 10 runs; 4 of 4 metrics files reproduced byte for byte
+  madelon-2026-11-15-2: 5 runs; 3 of 3 metrics files reproduced byte for byte
+  madelon-route-knn: 14 runs; 2 of 2 metrics files reproduced byte for byte; exit code differed: step-42
+  madelon-route-screened-forest: 15 runs; 3 of 3 metrics files reproduced byte for byte
+  madelon-route-svm: 11 runs; 5 of 5 metrics files reproduced byte for byte

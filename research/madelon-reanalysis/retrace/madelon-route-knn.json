@@ -1,0 +1,597 @@
+{
+  "version": 1,
+  "trail": "madelon-reanalysis/probe:madelon-route-knn",
+  "head": "sha256:b5c18bf71ba8e7d94f5ec93234a706394638301ac6d170e9f6c8be7df440e629",
+  "at": "2026-11-16T13:00:14Z",
+  "strace": "strace -- version 6.8",
+  "note": "A re-execution of the recorded runs from their code snapshots, not the runs themselves.",
+  "runs": [
+    {
+      "run": "step-2",
+      "observation": "step-3",
+      "exit": {
+        "recorded": 2,
+        "replayed": 2
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": null,
+        "same": null
+      },
+      "seconds": {
+        "recorded": 0.0,
+        "replayed": 0.0
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:146879f4c40ffb484c59c247e737bea8ef23e8c21a7f79f483158587d2af924c"
+        }
+      ]
+    },
+    {
+      "run": "step-6",
+      "observation": "step-7",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": "sha256:b4568fef894ae8fa05fca578d614328fdac31e8a2c284223896469eb5b879510",
+        "same": null
+      },
+      "seconds": {
+        "recorded": 15.8,
+        "replayed": 13.2
+      },
+      "reads": [
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:explore_knn.py",
+          "digest": "sha256:ebc5befe614ceddc3a1a6358dd949dd693761b1de538973c6725613739cb8a0f"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-10",
+      "observation": "step-11",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": "sha256:3c891ad744f354d7f3b28b9d415acfd569802f588988de1b96e82c5e61f9b542",
+        "same": null
+      },
+      "seconds": {
+        "recorded": 34.4,
+        "replayed": 28.0
+      },
+      "reads": [
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:explore2.py",
+          "digest": "sha256:3f533ab0635175d35ab34ba4b3d7dab5ef3c79e034b6c7e7eb72f96db02b169d"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-14",
+      "observation": "step-15",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": "sha256:cc8358bac85bd915404f40b398160fc3226ca1a4029797ade1f7bfc38591e46e",
+        "same": null
+      },
+      "seconds": {
+        "recorded": 22.9,
+        "replayed": 24.7
+      },
+      "reads": [
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:explore3.py",
+          "digest": "sha256:6ba6a0e3595f8cb0e74d0fcdf0cbc8a1575269da04da7e44b17b7855d7647696"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-18",
+      "observation": "step-19",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": "sha256:bc91822b96f09aaa6888abac7518b66e1c870a9a5176bb036859fd534dea24fd",
+        "same": null
+      },
+      "seconds": {
+        "recorded": 11.4,
+        "replayed": 9.2
+      },
+      "reads": [
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:explore4.py",
+          "digest": "sha256:fa0c714697b46fdff11f3f889a72db48cfb2b55a7cc8f5e65f271e3e85e22836"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-22",
+      "observation": "step-23",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": "sha256:530e390f1c1ceae418541f168ddfae4d2061dbe3dd458f26ca5510c2fc2f377f",
+        "same": null
+      },
+      "seconds": {
+        "recorded": 11.5,
+        "replayed": 9.2
+      },
+      "reads": [
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:explore5.py",
+          "digest": "sha256:3b395484e18fca0d7eac45f4cd0ca0c23c99234b269093ec483938fc7bdb226b"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-26",
+      "observation": "step-27",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": null,
+        "same": null
+      },
+      "seconds": {
+        "recorded": 5.8,
+        "replayed": 7.5
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:660a654c9272704a413a89ab3579908dbfd741ec233996abac5176031285974c"
+        },
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:preflight.py",
+          "digest": "sha256:e9081fba839197df03a327f980504c3d040106410bc3cd8d0bf6807f1f9d0cc9"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-29",
+      "observation": "step-30",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": "sha256:dd63db748943b4a4bfcaf6f0c9b7006371306a425f0270f86dc51a247c7b3d74",
+        "replayed": "sha256:dd63db748943b4a4bfcaf6f0c9b7006371306a425f0270f86dc51a247c7b3d74",
+        "same": true
+      },
+      "seconds": {
+        "recorded": 4.7,
+        "replayed": 7.6
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:660a654c9272704a413a89ab3579908dbfd741ec233996abac5176031285974c"
+        },
+        {
+          "ref": "file:data/heldout.csv",
+          "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+        },
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:out/metrics.json",
+          "digest": "sha256:dd63db748943b4a4bfcaf6f0c9b7006371306a425f0270f86dc51a247c7b3d74"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-32",
+      "observation": "step-33",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": null,
+        "same": null
+      },
+      "seconds": {
+        "recorded": 3.8,
+        "replayed": 7.5
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:376947bc8fa2221a7e342432dfb5be784028fffaa1102fd03fb5132441a645ca"
+        },
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:preflight.py",
+          "digest": "sha256:cb51d10f5085b1e70fdcdc5a96484fe6916186d4e8a1ffafbc4dfe1a8f9b41db"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-35",
+      "observation": "step-36",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": "sha256:a986b52e0fd85adbf125e4df5d5d68421e6fc9bbbf18782509544ef077db5b1d",
+        "same": null
+      },
+      "seconds": {
+        "recorded": 8.8,
+        "replayed": 9.8
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:376947bc8fa2221a7e342432dfb5be784028fffaa1102fd03fb5132441a645ca"
+        },
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:explore6.py",
+          "digest": "sha256:858aa92277f939601f456a957c95094f94f1c5ccb1d97890aa2cd450691e6ea6"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-39",
+      "observation": "step-40",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": "sha256:b2c210b513d1abaf87d40596a5c5cf00c5ad27b783e9c9ea97ae1bae28fcb74f",
+        "replayed": "sha256:b2c210b513d1abaf87d40596a5c5cf00c5ad27b783e9c9ea97ae1bae28fcb74f",
+        "same": true
+      },
+      "seconds": {
+        "recorded": 3.1,
+        "replayed": 6.0
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:a6b8a488c331c730474244b4db31a1e464a08d856fff43a4db6e8c918461db98"
+        },
+        {
+          "ref": "file:data/heldout.csv",
+          "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+        },
+        {
+          "ref": "file:data/pilot.csv",
+          "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+        },
+        {
+          "ref": "file:out/metrics.json",
+          "digest": "sha256:b2c210b513d1abaf87d40596a5c5cf00c5ad27b783e9c9ea97ae1bae28fcb74f"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    },
+    {
+      "run": "step-42",
+      "observation": "step-43",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 1
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": null,
+        "same": null
+      },
+      "seconds": {
+        "recorded": 0.0,
+        "replayed": 0.1
+      },
+      "reads": [
+        {
+          "ref": "file:.gitignore",
+          "digest": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84"
+        },
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:a6b8a488c331c730474244b4db31a1e464a08d856fff43a4db6e8c918461db98"
+        },
+        {
+          "ref": "file:explore2.py",
+          "digest": "sha256:3f533ab0635175d35ab34ba4b3d7dab5ef3c79e034b6c7e7eb72f96db02b169d"
+        },
+        {
+          "ref": "file:explore3.py",
+          "digest": "sha256:6ba6a0e3595f8cb0e74d0fcdf0cbc8a1575269da04da7e44b17b7855d7647696"
+        },
+        {
+          "ref": "file:explore4.py",
+          "digest": "sha256:fa0c714697b46fdff11f3f889a72db48cfb2b55a7cc8f5e65f271e3e85e22836"
+        },
+        {
+          "ref": "file:explore5.py",
+          "digest": "sha256:3b395484e18fca0d7eac45f4cd0ca0c23c99234b269093ec483938fc7bdb226b"
+        },
+        {
+          "ref": "file:explore6.py",
+          "digest": "sha256:858aa92277f939601f456a957c95094f94f1c5ccb1d97890aa2cd450691e6ea6"
+        },
+        {
+          "ref": "file:explore_knn.py",
+          "digest": "sha256:ebc5befe614ceddc3a1a6358dd949dd693761b1de538973c6725613739cb8a0f"
+        },
+        {
+          "ref": "file:preflight.py",
+          "digest": "sha256:cb51d10f5085b1e70fdcdc5a96484fe6916186d4e8a1ffafbc4dfe1a8f9b41db"
+        }
+      ]
+    },
+    {
+      "run": "step-44",
+      "observation": "step-45",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": null,
+        "same": null
+      },
+      "seconds": {
+        "recorded": 0.0,
+        "replayed": 0.0
+      },
+      "reads": [
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:a6b8a488c331c730474244b4db31a1e464a08d856fff43a4db6e8c918461db98"
+        },
+        {
+          "ref": "file:explore2.py",
+          "digest": "sha256:3f533ab0635175d35ab34ba4b3d7dab5ef3c79e034b6c7e7eb72f96db02b169d"
+        },
+        {
+          "ref": "file:explore3.py",
+          "digest": "sha256:6ba6a0e3595f8cb0e74d0fcdf0cbc8a1575269da04da7e44b17b7855d7647696"
+        },
+        {
+          "ref": "file:explore4.py",
+          "digest": "sha256:fa0c714697b46fdff11f3f889a72db48cfb2b55a7cc8f5e65f271e3e85e22836"
+        },
+        {
+          "ref": "file:explore5.py",
+          "digest": "sha256:3b395484e18fca0d7eac45f4cd0ca0c23c99234b269093ec483938fc7bdb226b"
+        },
+        {
+          "ref": "file:explore6.py",
+          "digest": "sha256:858aa92277f939601f456a957c95094f94f1c5ccb1d97890aa2cd450691e6ea6"
+        },
+        {
+          "ref": "file:explore_knn.py",
+          "digest": "sha256:ebc5befe614ceddc3a1a6358dd949dd693761b1de538973c6725613739cb8a0f"
+        },
+        {
+          "ref": "file:preflight.py",
+          "digest": "sha256:cb51d10f5085b1e70fdcdc5a96484fe6916186d4e8a1ffafbc4dfe1a8f9b41db"
+        }
+      ]
+    },
+    {
+      "run": "step-46",
+      "observation": "step-47",
+      "cwd_rewritten": true,
+      "exit": {
+        "recorded": 0,
+        "replayed": 0
+      },
+      "metrics": {
+        "recorded": null,
+        "replayed": null,
+        "same": null
+      },
+      "seconds": {
+        "recorded": 0.8,
+        "replayed": 1.7
+      },
+      "reads": [
+        {
+          "ref": "file:.gitignore",
+          "digest": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84"
+        },
+        {
+          "ref": "file:README.md",
+          "digest": "sha256:5c0147330f033b84af1ccb89da49b2c06154d312f077dbf9840e8f5ab1699c62"
+        },
+        {
+          "ref": "file:analysis.py",
+          "digest": "sha256:a6b8a488c331c730474244b4db31a1e464a08d856fff43a4db6e8c918461db98"
+        },
+        {
+          "ref": "file:evidence/explore2.py",
+          "digest": "sha256:3f533ab0635175d35ab34ba4b3d7dab5ef3c79e034b6c7e7eb72f96db02b169d"
+        },
+        {
+          "ref": "file:evidence/explore3.py",
+          "digest": "sha256:6ba6a0e3595f8cb0e74d0fcdf0cbc8a1575269da04da7e44b17b7855d7647696"
+        },
+        {
+          "ref": "file:evidence/explore4.py",
+          "digest": "sha256:fa0c714697b46fdff11f3f889a72db48cfb2b55a7cc8f5e65f271e3e85e22836"
+        },
+        {
+          "ref": "file:evidence/explore5.py",
+          "digest": "sha256:3b395484e18fca0d7eac45f4cd0ca0c23c99234b269093ec483938fc7bdb226b"
+        },
+        {
+          "ref": "file:evidence/explore6.py",
+          "digest": "sha256:858aa92277f939601f456a957c95094f94f1c5ccb1d97890aa2cd450691e6ea6"
+        },
+        {
+          "ref": "file:evidence/explore_knn.py",
+          "digest": "sha256:ebc5befe614ceddc3a1a6358dd949dd693761b1de538973c6725613739cb8a0f"
+        },
+        {
+          "ref": "file:evidence/preflight.py",
+          "digest": "sha256:cb51d10f5085b1e70fdcdc5a96484fe6916186d4e8a1ffafbc4dfe1a8f9b41db"
+        },
+        {
+          "ref": "file:pyproject.toml",
+          "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+        },
+        {
+          "ref": "file:uv.lock",
+          "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+        }
+      ]
+    }
+  ]
+}

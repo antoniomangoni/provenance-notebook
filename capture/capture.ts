@@ -156,6 +156,48 @@ export function parameters(command: string, names: string[]): Step[] {
 	return found;
 }
 
+// ---------------------------------------------------------------------------------------------
+// Tracing: which files a command opened. strace follows the command and every process it starts;
+// -y prints the path each successful open returned, so a relative path is already resolved.
+
+const OPENED = /^\d+\s+(?:open|openat|openat2)\((.*)\)\s+=\s+\d+<(.+)>$/;
+const UNTRACKED = [".git", ".venv", "__pycache__"];
+
+function quote(text: string): string {
+	return "'" + text.replace(/'/g, "'\\''") + "'";
+}
+
+// strace on PATH, unless NOTEBOOK_TRACE is 0; null means commands run untraced and their observations have no reads.
+export function tracer(env: NodeJS.ProcessEnv = process.env): string | null {
+	if (env.NOTEBOOK_TRACE === "0") return null;
+	for (const dir of (env.PATH ?? "").split(":")) if (dir && existsSync(join(dir, "strace"))) return join(dir, "strace");
+	return null;
+}
+
+export function tracedCommand(command: string, strace: string, trace: string): string {
+	return `${quote(strace)} -f -qq -y -e trace=open,openat,openat2 -e status=successful -o ${quote(trace)} -- bash -c ${quote(command)}`;
+}
+
+// The workspace files a trace shows opened for reading, workspace-relative, sorted, at their digest now.
+export function readsOf(trace: string, workspace: string): Step[] {
+	const root = realpathSync(workspace);
+	const found = new Set<string>();
+	for (const line of trace.split("\n")) {
+		const opened = OPENED.exec(line);
+		if (!opened || opened[1].includes("O_WRONLY") || opened[1].includes("O_DIRECTORY")) continue;
+		const path = opened[2];
+		if (!path.startsWith(root + sep)) continue;
+		const relative = path.slice(root.length + 1);
+		if (relative.split(sep).some((part) => UNTRACKED.includes(part))) continue;
+		try {
+			if (statSync(path).isFile()) found.add(relative);
+		} catch {
+			// Opened, then removed before the command ended: there is no content to cite.
+		}
+	}
+	return [...found].sort().slice(0, 500).map((relative) => ({ ref: `file:${relative}`, digest: digest(readFileSync(join(root, relative))) }));
+}
+
 // The runner's intent, written before the command executes.
 export function runStep(command: string, commit: string, environment: string | undefined, kept: Step[], inputs: Step[], plan: Step): Step {
 	return {
@@ -200,7 +242,7 @@ export type Metrics = { digest: string; measures: Record<string, number> };
 // The runner's observation of a finished run. Checks and outcome follow trail.check_observation
 // exactly, because the checker recomputes both: a check for each expectation whose measure is
 // there, `failed` for a non-zero exit nobody expected, `inconclusive` when a check is missing.
-export function observationStep(run: Step, plan: Step, exitCode: number, durationMs: number, metrics: Metrics | null): Step {
+export function observationStep(run: Step, plan: Step, exitCode: number, durationMs: number, metrics: Metrics | null, reads?: Step[]): Step {
 	const measures = metrics?.measures ?? {};
 	const expectations: Expectation[] = plan.expectations;
 	const checks: Step[] = [];
@@ -218,6 +260,7 @@ export function observationStep(run: Step, plan: Step, exitCode: number, duratio
 	const step: Step = {
 		kind: "observation", by: RUNNER, hook: "pi:tool_result", summary: "", exit_code: exitCode, duration_ms: Math.max(0, Math.round(durationMs)),
 		...(source ? { outputs: [source], measures_source: source, measures: Object.entries(measures).map(([name, value]) => ({ name, value })) } : {}),
+		...(reads ? { reads } : {}),
 		checks, outcome, ...(outcome === "failed" ? { error: { class: "exit" } } : {}),
 		links: [
 			{ relation: "observes", target: run.id, status: "confirmed" },
@@ -394,7 +437,11 @@ export default function (pi: ExtensionAPI) {
 	let tokens = 0;
 	let stopped = false;
 	// What is known of a command between its tool_call and its tool_result, by call id.
-	type Pending = { run: Step; plan: Step; cwd: string; before: Stamp; started: number; exitCode?: number | null; ended?: number; fresh?: Uint8Array | null };
+	type Pending = {
+		run: Step; plan: Step; cwd: string; before: Stamp; started: number; exitCode?: number | null; ended?: number; fresh?: Uint8Array | null;
+		trace?: string; reads?: Step[];
+	};
+	const strace = tracer();
 	const pending = new Map<string, Pending>();
 
 	pi.on("session_start", async (_event, ctx) => {
@@ -446,8 +493,13 @@ export default function (pi: ExtensionAPI) {
 			const tool = createBashToolDefinition(ctx.cwd, { operations: { exec: async (command, cwd, options) => {
 				const kept = pending.get(id);
 				if (kept) Object.assign(kept, { before: stamp(join(kept.cwd, METRICS)), started: Date.now() });
+				let run = command;
+				if (kept && strace) {
+					kept.trace = join(mkdtempSync(join(tmpdir(), "notebook-trace-")), "trace");
+					run = tracedCommand(command, strace, kept.trace);
+				}
 				try {
-					const result = await local.exec(command, cwd, options);
+					const result = await local.exec(run, cwd, options);
 					if (kept) kept.exitCode = result.exitCode;
 					return result;
 				} finally {
@@ -466,6 +518,11 @@ export default function (pi: ExtensionAPI) {
 		const path = join(kept.cwd, METRICS);
 		const after = stamp(path);
 		kept.fresh = after.exists && (!kept.before.exists || after.modified !== kept.before.modified) ? readFileSync(path) : null;
+		if (kept.trace) {
+			// A trace that was never written means the command did not start under strace: unknown, not empty.
+			kept.reads = existsSync(kept.trace) ? readsOf(readFileSync(kept.trace, "utf8"), kept.cwd) : undefined;
+			rmSync(dirname(kept.trace), { recursive: true, force: true });
+		}
 	}
 
 	pi.on("tool_call", async (event, ctx) => {
@@ -506,7 +563,7 @@ export default function (pi: ExtensionAPI) {
 			const stored = join(config.store, metrics.digest.split(":")[1]);
 			if (!existsSync(stored)) writeFileSync(stored, kept.fresh);
 		}
-		const observation = await trail.write(observationStep(kept.run, kept.plan, kept.exitCode ?? -1, kept.ended! - kept.started, metrics));
+		const observation = await trail.write(observationStep(kept.run, kept.plan, kept.exitCode ?? -1, kept.ended! - kept.started, metrics, kept.reads));
 		let line = receipt(kept.run, observation, kept.plan);
 		if (kept.fresh && !measures) {
 			await trail.write(noteStep(observation, "pi:tool_result", `${METRICS} was not usable for ${observation.id}`,

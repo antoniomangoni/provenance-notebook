@@ -69,7 +69,7 @@ def digest(revision: dict) -> str:
 class Trails:
     """The trails a map cites, by probe id, with the head after each step and where they live."""
 
-    def __init__(self, paths: list[Path]):
+    def __init__(self, paths: list[Path], retraced: list[Path] = ()):
         self.steps, self.heads, self.paths = {}, {}, {}
         for path in paths:
             steps = trail.load(path)
@@ -77,6 +77,29 @@ class Trails:
                 continue
             probe = trail.probe_id(steps)
             self.steps[probe], self.heads[probe], self.paths[probe] = steps, trail.heads(steps), path
+        # Re-executions by retrace.py, by probe and run: what each run read when it was run again.
+        self.retraced, self.problems = {}, []
+        for path in retraced:
+            kept = json.loads(Path(path).read_text())
+            if kept.get("trail") not in self.steps:
+                self.problems.append(f"{path}: re-executes {kept.get('trail')}, which is not among the trails given")
+            elif kept.get("head") not in self.heads[kept["trail"]]:
+                self.problems.append(f"{path}: re-executes {kept['trail']} at a head it never had")
+            else:
+                self.retraced[kept["trail"]] = {run["run"]: run for run in kept["runs"]}
+
+    def read(self, probe: str, run: dict, paths: list[str]) -> str | None:
+        """How the trail knows the run opened one of these paths: "read" when its observation was traced,
+        "read on re-execution" when only retrace.py saw it, "names" when only its command line does, and
+        None when none of them shows it. A traced observation that did not open one settles it: None."""
+        refs = {f"file:{path}" for path in paths}
+        observation = next((s for s in self.steps[probe] if s["kind"] == "observation" and trail.observed(s) == run["id"]), None)
+        if observation is not None and "reads" in observation:
+            return "read" if refs & {r["ref"] for r in observation["reads"]} else None
+        again = self.retraced.get(probe, {}).get(run["id"])
+        if again is not None and again.get("reads") is not None:
+            return "read on re-execution" if refs & {r["ref"] for r in again["reads"]} else None
+        return "names" if any(path in run["command"]["shown"] for path in paths) else None
 
     def cite(self, ref: str, project: str) -> tuple[str, dict] | str:
         """The probe and the step a pinned reference names, or what is wrong with it."""
@@ -237,6 +260,11 @@ def check_revision(revision: dict, trails: Trails) -> list[str]:
         elif recomputed != resolution["holds"]:
             said = "holds" if resolution["holds"] else "does not hold"
             errors.append(f"{here} says it {said}, but {step['id']}'s measures say otherwise")
+        if resolution["holds"]:
+            # Only a traced observation is the run itself; a re-execution or a command line is a lead.
+            caught = [run for run, how in peeks(revision, trails, resolution) if how == "read"]
+            if caught:
+                errors.append(f"{here}: {', '.join(caught)} read a sealed input before {step['id']}'s run")
     return errors
 
 
@@ -256,7 +284,7 @@ def check(revs: list[dict], trails: Trails) -> list[str]:
     for probe, steps in trails.steps.items():
         errors += [f"{probe}: {error}" for error in trail.check(steps)]
     errors += trail.merge(list(trails.steps.values()))[2]
-    return errors
+    return errors + trails.problems
 
 
 # ---------------------------------------------------------------------------------------------
@@ -568,6 +596,19 @@ def shared(revision: dict, trails: Trails) -> list[str]:
         )
     if not found:
         lines.append("  none")
+    if trails.retraced:
+        lines += ["", "Re-executed with retrace.py, from each run's code snapshot (a replay, not the run itself):"]
+        for probe, runs in sorted(trails.retraced.items()):
+            # Only a run whose observation cites a metrics file has something to reproduce.
+            wrote = [run for run in runs.values() if (run.get("metrics") or {}).get("recorded")]
+            same = [run["run"] for run in wrote if run["metrics"]["recorded"] == run["metrics"]["replayed"]]
+            differ = [run["run"] for run in wrote if run["metrics"]["recorded"] != run["metrics"]["replayed"]]
+            exits = [run["run"] for run in runs.values() if "exit" in run and run["exit"]["recorded"] != run["exit"]["replayed"]]
+            lines.append(
+                f"  {probe.split(':', 1)[1]}: {len(runs)} runs; {len(same)} of {len(wrote)} metrics files reproduced byte for byte"
+                + (f"; differed: {', '.join(differ)}" if differ else "")
+                + (f"; exit code differed: {', '.join(exits)}" if exits else "")
+            )
     return lines
 
 
@@ -647,10 +688,9 @@ def graph(revision: dict, trails: Trails) -> tuple[list[dict], list[dict], list[
     return nodes, edges, errors
 
 
-def peeks(revision: dict, trails: Trails, resolution: dict) -> list[str]:
-    """Runs before the cited observation's own run, in its trail, whose command names a sealed input.
-    A script that reads the file without naming it on the command line is not found: this is a lead
-    for a reader, not a check."""
+def peeks(revision: dict, trails: Trails, resolution: dict) -> list[tuple[str, str]]:
+    """Runs before the cited observation's own run, in its trail, that opened a sealed input, each with
+    how that is known (see Trails.read). Only a "read" is the run itself, traced as it ran."""
     sealed_inputs = revision.get("sealed_inputs", [])
     found = trails.cite(resolution["cites"], revision["project"])
     if not sealed_inputs or isinstance(found, str):
@@ -658,9 +698,9 @@ def peeks(revision: dict, trails: Trails, resolution: dict) -> list[str]:
     probe, observation = found
     own = trail.observed(observation)
     return [
-        step["id"]
+        (step["id"], how)
         for step in trails.steps[probe][: observation["seq"]]
-        if step["kind"] == "run" and step["id"] != own and any(path in step["command"]["shown"] for path in sealed_inputs)
+        if step["kind"] == "run" and step["id"] != own and (how := trails.read(probe, step, sealed_inputs))
     ]
 
 
@@ -690,7 +730,7 @@ def show(revision: dict, trails: Trails) -> list[str]:
                 name = resolution["cites"].split("@")[0]
                 lines.append(f"      {'reached' if resolution['holds'] else 'refuted'} by {name} {step['id']}: {step['summary']}")
                 if peeked := peeks(revision, trails, resolution):
-                    lines.append(f"        before it, runs whose command names a sealed input: {', '.join(peeked)}")
+                    lines.append(f"        before it, a sealed input: {', '.join(f'{run} {how}' for run, how in peeked)}")
     lines += ["", "Next, the most shared first:"]
     for row in ranked(revision) or []:
         goals = f"; goals not yet reached: {', '.join(row['open_goals'])}" if row["open_goals"] else ""
@@ -706,16 +746,17 @@ def show(revision: dict, trails: Trails) -> list[str]:
 OPTIONS = ("--trails", "--out", "--by", "--demo", "--at")
 
 
-def parse(argv: list[str]) -> tuple[list[str], list[Path], dict[str, str], bool]:
-    args, paths, named, csv = [], [], {}, False
+def parse(argv: list[str]) -> tuple[list[str], list[Path], list[Path], dict[str, str], bool]:
+    args, paths, retraced, named, csv = [], [], [], {}, False
     rest = list(argv)
     while rest:
         word = rest.pop(0)
         if word == "--csv":
             csv = True
-        elif word == "--trails":
+        elif word in ("--trails", "--reads"):
+            into = paths if word == "--trails" else retraced
             while rest and not rest[0].startswith("--"):
-                paths.append(Path(rest.pop(0)))
+                into.append(Path(rest.pop(0)))
         elif word in OPTIONS:
             if not rest or rest[0].startswith("--"):
                 raise Usage(f"project.py: {word} needs a value")
@@ -724,16 +765,16 @@ def parse(argv: list[str]) -> tuple[list[str], list[Path], dict[str, str], bool]
             raise Usage(f"project.py: unknown option {word}")
         else:
             args.append(word)
-    return args, paths, named, csv
+    return args, paths, retraced, named, csv
 
 
 def main(argv: list[str]) -> int:
     try:
-        args, paths, named, csv = parse(argv[1:])
+        args, paths, retraced, named, csv = parse(argv[1:])
         if len(args) < 2:
             raise Usage("usage: project.py COMMAND MAP --trails TRAIL... [options]; see the docstring")
         command, directory = args[0], Path(args[1])
-        trails = Trails(paths)
+        trails = Trails(paths, retraced)
         revs = revisions(directory)
         if command == "seal":
             if len(args) != 3 or "by" not in named:
