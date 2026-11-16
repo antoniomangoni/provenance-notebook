@@ -72,6 +72,39 @@ Every live attempt is committed under `live/`: twelve trails, all by the same mo
 | Re-executing five trails under a file trace | Two credits were withdrawn: designs judged "pilot-only" from their command lines had opened the held-out file. 17 of 17 metrics files were reproduced byte for byte | [the map](research/madelon-reanalysis/README.md#checked-not-judged) |
 | Two fleets of three agents sharing one map | The first reached nothing. In the second, agents built on each other's steps and two routes reached the goal; one held-out result leaked between agents, and the leak is disclosed and closed | [the map](research/madelon-reanalysis/README.md#agents-sharing-the-map) |
 | One agent in a sandbox | The sandbox held: no command reached outside its workspace, and the held-out file was never opened. The run reached nothing. The file trace slowed its first search thirteen times, and the wall clock ended it there | [the map](research/madelon-reanalysis/README.md#the-sandboxed-run) |
+| How sure the map's marks are, and a second model as forecaster | Every ✓ and ✗ at the floor is within noise of it (below). A second model forecast 22 settled questions from text code had checked was blind to the outcome, and beat the code-only baselines. On plans, its lead came from text that already held held-out scores | [the map](research/madelon-reanalysis/README.md#how-sure-the-marks-are) |
+
+### How sure the marks are
+
+A milestone is ✓ when one observation's measures meet its criteria. `beliefs.py` says how far
+each measure stood from its threshold. The held-out file has 1,100 rows of each class, so an AUC
+of 0.71 has a standard error of 0.0109:
+
+| Milestone | Held-out AUC | From the 0.71 floor | P(true AUC ≥ 0.71) |
+| --- | --- | --- | --- |
+| floor-selected-forest ✓ | 0.7214 | +1.05 SE | 0.85 |
+| compact-vote ✓ | 0.7190 | +0.83 SE | 0.80 |
+| compact-stable-forest ✓ | 0.7125 | +0.23 SE | 0.59 |
+| compact-knn ✗ | 0.7090 | −0.09 SE | 0.46 |
+| compact-forest ✗ | 0.6989 | −1.02 SE | 0.15 |
+
+`compact` was reached by two of four routes scored on the same file. The chance that at least one
+of the two truly clears the floor is 0.80 to 0.92, and neither route's 95% lower bound clears it.
+The probabilities assume a flat prior. The marks stand: `check` decides them, and this report only
+advises.
+
+The map is a small belief network: a route is the AND of its milestones, a goal the OR of its
+routes. A milestone's Markov blanket (the milestone before it, what follows, the other milestones
+leading there) is what bears on it. It is also what a second model, Gemma 4 31B, was shown to
+forecast each milestone, alongside each plan's trail up to the plan. Code built every text,
+recorded its digest and checked that it did not name the run that settled it. Code also did all
+the scoring.
+On 8 milestones the model's Brier score was 0.25, against 0.31 for both code-only forecasters.
+On 14 plans it was 0.18 against 0.29, but 12 of those plans came after their trail had opened the
+held-out file. On the other two, the model did worse than the base rate. These are backtests, and
+22 questions cannot rank forecasters. Four open milestones carry forecasts that a later run will
+settle ([scores](research/madelon-reanalysis/forecasts/scores.txt),
+[report](research/madelon-reanalysis/beliefs.txt), [spec 10](docs/specs/10-beliefs.md)).
 
 The demo task is constructed: the inherited script was written for this repository to show a
 known pitfall (feature selection outside cross-validation) on public data. No published analysis
@@ -124,6 +157,8 @@ the details, and a scripted provider that replays tool calls with no model.
 | `project.py view`, `shared`, `next`, `status` | The map as text, what routes share, what to run next, and the live state |
 | `project.py propose`, `seal` | Drafts the next revision from the trails; seals it |
 | `project.py page`, `serve` | The map as one static page, or live on 127.0.0.1 |
+| `beliefs.py show MAP --live DIR` | How sure each mark is, each open milestone's Markov blanket, and which to run next |
+| `beliefs.py questions`, `collect`, `score`; `scripts/forecast.sh` | Asks a model to forecast from text checked blind to the outcome, and scores it against code-only forecasters |
 | `retrace.py DIR` | Re-executes a trail's runs from their code snapshots under a file trace |
 | `tamper.py DIR …` | Runs the forgery sequence on a copy of a trail |
 | `readers.py texts`, `ask`, `grade` | The reader check |
@@ -148,6 +183,9 @@ the details, and a scripted provider that replays tool calls with no model.
   its `by`, and no live trail holds a person's review. No person has yet confirmed or disputed one.
 - **Cheap tracing.** The file trace slowed one multithreaded search from 52 to 701 seconds, and that
   ended the sandboxed run before it scored anything.
+- **That a ✓ would hold again.** The belief report rests on a declared standard error, a flat
+  prior and routes taken as independent. Where a milestone has fewer than two scored siblings it
+  falls back to a crude rate. The forecasts are 22 backtests.
 - **Generality.** One task, one model, one agent host. The reader check used models as readers.
 
 ## Layout
@@ -156,7 +194,7 @@ the details, and a scripted provider that replays tool calls with no model.
 | --- | --- |
 | `trail.py`, `step.schema.json`, `view.py` | The checker, the schema of one step, and the reviewer's page |
 | `capture/` | The Pi extension that writes steps as the agent works, and its scripted provider |
-| `project.py`, `mapview.py` | Research maps: the checker, and the page that draws them |
+| `project.py`, `mapview.py`, `beliefs.py` | Research maps: the checker, the page that draws them, and beliefs and forecasts over them |
 | `retrace.py`, `tamper.py`, `readers.py` | Re-execution under a trace, the forgery sequence, the reader check |
 | `demo/` | The task: an inherited analysis with a known pitfall |
 | `live/` | Every trail an agent wrote, with its transcript and code snapshots |

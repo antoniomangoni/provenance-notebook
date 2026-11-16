@@ -201,6 +201,43 @@ is visible, and the map only records it because a revision cited the first score
 `propose` now marks a candidate that follows misses of the same milestone (`after_misses`). That
 puts the second look in front of whoever seals the revision.
 
+## How sure the marks are
+
+`beliefs.py show` ([beliefs.txt](beliefs.txt)) reads the map as a belief network, with the noise
+declared in [beliefs/assumptions.json](beliefs/assumptions.json): a held-out AUC near 0.71 on
+1,100 rows of each class has a standard error of 0.0109. Every resolution at the floor is within
+noise: `floor-selected-forest` stands 1.05 standard errors above it, `compact-vote` 0.83,
+`compact-stable-forest` 0.23, and `compact-knn` was refuted 0.09 below it. `compact` was reached
+by two of the four routes scored on the held-out file. The chance that at least one of the two
+truly clears the floor is 0.80 if their errors are shared and 0.92 if independent.
+
+For `compact-boost`, the one open milestone with scored siblings, the blanket's four scores
+(mean 0.7098) give it an even chance, 0.49. The three open `floor` routes have no scored sibling
+but `floor-selected-forest`, so their 0.75 is a crude rate. Ranked by what settling each would
+tell about its goal, `compact-boost` comes first (0.019 bits), as `next` also puts it. Both goals
+are already near certain under these assumptions, so no open run would tell much.
+
+[forecasts/scores.txt](forecasts/scores.txt) scores a second model, Gemma 4 31B on Berget, asked
+26 questions once each, with no tools: the 8 milestones whose first resolution stands, each at
+the revision before it, the 4 open ones, and the 14 plans whose first run settled them. Code
+built each text and checked it was blind to its outcome, and code scored every answer. Five
+milestone questions could not be asked, because the credit was later withdrawn or the milestone
+appeared with its resolution. On the settled ones:
+
+| Questions | Gemma 4 31B | code:base-rate | code:blanket |
+| --- | --- | --- | --- |
+| 8 milestones | Brier 0.246 | 0.311 | 0.313 |
+| 14 plans | 0.180 | 0.287 | |
+| the 2 plans no earlier run had opened the held-out file before | 0.425 | 0.217 | |
+
+The model's lead on plans comes from trails that had already opened the held-out file. On
+`madelon-route-screened-forest` step-43 it answered 0.9 after reading, in the agent's own
+reasoning, held-out scores that step-41 printed. Both the model and the blanket gave
+`compact-stable-forest` and `compact-vote` 0.15 to 0.24 at rev-8, after two refutations. Both
+were then reached, within noise of the floor. For the open milestones, the model gives
+`compact-boost` 0.60, `floor-search` 0.90, and `floor-l1` and `floor-forest` 0.10; a later run
+scores them.
+
 ## Limits
 
 - **Methods.** `check` recomputes criteria, not methods. Rev-2 exists because two method claims
@@ -217,5 +254,7 @@ puts the second look in front of whoever seals the revision.
   order the routes fared in, but they are not measures, so `next` does not use them.
 - **The trace is slow.** It cost about thirteen times on the one command measured both ways
   ([above](#the-sandboxed-run)), and it ended the sandboxed run before it scored anything.
+- **Beliefs are advisory and rest on assumptions.** A declared standard error, a flat prior, and
+  routes taken as independent. The forecasts are 22 backtests, too few to rank forecasters.
 - **Scale.** One model, one task, three steered runs, two fleets of three agents and one sandboxed run: this demonstrates
   the mechanism, not a study of it.

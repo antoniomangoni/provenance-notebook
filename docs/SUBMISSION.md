@@ -53,6 +53,10 @@ held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
   were withdrawn, and the withdrawal is recorded (`research/madelon-reanalysis/README.md`).
 - One agent ran with every command in a sandbox. The sandbox held, and the run reached nothing:
   the file trace slowed its first search thirteen times, and the wall clock ended it there.
+- Every ✓ and ✗ at the held-out floor is within 1.1 standard errors of it (0.0109 on
+  2,200 rows). A second model forecast the map's milestones from their Markov blanket, from text
+  code checked blind to the outcome. It beat code-only forecasters on 22 backtests, but on plans
+  only where the trail had already opened the held-out file (`research/…/forecasts/scores.txt`).
 
 **What it does not prove.** Who wrote a step, what a read was used for, or that a run used the
 method it claims. Every revision of the map was sealed by an AI agent. The README lists each

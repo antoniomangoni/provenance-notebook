@@ -121,6 +121,11 @@ Built during the week, beyond the plan:
    one tool, and build on each other's steps. Numbers from a held-out file are withheld, what one
    agent wrote reaches another marked as text and not instructions, and each command runs in a
    sandbox that hides the map and the other trails.
+8. **Beliefs over the map, and a second model as forecaster** ([spec 10](specs/10-beliefs.md)).
+   `beliefs.py` says how far each ✓ and ✗ stood from its threshold, in declared standard errors:
+   every one at the held-out floor is within noise. A second model forecasts milestones from
+   their Markov blanket and plans from their trail. Code checks that the text is blind to the
+   outcome and scores the forecasts against code-only forecasters. The marks never change.
 
 One task type, one agent host, one model. Left out, and said so: redaction and keyed digests for
 hidden values in capture, signing by the capture host, resuming a trail in a second session,
