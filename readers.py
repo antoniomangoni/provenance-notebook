@@ -213,18 +213,43 @@ def prompt(text: str, questions: dict) -> str:
 def reply(asked: str, options: list[str]) -> str:
     """One call to Pi in print mode: no tools, no extensions, no skills, no context files, no session
     kept, in an empty directory. The prompt goes in on standard input, since a presentation is longer
-    than one argument may be (128 kB on Linux). The tests replace this function."""
-    command = [str(PI), "-p", "--no-tools", "--no-extensions", "--no-skills", "--no-context-files", "--no-prompt-templates",
-               "--no-session", "--system-prompt", SYSTEM, *options]  # fmt: skip
+    than one argument may be (128 kB on Linux). The tests replace this function.
+
+    Pi's events are read as JSON lines. A provider's error, a context too long for the model among
+    them, ends Pi with exit code 0 and nothing printed in text mode; the events keep its message."""
+    command = [str(PI), "-p", "--mode", "json", "--no-tools", "--no-extensions", "--no-skills", "--no-context-files",
+               "--no-prompt-templates", "--no-session", "--system-prompt", SYSTEM, *options]  # fmt: skip
     with tempfile.TemporaryDirectory() as work:
         try:
             done = subprocess.run(command, input=asked, cwd=work, capture_output=True, text=True, timeout=SECONDS, check=False)
         except subprocess.TimeoutExpired:
             raise Failed(f"no reply in {SECONDS} seconds") from None
-    if done.returncode != 0 or not done.stdout.strip():
+    if done.returncode != 0:
         said = (done.stderr.strip() or done.stdout.strip() or "no output").splitlines()[-1][:300]
         raise Failed(f"exit code {done.returncode}: {said}")
-    return done.stdout
+    return answer_of(done.stdout)
+
+
+def answer_of(events: str) -> str:
+    """The text of the model's last message among Pi's events, or the error that ended it."""
+    last = None
+    for line in events.splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        message = event.get("message") if isinstance(event, dict) else None
+        if event.get("type") == "message_end" and isinstance(message, dict) and message.get("role") == "assistant":
+            last = message
+    if last is None:
+        raise Failed("no message from the model")
+    if last.get("stopReason") in ("error", "aborted"):
+        raise Failed(f"{last['stopReason']}: {str(last.get('errorMessage') or 'no message given')[:500]}")
+    content = last.get("content") or []
+    text = "".join(part.get("text", "") for part in content if isinstance(part, dict) and part.get("type") == "text")
+    if not text.strip():
+        raise Failed(f"an empty reply (stop reason {last.get('stopReason')})")
+    return text
 
 
 def parse(text: str) -> dict | None:

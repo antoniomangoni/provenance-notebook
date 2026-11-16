@@ -138,7 +138,8 @@ What it shows:
 Why the calls failed:
 
 - **Mistral, all 20 on the transcripts.** Pi exited 0 with no output, and `readers.py` recorded
-  "exit code 0: no output". One more call, made afterwards with Pi's JSON output to find the
+  "exit code 0: no output". It has since been changed to read Pi's JSON events, so a later call
+  records the provider's own message; the 70 calls here were made before that change. One more call, made afterwards with Pi's JSON output to find the
   cause, was refused with `context_length_exceeded`: "This model's maximum context length is
   32768 tokens. However, your input is estimated at 54729 tokens". That call was not graded and
   is not in an answer file.

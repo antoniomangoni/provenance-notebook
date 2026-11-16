@@ -373,21 +373,47 @@ def test_parse_finds_the_object_or_nothing():
     assert readers.parse("no object here") is None and readers.parse("[1, 2]") is None and readers.parse("{broken") is None
 
 
-def test_reply_calls_pi_with_no_tools_and_reports_a_failure(monkeypatch, tmp_path):
-    """Pi is replaced by a script, so the call itself is tested without a model or the network."""
+def event(role: str, text: str = "", stop: str = "stop", error: str | None = None) -> str:
+    message = {"role": role, "content": [{"type": "thinking", "thinking": "hmm"}, {"type": "text", "text": text}], "stopReason": stop}
+    return json.dumps({"type": "message_end", "message": message | ({"errorMessage": error} if error else {})})
+
+
+def test_reply_calls_pi_with_no_tools_and_reads_its_events(monkeypatch, tmp_path):
+    """Pi is replaced by a script, so the call itself is tested without a model or the network. The
+    script answers with the arguments, its directory, the files in it and the prompt it was given."""
     fake = tmp_path / "pi"
-    fake.write_text('#!/bin/sh\nif [ "$FAKE_FAIL" ]; then echo "context too long" >&2; exit 1; fi\necho "$@"; pwd; ls -A | wc -l; cat\n')
+    fake.write_text(
+        f"#!{sys.executable}\nimport json, os, sys\n"
+        "if os.environ.get('FAKE_FAIL'):\n    print('cannot start', file=sys.stderr); sys.exit(1)\n"
+        "said = '\\n'.join([' '.join(sys.argv[1:]), os.getcwd(), str(len(os.listdir())), sys.stdin.read()])\n"
+        "print(json.dumps({'type': 'message_end', 'message': {'role': 'user', 'content': [{'type': 'text', 'text': 'q'}]}}))\n"
+        "print(json.dumps({'type': 'message_end', 'message': {'role': 'assistant', 'stopReason': 'stop',"
+        " 'content': [{'type': 'thinking', 'thinking': 'x'}, {'type': 'text', 'text': said}]}}))\n"
+    )
     fake.chmod(0o755)
     monkeypatch.setattr(readers, "PI", fake)
     said = readers.reply("the prompt, on standard input", ["--model", "m"]).splitlines()
     assert said[0].startswith(
-        "-p --no-tools --no-extensions --no-skills --no-context-files --no-prompt-templates --no-session --system-prompt "
+        "-p --mode json --no-tools --no-extensions --no-skills --no-context-files --no-prompt-templates --no-session --system-prompt "
     )
-    assert said[0].endswith(" --model m") and said[2].strip() == "0" and said[3] == "the prompt, on standard input"
+    assert said[0].endswith(" --model m") and said[2] == "0" and said[3] == "the prompt, on standard input"
     assert not Path(said[1]).exists(), "the call ran in a directory of its own, removed afterwards"
     monkeypatch.setenv("FAKE_FAIL", "1")
-    with pytest.raises(readers.Failed, match="exit code 1: context too long"):
+    with pytest.raises(readers.Failed, match="exit code 1: cannot start"):
         readers.reply("x", [])
+
+
+def test_a_provider_s_error_is_kept_with_its_message():
+    """What Pi printed when Berget refused a transcript too long for Mistral Small: exit code 0, no text."""
+    refused = '400: {"message":"This model\'s maximum context length is 32768 tokens.","code":"context_length_exceeded"}'
+    events = "\n".join([event("user", "q"), event("assistant", stop="error", error=refused), '{"type": "agent_end"}'])
+    with pytest.raises(readers.Failed, match="error: 400: .*context_length_exceeded"):
+        readers.answer_of(events)
+    # A failed attempt that Pi retried successfully: the last message is the answer.
+    assert readers.answer_of("\n".join([event("assistant", stop="error", error="503"), event("assistant", '{"a": 1}')])) == '{"a": 1}'
+    for empty in ("", "not json\n", event("user", "q"), event("assistant", "   ")):
+        with pytest.raises(readers.Failed):
+            readers.answer_of(empty)
 
 
 def test_readers_exits_2_on_a_wrong_command_line():
