@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-32",
+  "seq": 32,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:19:37.234Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python estimate_cv.py 2>&1 | tail -45",
+  "command": {
+    "shown": "uv run python estimate_cv.py 2>&1 | tail -45",
+    "digest": "sha256:8e86550e7ed43e7fe5ab0949432196528ce835a2d58412c6785a53666c304eeb"
+  },
+  "code": {
+    "ref": "commit:5ad15ea3fceea6cdedaf3976558fa8bfa3cdedd9"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-31",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:57c6b3b101e9ad222de0cc81e1096b08e4863ba075f15af2f9fa950aeb452dc4"
+}

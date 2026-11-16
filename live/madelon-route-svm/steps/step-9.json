@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:56:52.569Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "inconclusive: no fresh out/metrics.json with cv_auc, n_features",
+  "exit_code": 0,
+  "duration_ms": 31128,
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "inconclusive",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-8",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:6fc0cb44f84312165d7df9219ae7185c67cfb09466fad3d0cc46953490b62ddf"
+}

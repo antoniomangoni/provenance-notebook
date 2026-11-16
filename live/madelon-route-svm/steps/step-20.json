@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:13:41.648Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Diag3: redundancy-collapse / union / rank-transform / minmax SVM planes around the peak",
+  "reasoning": "Step-19 contradicted step-15: F-weighting and whitening do not help (best 0.6751, unweighted). Kernel distances here are plausibly inflated by redundant highly-correlated dims (classic madelon structure), which collapse-to-representatives should relieve; union and rank/minmax variants probe robustness; a finer C/gamma/k search probes the peak. Bar to proceed toward a full repeated-nested estimate: some configuration reaches plain-CV (fold-refit screens, seed 0) mean AUC >= 0.70. Flat metrics.json (cv_auc, n_features) with details in a side file, reading only data/pilot.csv.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "svm-config",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-15",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-19",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:1ef2831442ac3e1254d2550516c6736c6aafc4a17bc1eaba364cc81f5eee8623"
+}

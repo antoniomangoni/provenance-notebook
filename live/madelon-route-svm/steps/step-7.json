@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T11:56:08.802Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only tuning: repeated nested CV of F-screen + RBF SVM, grid C×gamma×K",
+  "reasoning": "Route method: pilot-fitted screen then RBF SVM. I reuse the snapshot's fully nested protocol (screen + K refit inside each outer fold, so no selection leakage) and swap the forest for StandardScaler+SVC(rbf) tuned over C∈[0.25..64]×γ∈[0.002..0.4]×K∈{10,25,50} with inner 4-fold GridSearchCV. cv_auc is the mean over 15 outer-fold AUCs (outer 5-fold, seeds 0,1,2), computed only on data/pilot.csv. This pilot-side honest estimate is my basis for freezing the procedure before the one-shot heldout scoring. Expectations: the tuning run exits cleanly, the estimate clears the floor 0.71, and the kept-feature count is within the route's cap of 50.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "estimate-above-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "prev": "sha256:e4c79ae456bb53c05c9d0834192afd9ebd97cceab97d5044ac774b91ab6c286b"
+}

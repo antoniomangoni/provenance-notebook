@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:11:32.097Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Diag2: F-weighted and whitened-PCA RBF SMV planes plus inherited-bias calibration",
+  "reasoning": "Step-13 contradicted step-11: no screen (F/RF/MI, k up to 50) lifts honest SVM cv past 0.673 vs forest 0.7267, and all-500 features score ~0.58, so the deficit is the SVM's distance geometry on noisy selected features, not the screen identity. New pilot-only idea set: weight selected standardized features by their fold-train F-score (schemes: min-max F, rank) so RBF distances concentrate on informative dims; and a whitened-PCA variant (rotation inside the watched-feature span); plus a wider local-gamma grid, and a static-screen logreg calibration to reproduce the inherited 0.76. Expectation: some configuration reaches plain-5-fold (fold-refit screens, seed 0) mean AUC >= 0.70, the level from which a repeated-nested estimate could support a 0.71 holdout; recorded as flat-numeric cv_auc and n_features <= 50. Reads only data/pilot.csv.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "svm-config",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-11",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-13",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:40227c762fddb81d7cdccab276ae0e602b0e66d9a8fad763c726b35f4edd59ac"
+}

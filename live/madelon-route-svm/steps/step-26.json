@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-26",
+  "seq": 26,
+  "trail": "madelon-route-svm",
+  "at": "2026-11-16T12:17:01.517Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Diag5: RBF SVM on screened mains + pairwise products (interaction space), pilot-only",
+  "reasoning": "Step-25 contradicted step-23: stability, L1/linear screens, robust transforms and small-k all stay ≤ 0.672. New hypothesis grounded in the forest-vs-SVM gap: trees exploit conjunctions, while RBF distances over k≈25 dims are noise-dominated; restricting the kernel to m screened mains plus their pairwise products (≤ 50 columns from ≤ 7 screened features) concentrate distances on the interaction-relevant subspace. Bar to proceed toward the repeated-nested estimate: fold-refit plain-CV seed-0 mean AUC >= 0.70; if reached, the winner gets fully nested re-estimation before freezing. All pilot-only; flat metrics.json.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "svm-config",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "feature-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-23",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-25",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:e587ffa82a7cc94ac8b9c19bc4ad84b305b2d63b9b510c603b94111f2872eb79"
+}
