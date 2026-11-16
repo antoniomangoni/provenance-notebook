@@ -1,0 +1,36 @@
+The tamper sequence on live/madelon-2026-11-15-1, 26 steps. Nothing is written there: the steps are copied to COPY
+and the store to COPY-STORE, both in a temporary directory.
+HEAD, the head cited before any change: sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933
+
+Stage 1. Nothing is changed.
+  trail.py check COPY --store COPY-STORE
+    no problems
+    as expected: passes
+  trail.py verify COPY HEAD
+    no problems
+    as expected: passes
+
+Stage 2. step-8 is rewritten: holdout_auc 0.5639 becomes 0.7039 in its measures, in the check that used it and in its summary.
+  trail.py check COPY
+    step-9: prev does not match step-8; an earlier step was changed
+    as expected: fails at step-9, whose prev no longer matches
+
+Stage 3. Every prev from step-9 on is recomputed.
+  trail.py check COPY
+    no problems
+    as expected: passes
+  trail.py check COPY --store COPY-STORE
+    step-8: the measures are not the ones in file:out/metrics.json
+    as expected: fails at step-8, whose measures are not the ones in the stored file
+
+Stage 4. A metrics file with the new value is put in the store, step-8 cites its digest, and the chain is recomputed.
+  trail.py check COPY --store COPY-STORE
+    no problems
+    as expected: passes
+
+Stage 5. Nothing more is changed.
+  trail.py verify COPY HEAD
+    madelon-reanalysis/probe:madelon-2026-11-15-1: never had the head sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933, so it changed after it was cited
+    as expected: fails, since the trail never had the cited head
+
+Every stage came out as expected.

@@ -246,3 +246,24 @@ def test_a_note_on_a_broken_trail_writes_nothing(tmp_path):
     before = files(directory)
     done = cli("note", directory, "step-4", "--text", "Fine.", "--by", "reviewer")
     assert done.returncode == 1 and files(directory) == before
+
+
+@pytest.mark.parametrize(("args", "option"), [
+    (("review", "step-3", "--verdict", "confirms", "--by", "ada", "--text"), "--text"),
+    (("note", "step-3", "--text", "--by", "ada"), "--text"),
+    (("view", "--out"), "--out"),
+    (("check", "--store"), "--store"),
+])
+def test_an_option_without_its_value_is_a_usage_error(args, option, tmp_path):
+    copy = copied(CHURN, tmp_path)
+    before = files(copy)
+    done = cli(args[0], copy, *args[1:])
+    assert done.returncode == 2 and done.stdout == ""
+    assert done.stderr == f"trail.py: {option} needs a value\n"
+    assert files(copy) == before
+
+
+def test_a_command_without_its_arguments_is_a_usage_error():
+    for args in [(), ("check",), ("verify", EXAMPLES / CHURN)]:
+        done = cli(*args)
+        assert done.returncode == 2 and len(done.stderr.splitlines()) == 1 and done.stderr.startswith("usage: trail.py")

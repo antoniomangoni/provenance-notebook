@@ -5,6 +5,8 @@ __pycache__/
 node_modules/
 # Derived from the step files by `trail.py graph` and `merge`.
 graph/
+# `trail.py view` without `--out` writes the page beside the trail's steps.
+view.html
 # A trail's HMAC key is kept outside the trail and outside git.
 *.key
 .env

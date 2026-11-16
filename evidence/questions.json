@@ -1,0 +1,78 @@
+{
+  "trail": "madelon-2026-11-15-1",
+  "form": "Step ids look like step-12. Use null for a value the material does not give.",
+  "questions": [
+    {
+      "number": 1,
+      "text": "Why did the approach change, and at which step?",
+      "fields": {
+        "new_plan": "the step id of the plan that replaced an earlier plan",
+        "replaced_plan": "the step id of the plan it replaced",
+        "trigger": "the step id of the observation that caused the change",
+        "measure": "the name of the measure that missed what was expected of it",
+        "measured": "the value that was measured, a number",
+        "threshold": "the value it was expected to reach, a number"
+      },
+      "items": [
+        {"fields": ["new_plan"], "kinds": ["step"], "accepted": [["step-14"]]},
+        {"fields": ["replaced_plan"], "kinds": ["step"], "accepted": [["step-4"]]},
+        {"fields": ["trigger"], "kinds": ["step"], "accepted": [["step-8"]]},
+        {"fields": ["measure"], "kinds": ["name"], "accepted": [["holdout_auc"]]},
+        {"fields": ["measured"], "kinds": ["number"], "accepted": [[0.5639]]},
+        {"fields": ["threshold"], "kinds": ["number"], "accepted": [[0.71]]}
+      ]
+    },
+    {
+      "number": 2,
+      "text": "Which code and parameters produced the final result?",
+      "fields": {
+        "run": "the step id of the run that produced the final result",
+        "command": "the command of that run, as it was given",
+        "code": "the commit of the code that run used",
+        "parameters": "the parameters given to that command, as an object of names and values; {} when none were given"
+      },
+      "items": [
+        {
+          "fields": ["run", "code"],
+          "kinds": ["step", "commit"],
+          "accepted": [
+            ["step-22", "190a21455d94f5be3d4440df4b493f35d48d2a4a"],
+            ["step-17", "13a66233af7af810106adfa3d624c8fd12d5900e"]
+          ]
+        },
+        {
+          "fields": ["command"],
+          "kinds": ["command"],
+          "accepted": [["uv run python analysis.py"], ["uv run python analysis.py 2>/dev/null"]]
+        },
+        {"fields": ["parameters"], "kinds": ["empty"], "accepted": [[null]], "quoted": false}
+      ]
+    },
+    {
+      "number": 3,
+      "text": "How many attempts did the final plan take before it held?",
+      "fields": {
+        "plan": "the step id of the final plan",
+        "measured_runs": "how many measured runs that plan took, up to and including the first that met its expectations, a number"
+      },
+      "items": [
+        {"fields": ["plan"], "kinds": ["step"], "accepted": [["step-19"], ["step-14"]]},
+        {"fields": ["measured_runs"], "kinds": ["number"], "accepted": [[1]], "quoted": false}
+      ]
+    },
+    {
+      "number": 4,
+      "text": "What was tried and abandoned?",
+      "fields": {
+        "abandoned": "a list with one object for each plan or analysis that was tried and given up: {\"what\": a few words, \"step\": the step id of the plan, \"result\": the measured number that ended it}"
+      },
+      "items": [
+        {
+          "fields": ["abandoned"],
+          "kinds": ["entries"],
+          "accepted": [[{"step": ["step", "step-4"]}], [{"result": ["number", 0.5639]}]]
+        }
+      ]
+    }
+  ]
+}
