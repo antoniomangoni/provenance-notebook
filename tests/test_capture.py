@@ -394,3 +394,23 @@ def test_a_malformed_builds_on_stops_capture_at_load(tmp_path):
     done = launch(tmp_path, {"builds_on": ["probe:madelon-2026-11-15-2#step-7"]}, "bad-builds-on")
     assert done.returncode == 1 and "the task file needs builds_on" in done.stderr
     assert not (tmp_path / "live" / "bad-builds-on" / "steps").exists()
+
+
+needs_strace = pytest.mark.skipif(shutil.which("strace") is None, reason="needs strace")
+
+
+@needs_strace
+def test_a_traced_command_records_the_workspace_files_it_read(tmp_path):
+    session = live(tmp_path, [[plan()], [bash("cat data/telco.csv > /dev/null; mkdir -p .venv && echo x > .venv/f && cat .venv/f fit.py >/dev/null")],
+                              [bash("true")]])
+    first, second = session.of("observation")
+    telco = trail.digest((FIXTURE / "workspace" / "data" / "telco.csv").read_bytes())
+    assert first["reads"] == [{"ref": "file:data/telco.csv", "digest": telco},
+                              {"ref": "file:fit.py", "digest": trail.digest((FIXTURE / "workspace" / "fit.py").read_bytes())}]
+    assert second["reads"] == []
+
+
+def test_with_tracing_off_an_observation_has_no_reads(tmp_path):
+    session = live(tmp_path, [[plan()], [bash("cat data/telco.csv > /dev/null")]], NOTEBOOK_TRACE="0")
+    (observation,) = session.of("observation")
+    assert "reads" not in observation and observation["outcome"] == "as_expected"

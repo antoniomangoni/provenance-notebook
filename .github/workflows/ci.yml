@@ -15,6 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - run: sudo apt-get update -q && sudo apt-get install -y -q strace
       - run: uv sync --locked
       - run: npm ci --prefix capture
       - run: uv run ruff check
