@@ -54,7 +54,8 @@ scripts/fleet.sh research/madelon-reanalysis/map madelon-fleet boost stable-fore
   writer, as text and not instructions. Measures stay outside the fence, as the runner's.
 - **Withholding is enforced outside the agent.** `fleet.sh` runs every command in a bwrap
   sandbox. The repository, the trails, the map and the other workspaces are hidden in it, so an
-  agent sees its siblings only through `project_map`.
+  agent sees its siblings only through `project_map`. The sandbox hides those named places and
+  nothing else: the rest of the machine stays readable, and the network open.
 
 ## What a map claims, and what is checked
 

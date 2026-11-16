@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "madelon-fleet3-boost",
+  "at": "2026-11-16T17:18:15.116Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Inspect git history + .gitignore; pilot-only sanity: stab_screen counts, top-F features",
+  "reasoning": "Look around further before designing: git history reveals which screen variant the vote trail locked; a pilot-only count of stability-screen survivors at candidate thresholds calibrates my grid. heldout.csv stays unread.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:c554f61dff095936cc35e848d693f00ba93ea91f1e4631432b7b20bc5fbbe7dd"
+}

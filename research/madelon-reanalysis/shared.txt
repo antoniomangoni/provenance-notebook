@@ -5,11 +5,12 @@ Milestones on more than one route, and the trails that reached them:
   screen: on knn, screened-forest, boost, stable-forest, vote; reached by probe:madelon-fleet2-boost#step-25, probe:madelon-fleet2-stable-forest#step-56, probe:madelon-fleet2-vote#step-22
 
 Files more than one trail used at the same digest:
-  file:data/heldout.csv sha256:e0b31cbc8eed…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-fleet-boost, madelon-fleet-stable-forest, madelon-fleet-vote, madelon-fleet2-boost, madelon-fleet2-stable-forest, madelon-fleet2-vote, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
-  file:data/pilot.csv sha256:11bd022d3a3b…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-fleet-boost, madelon-fleet-stable-forest, madelon-fleet-vote, madelon-fleet2-boost, madelon-fleet2-stable-forest, madelon-fleet2-vote, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
+  file:data/heldout.csv sha256:e0b31cbc8eed…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-fleet-boost, madelon-fleet-stable-forest, madelon-fleet-vote, madelon-fleet2-boost, madelon-fleet2-stable-forest, madelon-fleet2-vote, madelon-fleet3-boost, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
+  file:data/pilot.csv sha256:11bd022d3a3b…: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-fleet-boost, madelon-fleet-stable-forest, madelon-fleet-vote, madelon-fleet2-boost, madelon-fleet2-stable-forest, madelon-fleet2-vote, madelon-fleet3-boost, madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
 
 Code more than one trail ran, by tree (a commit differs between repositories, its tree does not):
   tree 0a8c069: madelon-2026-11-15-1, madelon-2026-11-15-2, madelon-fleet-boost, madelon-fleet-stable-forest, madelon-fleet-vote, madelon-fleet2-boost, madelon-fleet2-stable-forest, madelon-fleet2-vote, madelon-route-screened-forest
+  tree 659cae7: madelon-fleet2-vote, madelon-fleet3-boost
   tree f68ad08: madelon-route-knn, madelon-route-screened-forest, madelon-route-svm
 
 Computation repeated across trails: the same command, code tree and inputs:
