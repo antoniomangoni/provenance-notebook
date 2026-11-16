@@ -131,7 +131,8 @@ enable the tool. Without them, capture is as it was.
 **`propose_plan`** gains an optional `builds_on: string[]`.
 - Each reference must be one that a `project_map` call in this session returned. Any other is
   refused, and the plan is not recorded.
-- Each is written as a `builds_on` link with status `confirmed`.
+- Each is written as a `builds_on` link with status `suggested`, as every link an agent writes
+  is. Capture confirms the reference was shown to the agent, not that the plan uses it.
 
 **The checker.** `trail.check` allows `builds_on` on a plan as well as on the task. It is
 already cross-probe, so `merge` checks its head and step. The schema stays version 2.
@@ -175,7 +176,8 @@ It then waits for every agent and prints each trail's check. Pi options come aft
 - `docs/specs/07-live-map.md`
 - `project.py`, `mapview.py`
 - `trail.py`, `step.schema.json`, `docs/DESIGN.md`
-- `capture/capture.ts`
+- `capture/capture.ts`, and `capture/scripted.ts`: a scripted turn may cite `{{ref:N}}`, the Nth step
+  reference in the latest tool result
 - `scripts/fleet.sh`
 - `tests/test_project.py`, `tests/test_mapview.py`, `tests/test_capture.py`, `tests/test_trail.py`
 - one `PLAN.md` row

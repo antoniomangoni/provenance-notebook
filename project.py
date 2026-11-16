@@ -896,6 +896,7 @@ def live_state(revs: list[dict], trails: Trails, for_probe: str | None = None) -
     )
     return {
         "project": project,
+        "problems": check(revs, trails),
         "rev": last["rev"],
         "rev_digest": digest(last),
         "at": last["at"],
@@ -930,7 +931,9 @@ def status_text(live: dict, clock: datetime, refs_per_trail: int = 3) -> list[st
     """The live state as text: what `status` prints and an agent's project_map tool returns. Each step
     reference it shows is pinned at its trail's present head, so a plan may build on it."""
     marks = {"reached": "✓", "refuted": "✗", "open": "○"}
-    lines = [f"Project {live['project']}, map revision {live['rev']} (sealed {live['at']} by {live['by']})."]
+    lines = [f"Project {live['project']}, map revision {live['rev']} ({live['rev_digest']}, sealed {live['at']} by {live['by']})."]
+    if live["problems"]:
+        lines.append(f"project.py check finds {len(live['problems'])} problems; the first: {live['problems'][0]}")
     lines.append("Goals: " + ", ".join(f"{'✓' if g['reached'] else '○'} {g['id']}" for g in live["goals"]))
     lines += ["", "Routes:"]
     state_of = {node["id"]: node["state"] for node in live["nodes"]}
@@ -1019,7 +1022,8 @@ def main(argv: list[str]) -> int:
             print(f"wrote {directory / f'rev-{revision["rev"]}.json'}")
             return 0
         errors = check(revs, trails)
-        if command == "check" or errors:
+        # The live views show what fails check rather than refusing: a map is watched while it is wrong too.
+        if command == "check" or (errors and command not in ("status", "page")):
             print("\n".join(errors) or f"ok: {len(revs)} revisions, {len(revs[-1]['resolutions'])} resolutions, {len(trails.steps)} trails")
             return 1 if errors else 0
         last = revs[-1]

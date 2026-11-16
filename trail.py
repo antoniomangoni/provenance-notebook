@@ -59,7 +59,7 @@ RELATIONS = {
     "supersedes": ({"plan", "note", "review"}, None),
     "reviews": ({"review"}, None),
     "about": ({"note"}, None),
-    "builds_on": ({"task"}, None),
+    "builds_on": ({"task", "plan"}, None),
 }
 # Relations that may point at another probe; the kind of a cited step is checked by merge.
 CROSS = {"builds_on", "triggered_by", "about"}
