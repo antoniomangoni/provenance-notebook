@@ -27,7 +27,8 @@ Pi 0.84.1. Not started: the view, capture, the demo task, the real-model test.
 Slices 1 to 4 are merged, with two live runs of the task. Four more specs followed the first
 results: a research map over many trails (5), traced reads (6), a live map shared by agents
 running at once (7), and credits checked across trails with a sandboxed fleet (8). Spec 9 put
-what each run opened on the reviewer's page. Twelve live trails are committed. What remains is a
+what each run opened on the reviewer's page, and spec 10 (17 November) added beliefs over the
+map with a second model as forecaster. Twelve live trails are committed. What remains is a
 person's: the video, the repository's visibility, and submitting.
 
 ## Slices
@@ -249,3 +250,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 16 Nov | The map is drawn live, and agents running at once share it ([spec 7](docs/specs/07-live-map.md)): `project.py serve` redraws the map and every trail as steps arrive, and capture's `project_map` tool lets an agent read its siblings' progress (numbers from a sealed input withheld) and build a plan on their steps. A plan may now carry `builds_on` |
 | 16 Nov | A credit rests on what its trail built on ([spec 8](docs/specs/08-rests-on.md)): a version 2 revision judges sealed reads in every step a credit rests on, across trails, and records each withdrawal with why. What `project_map` relays from a sibling is fenced as text, not instructions, and fleet commands run in a sandbox that cannot see the map or the other trails |
 | 16 Nov | The licence is MIT and the repository is made public for the submission. `scripts/site.sh` builds the pages a stranger opens first, and a workflow run by hand publishes them. The committed trails keep the absolute paths their commands were typed with: they are evidence, and capture has no redactor |
+| 17 Nov | Beliefs over the map ([spec 10](docs/specs/10-beliefs.md)) are advisory and computed by code: a declared standard error per measure, each milestone's Markov blanket as the scope of what bears on it, and a second model (Gemma 4 31B) that forecasts from text code checked blind to the outcome, scored against code-only forecasters. No mark, revision or trail changes |

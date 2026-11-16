@@ -1,0 +1,51 @@
+Forecasts over madelon-reanalysis, scored against revision 11 and the trails.
+Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.
+Each forecaster is compared with code-only forecasters on the same questions: code:base-rate, the Laplace rate
+of what was settled before the question was asked, and code:blanket, the milestone's Markov blanket alone.
+
+Not asked: 5 milestone and 14 plan questions.
+  floor-l1 at rev-0: its first resolution, in rev-1, was withdrawn later
+  floor-forest at rev-0: its first resolution, in rev-1, was withdrawn later
+  floor-search at rev-2: it first appeared with its resolution
+  floor-selected-forest at rev-2: it first appeared with its resolution
+  screen at rev-2: its first resolution, in rev-3, was withdrawn later
+  plans: 3 its first run failed
+  plans: 8 its first run inconclusive
+  plans: 3 never run
+
+gemma-backtest.json: by agent:pi/google/gemma-4-31B-it at 2026-11-16T23:32:34Z
+  milestone questions settled: 8 (backtest); held 6
+    agent:pi/google/gemma-4-31B-it: Brier 0.246, log loss 0.997 bits, n 8
+    code:base-rate: Brier 0.311, log loss 1.274 bits, n 8
+    code:blanket: Brier 0.313, log loss 1.206 bits, n 8
+      held  reproduce at rev-0: p 0.80; base-rate 0.50, blanket 0.50
+      held  miss at rev-0: p 0.90; base-rate 0.50, blanket 0.50
+      held  nested at rev-0: p 0.60; base-rate 0.50, blanket 0.50
+      held  screen at rev-8: p 0.85; base-rate 0.67, blanket 0.67
+      missed  compact-knn at rev-3: p 0.10; base-rate 0.77, blanket 0.50
+      missed  compact-forest at rev-2: p 0.60; base-rate 0.90, blanket 0.50
+      held  compact-stable-forest at rev-8: p 0.20; base-rate 0.67, blanket 0.24
+      held  compact-vote at rev-8: p 0.15; base-rate 0.67, blanket 0.24
+  plan questions settled: 14 (backtest); held 8
+    agent:pi/google/gemma-4-31B-it: Brier 0.180, log loss 0.750 bits, n 14
+    code:base-rate: Brier 0.287, log loss 1.111 bits, n 14
+      missed  madelon-2026-11-15-2 step-5: p 0.60; base-rate 0.50
+      held  madelon-2026-11-15-2 step-17: p 0.30; base-rate 0.33 † after step-6, step-10, step-14
+      held  madelon-fleet2-boost step-23: p 0.90; base-rate 0.50 † after step-3
+      held  madelon-fleet2-stable-forest step-54: p 0.90; base-rate 0.46 † after step-3
+      held  madelon-fleet2-stable-forest step-57: p 0.80; base-rate 0.50 † after step-3
+      held  madelon-fleet2-vote step-23: p 0.60; base-rate 0.42 † after step-5
+      missed  madelon-route-knn step-28: p 0.70; base-rate 0.43
+      held  madelon-route-knn step-38: p 0.60; base-rate 0.38 † after step-29
+      missed  madelon-route-screened-forest step-13: p 0.70; base-rate 0.50 † after step-5, step-8, step-11
+      missed  madelon-route-screened-forest step-34: p 0.40; base-rate 0.40 † after step-5, step-8, step-11, step-14, step-29
+      held  madelon-route-screened-forest step-43: p 0.90; base-rate 0.33 † after step-5, step-8, step-11, step-14, step-29, step-35, step-38, step-41
+      missed  madelon-route-svm step-20: p 0.30; base-rate 0.44 † after step-5
+      missed  madelon-route-svm step-23: p 0.15; base-rate 0.40 † after step-5
+      held  madelon-route-svm step-31: p 0.85; base-rate 0.36 † after step-5
+    † 12 of 14: an earlier run of the trail is known to have opened data/heldout.csv, so what it printed may be in the text shown.
+      on the other 2: agent:pi/google/gemma-4-31B-it Brier 0.425; code:base-rate Brier 0.217
+  pending compact-boost at rev-11: p 0.60, code:blanket 0.49
+  pending floor-forest at rev-11: p 0.10, code:blanket 0.75
+  pending floor-l1 at rev-11: p 0.10, code:blanket 0.75
+  pending floor-search at rev-11: p 0.90, code:blanket 0.75

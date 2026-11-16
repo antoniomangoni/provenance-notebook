@@ -1,0 +1,66 @@
+Beliefs over madelon-reanalysis, revision 11 (2026-11-16T17:49:41Z, agent:claude-code/claude-fable-5-2).
+Advisory: nothing here changes a ✓ or ✗. P is a probability under the assumptions below.
+
+Assumptions:
+  holdout_auc: standard error 0.0109, declared by agent:claude-code/claude-fable-5-2: data/heldout.csv holds 1,100 rows of each class; the Hanley-McNeil standard error of an AUC of 0.71 on them is 0.0109 (beliefs.py se --auc 0.71 --pos 1100 --neg 1100). It is the error of scoring one fixed model once, not of refitting it.
+  Taken as measured without error: cv_auc, gap, n_features.
+  A flat prior on each true value; errors independent between criteria and between routes, unless said.
+
+Resolutions at a noisy criterion (P that the true value meets it; within noise when under 1.645 SE):
+  ✓ miss: holdout_auc < 0.71, measured 0.5639: +13.40 SE, P 1.00 (madelon-2026-11-15-1 step-8)
+  ✓ nested: holdout_auc < 0.71, measured 0.5639: +13.40 SE, P 1.00 (madelon-2026-11-15-1 step-13)
+  ✓ miss: holdout_auc < 0.71, measured 0.5639: +13.40 SE, P 1.00 (madelon-2026-11-15-2 step-7)
+  ✓ nested: holdout_auc < 0.71, measured 0.5639: +13.40 SE, P 1.00 (madelon-2026-11-15-2 step-11)
+  ✓ floor-selected-forest: holdout_auc >= 0.71, measured 0.7214: +1.05 SE, P 0.85, within noise (madelon-2026-11-15-2 step-19)
+  ✗ compact-forest: holdout_auc >= 0.71, measured 0.6989: -1.02 SE, P 0.15, within noise (madelon-route-screened-forest step-15)
+  ✗ compact-forest: holdout_auc >= 0.71, measured 0.6989: -1.02 SE, P 0.15, within noise (madelon-route-screened-forest step-36)
+  ✗ compact-knn: holdout_auc >= 0.71, measured 0.709: -0.09 SE, P 0.46, within noise (madelon-route-knn step-30)
+  ✓ compact-stable-forest: holdout_auc >= 0.71, measured 0.7125: +0.23 SE, P 0.59, within noise (madelon-fleet2-stable-forest step-59)
+  ✓ compact-vote: holdout_auc >= 0.71, measured 0.719: +0.83 SE, P 0.80, within noise (madelon-fleet2-vote step-26)
+
+Goals, and the routes scored on data/heldout.csv:
+  ✓ explain: 1 of 1 scored routes credited
+      ✓ explain: holdout_auc 0.5639, P 1.00; 95% bound 0.5818
+      P(at least one credited route truly meets it): 1.00 (errors shared) to 1.00 (independent)
+      1 of 1 credited routes clear the threshold at their 95% bound.
+  ✓ floor: 1 of 1 scored routes credited
+      ✓ selected-forest: holdout_auc 0.7214, P 0.85; 95% bound 0.7035
+      P(at least one credited route truly meets it): 0.85 (errors shared) to 0.85 (independent)
+      No credited route's 95% bound clears the threshold.
+  ✓ compact: 2 of 4 scored routes credited
+      ✗ knn: holdout_auc 0.709, P 0.46; 95% bound 0.6911
+      ✗ screened-forest: holdout_auc 0.6989, P 0.15; 95% bound 0.6810
+      ✓ stable-forest: holdout_auc 0.7125, P 0.59; 95% bound 0.6946
+      ✓ vote: holdout_auc 0.719, P 0.80; 95% bound 0.7011
+      P(at least one credited route truly meets it): 0.80 (errors shared) to 0.92 (independent)
+      No credited route's 95% bound clears the threshold.
+
+Open milestones, their Markov blanket and P(reached) from the blanket alone:
+  ○ compact-boost: next on boost
+      before it: screen ✓
+      leading to the same place: compact-forest ✗ (holdout_auc 0.6989), compact-knn ✗ (holdout_auc 0.709), compact-stable-forest ✓ (holdout_auc 0.7125), compact-svm ○, compact-vote ✓ (holdout_auc 0.719)
+      after it: goal:compact ✓
+      P(reached) 0.49: holdout_auc of 4 co-parents: mean 0.7098, predictive sd 0.0094
+  ○ floor-forest: next on forest
+      before it: miss ✓ (holdout_auc 0.5639)
+      leading to the same place: floor-l1 ○, floor-search ○, floor-selected-forest ✓ (holdout_auc 0.7214)
+      after it: goal:floor ✓
+      P(reached) 0.75: Laplace rate of the blanket: 2 of 2 resolved milestones hold
+  ○ floor-l1: next on l1
+      before it: nested ✓ (holdout_auc 0.5639)
+      leading to the same place: floor-forest ○, floor-search ○, floor-selected-forest ✓ (holdout_auc 0.7214)
+      after it: goal:floor ✓
+      P(reached) 0.75: Laplace rate of the blanket: 2 of 2 resolved milestones hold
+  ○ floor-search: next on search
+      before it: nested ✓ (holdout_auc 0.5639)
+      leading to the same place: floor-forest ○, floor-l1 ○, floor-selected-forest ✓ (holdout_auc 0.7214)
+      after it: goal:floor ✓
+      P(reached) 0.75: Laplace rate of the blanket: 2 of 2 resolved milestones hold
+
+Which open milestone tells most about its goal, in bits (an upper bound: routes taken as independent,
+and one run taken to settle the milestone). Beside it, the order project.py next gives, the most shared first:
+  P(some route truly meets the goal), open routes at their P(reached): explain 1.00, floor 1.00, compact 0.98
+  compact-boost: 0.019 bits (0.019 about compact); P(reached) 0.49; next gives it 1
+  floor-forest: 0.005 bits (0.005 about floor); P(reached) 0.75; next gives it 2
+  floor-l1: 0.005 bits (0.005 about floor); P(reached) 0.75; next gives it 3
+  floor-search: 0.005 bits (0.005 about floor); P(reached) 0.75; next gives it 4
