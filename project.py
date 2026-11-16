@@ -599,9 +599,10 @@ def shared(revision: dict, trails: Trails) -> list[str]:
     if trails.retraced:
         lines += ["", "Re-executed with retrace.py, from each run's code snapshot (a replay, not the run itself):"]
         for probe, runs in sorted(trails.retraced.items()):
-            wrote = [run for run in runs.values() if (run.get("metrics") or {}).get("same") is not None]
-            same = [run["run"] for run in wrote if run["metrics"]["same"]]
-            differ = [run["run"] for run in wrote if not run["metrics"]["same"]]
+            # Only a run whose observation cites a metrics file has something to reproduce.
+            wrote = [run for run in runs.values() if (run.get("metrics") or {}).get("recorded")]
+            same = [run["run"] for run in wrote if run["metrics"]["recorded"] == run["metrics"]["replayed"]]
+            differ = [run["run"] for run in wrote if run["metrics"]["recorded"] != run["metrics"]["replayed"]]
             exits = [run["run"] for run in runs.values() if "exit" in run and run["exit"]["recorded"] != run["exit"]["replayed"]]
             lines.append(
                 f"  {probe.split(':', 1)[1]}: {len(runs)} runs; {len(same)} of {len(wrote)} metrics files reproduced byte for byte"

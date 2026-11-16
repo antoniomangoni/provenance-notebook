@@ -144,7 +144,7 @@ def retrace(trail_dir: Path, factor: float = 3, workspace: Path | None = None) -
                     kept
                     | {
                         "exit": {"recorded": (observation or {}).get("exit_code"), "replayed": None if timed_out else code},
-                        "metrics": {"recorded": source, "replayed": replayed, "same": source == replayed if source or replayed else None},
+                        "metrics": {"recorded": source, "replayed": replayed, "same": source == replayed if source else None},
                         "seconds": {"recorded": round(recorded, 1), "replayed": round(time.monotonic() - started, 1)},
                         **({"timed_out": True} if timed_out else {}),
                         "reads": reads(trace, workspace) if trace.exists() else None,
