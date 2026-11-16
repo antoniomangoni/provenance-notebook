@@ -39,10 +39,13 @@ Non-goals: any change to `questions.json`, `answers.jsonl`'s first 20 lines, `ta
 
 - each `propose_plan` tool call is removed, with its tool result (matched by `toolCallId`);
 - every line beginning `[notebook]` is removed from tool results and their details;
-- every remaining step id (`step-N`) in text, thinking, arguments or details becomes
-  `(step id removed)`.
+- every remaining step id (`step-N`, in any case) in text, thinking, arguments or details
+  becomes `(step id removed)`.
 
-Nothing else changes; thinking is kept.
+Nothing else changes; thinking is kept. The agent's thinking still speaks of `propose_plan`,
+the notebook and its receipts by name, since it was written under them: the plain transcript
+removes what the notebook recorded, not what the agent thought about it. The README counts
+those mentions.
 
 The two transcripts bracket what a reviewer would have. `baseline.txt` says too much: it holds
 the notebook's record. `plain.txt` may say too little: an agent working without the notebook
@@ -131,12 +134,15 @@ recorded in an answer file, and the README says it was made.
 
 ## Testing
 
-1. `plain.txt` holds no `[notebook]`, no `propose_plan` and no `step-N`. It keeps every bash,
-   read, write and edit call's arguments, with step ids removed, and ends with the git log.
+1. `plain.txt` holds no receipt line, no call to `propose_plan` and its result, and no step id.
+   It keeps every bash, read, write and edit call's arguments, with step ids removed, and ends
+   with the git log.
 2. The key of question 5 and the neutral list are derived from the step files.
 3. Kind `bool` accepts `true` and rejects `"yes"`, `1` and `null`.
 4. `table.md` is what `grade` writes without `--compare`, as committed.
-5. `table-2.md` is what `grade --compare` writes from the committed answer files.
+5. `table-2.md` is what `grade --compare` writes from the committed answer files. Each call of
+   this comparison carries `"comparison": 2` in its line, so `table.md` is graded from the first
+   comparison's 20 calls only.
 6. `ask --presentations plain` asks the plain presentation only.
 
 ## Boundaries

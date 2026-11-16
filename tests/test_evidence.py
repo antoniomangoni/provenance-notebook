@@ -6,6 +6,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -400,7 +401,7 @@ def test_readers_exits_2_on_a_wrong_command_line():
 def test_the_committed_table_is_the_grade_of_the_committed_answers(tmp_path):
     """Every call that was made is a line, five for each model and presentation, and the table is
     what the grader writes from those lines today."""
-    answers = [json.loads(line) for line in (EVIDENCE / "answers.jsonl").read_text().splitlines()]
+    answers = [line for line in readers.read_answers(EVIDENCE / "answers.jsonl") if "comparison" not in line]
     models = ["berget/zai-org/GLM-5.3-Flash", "berget/google/gemma-4-31B-it"]
     assert [(line["model"], line["repeat"], line["presentation"]) for line in answers] == [
         (model, repeat, presentation) for model in models for repeat in range(1, 6) for presentation in readers.PRESENTATIONS
@@ -408,5 +409,103 @@ def test_the_committed_table_is_the_grade_of_the_committed_answers(tmp_path):
     assert all(line["answer"] == readers.parse(line["reply"]) for line in answers if line["reply"] is not None)
     for name in ("view.txt", "baseline.txt", "answers.jsonl"):
         (tmp_path / name).write_bytes((EVIDENCE / name).read_bytes())
+    # The second comparison's calls follow in the same file; the first table is graded without them.
+    assert all(line.get("comparison") == 2 for line in readers.read_answers(EVIDENCE / "answers.jsonl")[20:])
     assert readers.grade(tmp_path, ROOT / "evidence" / "questions.json", LIVE) == []
     assert (tmp_path / "table.md").read_text().replace(str(ROOT) + "/", "") == (EVIDENCE / "table.md").read_text()
+
+
+# --- the second comparison, added after the first result ----------------------------------------------
+
+HELDOUT = json.loads((ROOT / "evidence" / "heldout.json").read_text())
+COMPARISON = json.loads((ROOT / "evidence" / "comparison-2.json").read_text())
+
+
+def test_plain_txt_is_the_transcript_without_the_notebook_s_words():
+    text = (EVIDENCE / "plain.txt").read_text()
+    assert text == readers.plain_text(LIVE, LOG) and text.endswith(LOG.read_text())
+    assert not re.search(r"step-[0-9]", text, re.IGNORECASE)
+    assert not [line for line in text.splitlines() if line.startswith("[notebook]")]
+    assert "(calls propose_plan)" not in text and "[result of propose_plan" not in text
+    calls = [
+        part for entry in session() if entry["type"] == "message" for part in entry["message"]["content"] if part["type"] == "toolCall"
+    ]
+    kept = [call for call in calls if call["name"] != "propose_plan"]
+    assert len(calls) - len(kept) == 6 and text.count("\n(calls ") == len(kept) == 17
+    for call in kept:
+        for value in call["arguments"].values():
+            shown = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
+            assert readers.STEP_ID.sub("(step id removed)", shown) in text
+    # The view and the baseline are not changed by the third presentation.
+    assert (EVIDENCE / "baseline.txt").read_text() == readers.baseline_text(LIVE, LOG)
+
+
+def test_the_fifth_question_s_key_is_read_off_the_step_files():
+    steps = trail.load(LIVE)
+    by_id = {step["id"]: step for step in steps}
+    (change,) = view.changes(steps)
+    (trigger,) = change["triggers"]
+    designed = change["plan"]["seq"]
+    # Runs after the inherited analysis's score and before the plan that designed the final analysis,
+    # which measured held-out AUC and settled with measures.
+    lookups = view.Trail(steps, None)
+    measuring = [
+        step for step in steps
+        if step["kind"] == "run" and trigger["seq"] < step["seq"] < designed and lookups.measured(step)
+        and "holdout_auc" in {m["name"] for m in lookups.settlement[step["id"]]["measures"]}
+    ]  # fmt: skip
+    (run,) = measuring
+    observation = lookups.settlement[run["id"]]
+    (question,) = HELDOUT["questions"]
+    items = {item["fields"][0]: item for item in question["items"]}
+    assert items["measured_heldout"]["accepted"] == [[True]]
+    assert items["command"]["accepted"] == [[run["command"]["shown"]]]
+    assert items["step"]["accepted"] == [[run["id"]], [observation["id"]]]
+    assert HELDOUT["trail"] == steps[0]["trail"] and readers.key_problems(HELDOUT, steps) == []
+    assert view.implemented(run, by_id)["id"] == "step-9" and question["number"] == 5
+    # The code that run used reads the held-out file.
+    with tempfile.TemporaryDirectory() as work:
+        subprocess.run(["git", "clone", "--quiet", str(LIVE / "code.bundle"), work], check=True, capture_output=True)
+        code = subprocess.run(
+            ["git", "-C", work, "show", f"{run['code']['ref'].removeprefix('commit:')}:diagnose.py"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+    assert 'load("data/heldout.csv")' in code
+
+
+def test_the_neutral_items_need_no_step_id_or_snapshot_commit():
+    neutral = readers.neutral_questions(COMPARISON, [QUESTIONS, HELDOUT])
+    assert [question["number"] for question in neutral] == [1, 2, 3, 4, 5]
+    items = [item for question in neutral for item in question["items"]]
+    assert len(items) == len(COMPARISON["neutral"]) == 9
+    for item in items:
+        assert not {"step", "commit"} & set(item["kinds"])
+        for alternative in item["accepted"]:
+            assert "step" not in json.dumps(alternative)
+    # The plain transcript can be read for every one of them that a text has to state.
+    plain = (EVIDENCE / "plain.txt").read_text()
+    assert all(readers.item_occurs(item, plain) in (True, None) for item in items)
+
+
+def test_kind_bool_accepts_only_a_json_boolean():
+    assert readers.matches("bool", True, True) and not readers.matches("bool", False, True)
+    assert not any(readers.matches("bool", given, True) for given in ("yes", "true", 1, None))
+
+
+def test_ask_asks_only_the_presentations_named_and_tags_its_calls(tmp_path, monkeypatch):
+    for name in readers.EVERY:
+        (tmp_path / f"{name}.txt").write_text(f"the {name} record")
+    monkeypatch.setattr(readers, "reply", lambda asked, options: json.dumps({"measured_heldout": True}))
+    lines = readers.ask(tmp_path, HELDOUT, 2, {}, ("plain",), "answers-heldout.jsonl", 2)
+    assert [(line["presentation"], line["comparison"]) for line in lines] == [("plain", 2), ("plain", 2)]
+    assert readers.read_answers(tmp_path / "answers-heldout.jsonl") == lines and not (tmp_path / "answers.jsonl").exists()
+
+
+def test_the_second_table_is_the_grade_of_the_committed_answers(tmp_path):
+    out = tmp_path / "table-2.md"
+    assert readers.compare(EVIDENCE, ROOT / "evidence" / "comparison-2.json", LIVE, out) == []
+    committed = EVIDENCE / "table-2.md"
+    if committed.exists():
+        assert out.read_text() == committed.read_text()

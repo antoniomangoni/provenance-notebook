@@ -30,7 +30,9 @@ from pathlib import Path
 import trail
 import view
 
-PRESENTATIONS = ("view", "baseline")
+PRESENTATIONS = ("view", "baseline")  # the first comparison's
+EVERY = ("view", "baseline", "plain")  # the second comparison adds the transcript without the notebook
+STEP_ID = re.compile(r"\bstep-[0-9]+\b", re.IGNORECASE)
 TOLERANCE = 0.0005  # numbers are right within this: 0.564 is right for 0.5639, 0.565 is not
 
 
@@ -142,6 +144,33 @@ def baseline_text(directory: Path, log: Path) -> str:
     return f"===== The agent's session: Pi's transcript =====\n\n{transcript}\n\n===== git log --stat of the agent's repository =====\n\n{log.read_text()}"
 
 
+def plain_text(directory: Path, log: Path) -> str:
+    """What Pi alone would have recorded: the transcript without the notebook's words. The calls to
+    `propose_plan` and their results go, the receipts capture added to tool results go, and any step id
+    left, in the agent's thinking or text, is replaced, since only the notebook's receipts taught it."""
+    sessions = sorted((directory / "session").glob("*.jsonl"))
+    entries = [json.loads(line) for session in sessions for line in session.read_text().splitlines() if line.strip()]
+    plans = {
+        part["id"]
+        for entry in entries
+        for part in (entry.get("message") or {}).get("content") or []
+        if isinstance(part, dict) and part.get("type") == "toolCall" and part.get("name") == "propose_plan"
+    }
+    kept = []
+    for entry in entries:
+        message = entry.get("message") or {}
+        if message.get("toolCallId") in plans:
+            continue
+        if isinstance(message.get("content"), list):
+            content = [part for part in message["content"] if not (part.get("type") == "toolCall" and part.get("id") in plans)]
+            entry = entry | {"message": message | {"content": content}}
+        kept.append(message_text(entry))
+    lines = "\n\n".join(kept).split("\n")
+    transcript = "\n".join(line for line in lines if not line.startswith("[notebook]"))
+    transcript = STEP_ID.sub("(step id removed)", transcript)
+    return f"===== The agent's session: Pi's transcript =====\n\n{transcript}\n\n===== git log --stat of the agent's repository =====\n\n{log.read_text()}"
+
+
 def texts(directory: Path, store: Path, log: Path, out: Path) -> list[str]:
     steps = trail.load(directory)
     if found := trail.check(steps, store):
@@ -149,6 +178,7 @@ def texts(directory: Path, store: Path, log: Path, out: Path) -> list[str]:
     out.mkdir(parents=True, exist_ok=True)
     (out / "view.txt").write_text(view_text(directory, steps), encoding="utf-8")
     (out / "baseline.txt").write_text(baseline_text(directory, log), encoding="utf-8")
+    (out / "plain.txt").write_text(plain_text(directory, log), encoding="utf-8")
     return []
 
 
@@ -210,22 +240,33 @@ def parse(text: str) -> dict | None:
     return None
 
 
-def ask(directory: Path, questions: dict, repeats: int, options: dict[str, str]) -> list[dict]:
+def ask(
+    directory: Path,
+    questions: dict,
+    repeats: int,
+    options: dict[str, str],
+    presentations: tuple[str, ...] = PRESENTATIONS,
+    answers_file: str = "answers.jsonl",
+    comparison: int | None = None,
+) -> list[dict]:
     """Each presentation, `repeats` times. A line is appended as soon as its call returns, so the file
-    holds every call that was made, whatever happens to the ones after it."""
+    holds every call that was made, whatever happens to the ones after it. A call made for a later
+    comparison carries its number, so the first comparison's table is graded from its own calls."""
     chosen = DEFAULTS | options
     model = f"{chosen['--provider']}/{chosen['--model']}"
-    asked = {name: prompt((directory / f"{name}.txt").read_text(encoding="utf-8"), questions) for name in PRESENTATIONS}
+    asked = {name: prompt((directory / f"{name}.txt").read_text(encoding="utf-8"), questions) for name in presentations}
     lines = []
     for repeat in range(1, repeats + 1):
-        for presentation in PRESENTATIONS:
+        for presentation in presentations:
             line = {"presentation": presentation, "repeat": repeat, "model": model, "reply": None, "answer": None}
+            if comparison is not None:
+                line["comparison"] = comparison
             try:
                 line["reply"] = reply(asked[presentation], [word for pair in chosen.items() for word in pair])
                 line["answer"] = parse(line["reply"])
             except Failed as failed:
                 line["error"] = failed.args[0]
-            with (directory / "answers.jsonl").open("a", encoding="utf-8") as answers:
+            with (directory / answers_file).open("a", encoding="utf-8") as answers:
                 answers.write(json.dumps(line, ensure_ascii=False) + "\n")
             lines.append(line)
     return lines
@@ -264,6 +305,8 @@ def matches(kind: str, given: object, accepted: object) -> bool:
         return isinstance(given, str) and given.strip() == accepted
     if kind == "empty":
         return given in ([], {})
+    if kind == "bool":
+        return isinstance(given, bool) and given is accepted
     if kind == "entries":
         # A list of objects, one of which holds every accepted field: {"step": ["step", "step-4"]}.
         entries = [entry for entry in given if isinstance(entry, dict)] if isinstance(given, list) else []
@@ -299,7 +342,7 @@ def occurs(kind: str, accepted: object, text: str) -> bool | None:
         return accepted in text
     if kind == "entries":
         return all(occurs(sub, value, text) for sub, value in accepted.values())
-    return None
+    return None  # empty and bool: a reader works them out
 
 
 def item_occurs(item: dict, text: str) -> bool | None:
@@ -314,6 +357,8 @@ def item_occurs(item: dict, text: str) -> bool | None:
 def said(kind: str, accepted: object) -> str:
     if kind == "empty":
         return "none given"
+    if kind == "bool":
+        return f"`{json.dumps(accepted)}`"
     if kind == "entries":
         return "an entry with " + " and ".join(f"{name} {said(sub, value)}" for name, (sub, value) in accepted.items())
     return f"`{commit(accepted)}`" if kind == "commit" else f"`{view.number(accepted) if kind == 'number' else accepted}`"
@@ -420,12 +465,139 @@ def table(questions: dict, answers: list[dict], texts: dict[str, str], steps: li
     return "\n".join(lines) + "\n"
 
 
+def read_answers(path: Path) -> list[dict]:
+    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()] if path.exists() else []
+
+
+def neutral_questions(comparison: dict, sets: list[dict]) -> list[dict]:
+    """Each question with only the items a reader can answer without the notebook's step ids or snapshot
+    commits, and the narrower accepted values the comparison gives some of them."""
+    chosen = {(entry["question"], tuple(entry["fields"])): entry for entry in comparison["neutral"]}
+    found = []
+    for questions in sets:
+        for question in questions["questions"]:
+            items = []
+            for item in question["items"]:
+                if entry := chosen.get((question["number"], tuple(item["fields"]))):
+                    items.append(item | ({"accepted": entry["accepted"]} if "accepted" in entry else {}))
+            if items:
+                found.append(question | {"items": items})
+    return found
+
+
+def table_2(comparison: dict, sets: list[tuple[dict, list[dict]]], texts: dict[str, str], steps: list[dict]) -> str:
+    """The second comparison: three presentations, the neutral items beside the full key, every call."""
+    calls = [(questions, line) for questions, answers in sets for line in answers]
+    models = list(dict.fromkeys(line["model"] for _, line in calls))
+    by_number = {question["number"]: questions for questions, _ in sets for question in questions["questions"]}
+
+    def of(model: str, presentation: str, number: int) -> list[dict]:
+        return [
+            line
+            for questions, line in calls
+            if line["model"] == model and line["presentation"] == presentation and questions is by_number[number]
+        ]
+
+    def scores_table(questions: list[dict]) -> list[str]:
+        rows = ["| Model | Question | " + " | ".join(f"From the {name}" for name in EVERY) + " |", "| --- | --- |" + " --- |" * len(EVERY)]
+        for model in models:
+            for question in questions:
+                cells = [spread([score(question, line["answer"]) for line in of(model, name, question["number"])]) for name in EVERY]
+                rows.append(f"| `{model}` | {question['number']}. {question['text']} | " + " | ".join(cells) + " |")
+        return rows
+
+    neutral = neutral_questions(comparison, [questions for questions, _ in sets])
+    every = [question for questions, _ in sets for question in questions["questions"]]
+    lines = [
+        f"# Reader check, second comparison: {comparison['trail']}",
+        "",
+        "**Added after the first result was seen** ([spec 4b](../../docs/specs/04b-second-comparison.md)). The first",
+        "comparison's table, `table.md`, is unchanged. Written by `readers.py grade --compare` from "
+        + ", ".join(f"`{entry['answers']}`" for entry in comparison["sets"])
+        + f". The trail's head is `{trail.digest(trail.canonical(steps[-1]))}`.",
+        "",
+        "Presentations: `view.txt`, the text of the reviewer's page; `baseline.txt`, Pi's whole transcript, which",
+        "holds the notebook's plan calls and receipts; `plain.txt`, the same transcript without them and with",
+        "step ids removed, and so without the notebook. A score is the share of a question's items an answer got",
+        "right: the mean over the calls and, in brackets, the lowest and the highest.",
+        "",
+        "## Scores on the items every presentation can answer",
+        "",
+        "Only the items listed in `comparison-2.json`: none needs a step id or a snapshot commit.",
+        "",
+        *scores_table(neutral),
+        "",
+        "## Scores on the whole key",
+        "",
+        "The plain transcript has no step ids, so it cannot score on the items that ask for one.",
+        "",
+        *scores_table(every),
+        "",
+        "## Calls",
+        "",
+        "| Model | Questions | Presentation | Characters | Calls | Failed | Without a JSON object |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for model in models:
+        for questions, _ in sets:
+            first = questions["questions"][0]["number"]
+            for name in EVERY:
+                made = of(model, name, first)
+                failed = sum(line.get("error") is not None for line in made)
+                unparsed = sum(line.get("error") is None and line["answer"] is None for line in made)
+                lines.append(f"| `{model}` | {questions['file']} | {name} | {len(texts[name])} | {len(made)} | {failed} | {unparsed} |")
+    lines += [
+        "",
+        "## Each item every presentation can answer",
+        "",
+        'Whether an accepted value can be read off each text ("counted": a reader works it out), and how many',
+        "calls got the item right, in the order view, baseline, plain.",
+        "",
+        "| Item | Accepted | In the view | In the baseline | In the plain | " + " | ".join(f"`{model}`" for model in models) + " |",
+        "| --- | --- | --- | --- | --- |" + " --- |" * len(models),
+    ]
+    for question in neutral:
+        for item in question["items"]:
+            accepted = "; or ".join(
+                " with ".join(said(kind, value) for kind, value in zip(item["kinds"], alternative, strict=True))
+                for alternative in item["accepted"]
+            )
+            there = [{None: "counted", True: "yes", False: "no"}[item_occurs(item, texts[name])] for name in EVERY]
+            counts = [
+                ", ".join(
+                    f"{sum(right(item, line['answer']) for line in of(model, name, question['number']))} of {len(of(model, name, question['number']))}"
+                    for name in EVERY
+                )
+                for model in models
+            ]
+            lines.append(
+                f"| {question['number']} {', '.join(f'`{f}`' for f in item['fields'])} | {accepted} | " + " | ".join(there + counts) + " |"
+            )
+    return "\n".join(lines) + "\n"
+
+
+def compare(directory: Path, comparison_file: Path, trail_directory: Path, out: Path) -> list[str]:
+    comparison = json.loads(comparison_file.read_text())
+    steps = trail.load(trail_directory)
+    sets, found = [], []
+    for entry in comparison["sets"]:
+        path = comparison_file.parent / entry["questions"]
+        questions = json.loads(path.read_text()) | {"file": f"`{entry['questions']}`"}
+        found += key_problems(questions, steps)
+        sets.append((questions, read_answers(directory / entry["answers"])))
+    if found:
+        return found
+    kept = {name: (directory / f"{name}.txt").read_text(encoding="utf-8") for name in EVERY}
+    out.write_text(table_2(comparison, sets, kept, steps), encoding="utf-8")
+    return []
+
+
 def grade(directory: Path, questions_file: Path, trail_directory: Path) -> list[str]:
     questions = json.loads(questions_file.read_text()) | {"file": questions_file.as_posix()}
     steps = trail.load(trail_directory)
     if found := key_problems(questions, steps):
         return found
-    answers = [json.loads(line) for line in (directory / "answers.jsonl").read_text().splitlines() if line.strip()]
+    answers = [line for line in read_answers(directory / "answers.jsonl") if "comparison" not in line]
     kept = {presentation: (directory / f"{presentation}.txt").read_text(encoding="utf-8") for presentation in PRESENTATIONS}
     (directory / "table.md").write_text(table(questions, answers, kept, steps), encoding="utf-8")
     return []
@@ -435,14 +607,29 @@ def grade(directory: Path, questions_file: Path, trail_directory: Path) -> list[
 
 USAGE = {
     "texts": ("readers.py texts TRAIL --store STORE --log FILE --out DIR", ("--store", "--log", "--out")),
-    "ask": ("readers.py ask DIR --questions FILE --repeats N [pi options]", ("--questions", "--repeats")),
-    "grade": ("readers.py grade DIR --questions FILE --trail TRAIL", ("--questions", "--trail")),
+    "ask": (
+        "readers.py ask DIR --questions FILE --repeats N [--presentations A,B] [--answers FILE] [--comparison N] [pi options]",
+        ("--questions", "--repeats"),
+    ),
+    "grade": ("readers.py grade DIR --questions FILE --trail TRAIL [--compare FILE --out FILE]", ("--questions", "--trail")),
 }
+OPTIONAL = {"ask": ("--presentations", "--answers", "--comparison"), "grade": ("--compare", "--out")}
+
+
+def optional(args: list[str], name: str) -> str | None:
+    """Takes `name VALUE` out of the arguments when it is there; a name without a value is left for the usage check."""
+    if name not in args or args.index(name) + 1 == len(args):
+        return None
+    at = args.index(name)
+    value = args[at + 1]
+    del args[at : at + 2]
+    return value
 
 
 def main(argv: list[str]) -> int:
     args = argv[1:]
     usage, names = USAGE.get(args[0] if args else "", ("\n       ".join(line for line, _ in USAGE.values()), ()))
+    extra = {name[2:]: optional(args, name) for name in OPTIONAL.get(args[0] if args else "", ())}
     rest = len(args) - 2 - 2 * len(names)
     # After the command, its directory and its own options, only `ask` takes more: Pi's options, in pairs.
     wrong = rest % 2 != 0 or not all(word.startswith("--") for word in args[2:][::2]) if args[:1] == ["ask"] else rest != 0
@@ -453,9 +640,11 @@ def main(argv: list[str]) -> int:
     command, directory = args[0], Path(args[1])
     if command == "texts":
         found = texts(directory, Path(named["store"]), Path(named["log"]), Path(named["out"]))
-        print("\n".join(found) or f"wrote {Path(named['out']) / 'view.txt'} and {Path(named['out']) / 'baseline.txt'}")
+        print("\n".join(found) or f"wrote view.txt, baseline.txt and plain.txt in {named['out']}")
     elif command == "ask":
-        if not named["repeats"].isdigit() or int(named["repeats"]) < 1:
+        shown = tuple((extra["presentations"] or ",".join(PRESENTATIONS)).split(","))
+        number = extra["comparison"]
+        if not named["repeats"].isdigit() or int(named["repeats"]) < 1 or set(shown) - set(EVERY) or (number and not number.isdigit()):
             print(f"usage: {usage}", file=sys.stderr)
             return 2
         lines = ask(
@@ -463,6 +652,9 @@ def main(argv: list[str]) -> int:
             json.loads(Path(named["questions"]).read_text()),
             int(named["repeats"]),
             dict(zip(args[2::2], args[3::2], strict=True)),
+            shown,
+            extra["answers"] or "answers.jsonl",
+            int(number) if number else None,
         )
         for line in lines:
             state = (
@@ -470,6 +662,12 @@ def main(argv: list[str]) -> int:
             )
             print(f"{line['model']} {line['presentation']} {line['repeat']}: {state}")
         found = []
+    elif extra["compare"] or extra["out"]:
+        if not (extra["compare"] and extra["out"]):
+            print(f"usage: {usage}", file=sys.stderr)
+            return 2
+        found = compare(directory, Path(extra["compare"]), Path(named["trail"]), Path(extra["out"]))
+        print("\n".join(found) or f"wrote {extra['out']}")
     else:
         found = grade(directory, Path(named["questions"]), Path(named["trail"]))
         print("\n".join(found) or f"wrote {directory / 'table.md'}")
