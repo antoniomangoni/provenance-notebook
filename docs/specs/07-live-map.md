@@ -81,6 +81,17 @@ from agents too.
 **Judged steps stay judged.** `propose` does not offer a step that any revision has already
 cited. A credit that a revision withdrew stays withdrawn until a later revision says otherwise.
 
+**Excused reads.** A holding resolution may carry `excused: [{run, why}]`, for a captured read of
+a sealed input that the sealer judged harmless, such as a row count. `check` accepts the
+resolution only if every captured read is named. It refuses an excuse for a run that read
+nothing, and an excuse without a reason. `view`, `status` and the page show each excuse beside
+the read. Added after the second fleet, where every agent counted the held-out file's rows
+before designing anything.
+
+**Withheld results.** For an agent, a sibling's unsealed result from a run that opened a sealed
+input is left out of what it is shown. That it met a milestone judged on the sealed input is
+itself a held-out result.
+
 **`seal`.** It creates `rev-N.json` exclusively, so of two seals of the same revision, the
 second fails and says so.
 
