@@ -51,9 +51,12 @@ held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
 - Re-executing five trails under a file trace reproduced 17 of 17 metrics files byte for byte,
   and showed that two results judged "pilot-only" had opened the held-out file. Both credits
   were withdrawn, and the withdrawal is recorded (`research/madelon-reanalysis/README.md`).
+- One agent ran with every command in a sandbox. The sandbox held, and the run reached nothing:
+  the file trace slowed its first search thirteen times, and the wall clock ended it there.
 
 **What it does not prove.** Who wrote a step, what a read was used for, or that a run used the
-method it claims. The README lists each limit.
+method it claims. Every revision of the map was sealed by an AI agent. The README lists each
+limit.
 
 **Disclosure.** The step schema, checker and three example trails predate 10 November. The code
 was written by AI coding agents from specs in `docs/specs/`.

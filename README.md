@@ -71,7 +71,7 @@ Every live attempt is committed under `live/`: twelve trails, all by the same mo
 | A reader check: three models answer fixed questions from the page, and from the agent's raw transcript | **The page was not needed.** A model answers as well from the transcript. The page's measured advantage is its length, a tenth of the transcript's, which let a small-context model answer at all | [evidence/](evidence/README.md#the-reader-check) |
 | Re-executing five trails under a file trace | Two credits were withdrawn: designs judged "pilot-only" from their command lines had opened the held-out file. 17 of 17 metrics files were reproduced byte for byte | [the map](research/madelon-reanalysis/README.md#checked-not-judged) |
 | Two fleets of three agents sharing one map | The first reached nothing. In the second, agents built on each other's steps and two routes reached the goal; one held-out result leaked between agents, and the leak is disclosed and closed | [the map](research/madelon-reanalysis/README.md#agents-sharing-the-map) |
-| One agent in a sandbox | FLEET3_RESULT | [the map](research/madelon-reanalysis/README.md#the-sandboxed-run) |
+| One agent in a sandbox | The sandbox held: no command reached outside its workspace, and the held-out file was never opened. The run reached nothing. The file trace slowed its first search thirteen times, and the wall clock ended it there | [the map](research/madelon-reanalysis/README.md#the-sandboxed-run) |
 
 The demo task is constructed: the inherited script was written for this repository to show a
 known pitfall (feature selection outside cross-validation) on public data. No published analysis
@@ -144,7 +144,10 @@ the details, and a scripted provider that replays tool calls with no model.
   with `live.sh` are not sandboxed unless asked.
 - **Privacy.** Commands are recorded as typed. The design's redactor and keyed digests are not
   built, so the committed trails hold absolute paths of the machine they ran on.
-- **A person's judgment.** MAP_SIGNED
+- **A person's judgment.** Every revision of the research map was sealed by an AI agent, named in
+  its `by`, and no live trail holds a person's review. No person has yet confirmed or disputed one.
+- **Cheap tracing.** The file trace slowed one multithreaded search from 52 to 701 seconds, and that
+  ended the sandboxed run before it scored anything.
 - **Generality.** One task, one model, one agent host. The reader check used models as readers.
 
 ## Layout

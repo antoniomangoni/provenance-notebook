@@ -98,6 +98,10 @@ map ([spec 7](../docs/specs/07-live-map.md), [spec 8](../docs/specs/08-rests-on.
 - **The sandbox hides named places.** Everything else on the machine stays readable, and the network is
   open, so a public dataset's held-out labels can still be downloaded. It keeps agents of one fleet
   apart; it does not contain a hostile one.
+- **The trace is slow on threaded work.** `strace` stops a process at every system call. One search
+  that fits boosted models on many threads took 52 seconds untraced and 701 seconds traced, and the
+  wall clock ended that session inside it. Set `NOTEBOOK_WALL` for traced runs, or `NOTEBOOK_TRACE=0`
+  and give up the record of reads.
 - **A trace keeps workspace reads only.** A file opened outside the workspace is not in `reads`; it is
   known only from the command line.
 - **Freshness is the file's modification time.** On a file system that keeps times to the second, a
