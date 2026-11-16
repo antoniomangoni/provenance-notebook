@@ -659,7 +659,7 @@ def show(revision: dict, trails: Trails) -> list[str]:
     lines += ["", "Next, the most shared first:"]
     for row in ranked(revision) or []:
         goals = f"; goals not yet reached: {', '.join(row['open_goals'])}" if row["open_goals"] else ""
-        lines.append(f"  {row['node']}: next on {', '.join(row['leads'])}; on {row['through']} routes{goals}")
+        lines.append(f"  {row['node']}: next on {', '.join(row['leads'])}; on {row['through']} route{'s' * (row['through'] != 1)}{goals}")
     if not ranked(revision):
         lines.append("  no open route")
     return lines
