@@ -236,3 +236,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 12 Nov | Pi stays the host, after weighing Claude Code hooks, an MCP server alone, a loop of our own and Pi 0.87.1. The model is the larger risk, so the budget stop returns to capture and Anthropic is the named fallback |
 | 13 Nov | The graph tables keep their columns for the week and gain tests. They differ from the graph artifact Almanaque now builds, and GRAPH.md lists what the port changes |
 | 15 Nov | The live model is `zai-org/GLM-5.3-Flash` on Berget, which no longer offers the two models tried in September. `google/gemma-4-31B-it` is the second model, for a live attempt and for the reader check |
+| 16 Nov | A research map over many trails ([spec 5](docs/specs/05-research-map.md)): goals, routes and shared milestones, revised as trails come in. A task file may now cite the step it `builds_on`, so a route starts from a shared result instead of recomputing it |
