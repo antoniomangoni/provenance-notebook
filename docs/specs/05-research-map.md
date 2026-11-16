@@ -120,7 +120,8 @@ Every command except `check` and `seal` checks first, and stops with exit 1 on a
 - **`candidates`.** For each trail whose step 0 summary begins `Route ROUTE:`, its
   observations are walked in order against that route's path, starting at the route's next
   node. An observation that meets the next node's criteria is a candidate resolution, and the
-  walk moves on, since one observation may meet several nodes in a row. Once the walk stops, the
+  walk moves on, since one observation may meet several nodes in a row. A candidate that holds lists, as `after_misses`, the trail's earlier observations
+  that measured the same node and missed it: a hit after a miss may be a second look. Once the walk stops, the
   trail's last observation that has every measure the next node needs becomes a candidate with
   `holds: false`.
 - **The same walk for a trail without a route,** against every open route, with the routes it

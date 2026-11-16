@@ -365,6 +365,12 @@ def propose(revs: list[dict], trails: Trails) -> dict:
                     (node, ref), {"node": node, "cites": ref, "holds": holds, "routes": [], "summary": observation["summary"]}
                 )
                 kept["routes"].append(route["id"])
+                # Earlier observations that measured this node and missed it: a hit after misses may be a
+                # second look, which a person has to judge before accepting it.
+                if holds and (
+                    misses := [o["id"] for o in observations if o["seq"] < observation["seq"] and meets(nodes[node], o) is False]
+                ):
+                    kept["after_misses"] = misses
         # A replacement plan none of whose observations resolves a node is a path the map does not have yet.
         resolved = {r["cites"].split("#")[1] for r in last["resolutions"] if r["cites"].split("@")[0] == probe.split("/", 1)[1]}
         for step in steps:

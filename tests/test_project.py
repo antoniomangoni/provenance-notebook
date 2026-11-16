@@ -251,3 +251,10 @@ def test_a_revision_s_instructions_reach_every_brief_and_must_be_text(tmp_path):
     project.brief(revision, "knn", trails(), ROOT / "demo", tmp_path / "knn")
     assert "Rules for every route of this map:\nScore the held-out file once." in (tmp_path / "knn" / "prompt.md").read_text()
     assert "rev-0: instructions must be text of at most 4,000 characters" in project.check(alone(revision | {"instructions": ""}), trails())
+
+
+def test_propose_flags_a_hit_that_came_after_misses_of_the_same_node():
+    revs = project.revisions(MAP)[:4]
+    draft = project.propose(revs, trails(LIVE1, LIVE2, ROUTE1, ROOT / "live" / "madelon-route-knn"))
+    (hit,) = [c for c in draft["candidates"] if c["node"] == "compact-knn"]
+    assert (hit["cites"].split("#")[1], hit["holds"], hit["after_misses"]) == ("step-40", True, ["step-30"])
