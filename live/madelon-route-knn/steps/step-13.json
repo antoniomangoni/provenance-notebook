@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:46:05.415Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only NCA-metric kNN grid plus screen-noise diagnostic",
+  "reasoning": "Pilot-only batch 3: (a) leaky-diagnostic kNN on whole-pilot-selected top-20 to see if per-fold screen noise is the limiter; (b) NCA metric learning inside the pipeline (SelectKBest -> Scaler -> NCA -> kNN), grid over K in {20,30}, n_components {10,15,20,None}, init pca/identity, nn {5,7,11}, 10 CV folds. Bar: a config family >= ~0.74 pilot CV would justify the final nested run.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:94494bb1f98ef3b73e7ecd3377a52b0d846c9bb441f88c6a0dc1741457e3c69c"
+}

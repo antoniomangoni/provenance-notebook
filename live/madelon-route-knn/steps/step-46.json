@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-46",
+  "seq": 46,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:50:39.732Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cd /tmp/notebook-madelon-route-knn.DWzGi3 && mkdir -p evidence && git mv explore_knn.py explore2.py explore3.py explore4.py explore5.py explore6.py preflight.py evidence/ 2>/dev/null || (mv explore_kn",
+  "command": {
+    "shown": "cd /tmp/notebook-madelon-route-knn.DWzGi3 && mkdir -p evidence && git mv explore_knn.py explore2.py explore3.py explore4.py explore5.py explore6.py preflight.py evidence/ 2>/dev/null || (mv explore_knn.py explore2.py explore3.py explore4.py explore5.py explore6.py preflight.py evidence/ && git add -A); git add -A && git -c user.name=agent -c user.email=agent@local commit -q -m \"Move pilot-only exploration scripts to evidence/; README documents the corrected route\" && git log --oneline | head -3 && uv run python analysis.py --help >/dev/null 2>&1 && ls",
+    "digest": "sha256:22f1a445cd694a8cb0dca0949ab0d4f4d668ee821a6db0c4a2d6b124067c9fd6"
+  },
+  "code": {
+    "ref": "commit:2a6e32b76292c6033af1f3fd9ecac1ec5b5b57c3"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-41",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8a71f80999a450d2254a105af82c551a5f4c1f0dffcd9d8281b8ec559092fc53"
+}

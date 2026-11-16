@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-2",
+  "seq": 2,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:42:53.857Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ls -laR . | head -60 && echo ---- && wc -l analysis.py 2>/dev/null && ls data out 2>/dev/null",
+  "command": {
+    "shown": "ls -laR . | head -60 && echo ---- && wc -l analysis.py 2>/dev/null && ls data out 2>/dev/null",
+    "digest": "sha256:06eee363bd2c8f2bfcf7094caa71cad1567fb1b0ef64a6b418e4df7746015f78"
+  },
+  "code": {
+    "ref": "commit:bcb30a7218501afd767dd909c4ae9b72504b7805"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-1",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:1c0a65c0b0f2faae43374dcbdaf81dd80bdcf8abbbef0bc290f52b8cae3a2edc"
+}

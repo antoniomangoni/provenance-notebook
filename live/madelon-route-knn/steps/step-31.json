@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-31",
+  "seq": 31,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:49:19.044Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Fix hyperparameters from pilot CV; preflight fixed spec",
+  "reasoning": "Replacing the contradicted step-28 plan. Revision is pilot-justified only: batch-5 (10 pilot folds) showed the grid cell the failing inner CV chose (K=50, nn=15; 0.7333) is beaten by (K=40, nn=11; 0.7360, fold-std 0.0192, tightest) and (K=50, nn=7; 0.7452). New analysis: fully pre-specified fixed procedure (PCA-free soft screen K=40, alpha=1, kNN nn=11 manhattan/distance), cv_auc from 3 repeats of 5-fold CV of the fixed procedure, final model refit on all pilot samples, single held-out score. First: pilot-only preflight of the fixed spec across repeat seeds 1-3 to confirm ~0.73+ stability before re-touching heldout.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-28",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-30",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:a7583c107bd54eaaa4356ba832fb49d7756331a7dbf2f78bcd65739780dd22c0"
+}

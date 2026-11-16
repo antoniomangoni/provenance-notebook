@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-37",
+  "seq": 37,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:49:59.927Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "out/metrics.json was not usable for step-36",
+  "text": "The command wrote out/metrics.json, but it is not one object of measure names to finite numbers, so step-36 has no measures.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-36",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:6998d6f2c929a3f092453cdd2141dfbc49f4f0473d53a7113dae27ce82dcc4bd"
+}

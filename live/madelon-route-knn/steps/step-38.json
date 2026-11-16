@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "id": "step-38",
+  "seq": 38,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:50:18.669Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final scoring of locked spec K=50 alpha=1 nn=7",
+  "reasoning": "Second (and final) held-out scoring of the revised route, spec (K=50, alpha=1, nn=7, manhattan/distance) chosen by a pre-declared pilot-only rule (highest seed-averaged CV mean across 20 folds: 0.7261; corroborated by batch-5 0.7452+/-0.029). Expected cv_auc ~0.72-0.73; the earlier honest run calibrated cv~holdout within ~0.01, so holdout should land ~0.71-0.74. Thresholds: holdout>=0.71, |gap|<=0.05, n_features<=50.",
+  "expectations": [
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "feature-budget",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-31",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-30",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:fcdf303bca68fb47c2727a69ce3225da38f577b0b40df5e9a56f2a94cc8d4e99"
+}

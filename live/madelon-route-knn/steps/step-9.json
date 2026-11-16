@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:44:52.171Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only kNN refinement: fine grid, PCA/whiten, cosine, MI screen",
+  "reasoning": "Plain kNN plateaus at ~0.71 pilot CV, under what the route needs (holdout >= 0.71 implies pilot nested CV should sit near ~0.74+). Pilot-only batch 2 tests refinements: K in {15,20,25}, smaller nn, metrics euclidean/manhattan/cosine, PCA or whitening between screen and kNN, and an MI screen. Each config judged by 10 CV folds (5-fold x 2 repeats), all on pilot.csv. Bar for proceeding: a stable config family at pilot CV >= ~0.74.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:bc379f9e4e649825c6f8098495652d2f0100858386bc2971eae02308362b5a7f"
+}

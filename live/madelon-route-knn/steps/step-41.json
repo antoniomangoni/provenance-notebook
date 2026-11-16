@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-41",
+  "seq": 41,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:50:29.028Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Heldout audit, README update, commit provenance",
+  "reasoning": "Housekeeping: (1) audit that heldout.csv is referenced only by analysis.py; (2) rewrite README's method/result to the corrected soft-screened kNN route; (3) commit analysis.py, exploration scripts, README as provenance; (4) confirm final metrics.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:2d43b492c5a82f792814ef4207b4f32b3dd2a10b44758f36d3ea30def318ac83"
+}

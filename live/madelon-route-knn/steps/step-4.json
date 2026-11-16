@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:42:55.479Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Read analysis.py, README, pyproject; check CSV headers/shapes",
+  "reasoning": "Read analysis.py, README, pyproject to understand pipeline and deps; check CSV shapes/columns with a tiny python read of headers only (not touching heldout values).",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-1",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-3",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:7a411ba44791cae9c68497bde5a7aba6fc165786db8af224c36808710c3472ce"
+}

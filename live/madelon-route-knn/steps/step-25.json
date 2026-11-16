@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:48:20.992Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Write final kNN-route analysis.py and pilot-only nested preflight",
+  "reasoning": "Write the final analysis.py (soft-screened kNN route, nested CV, single heldout scoring) and run a pilot-only preflight that repeats the exact nested procedure with outer seeds 1 and 2 to confirm cv_auc stability (~0.73-0.75 expected) before the one real run. No heldout access in preflight.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:0d234de0eddaaea4afc5b1a93cb17e98ead8890383a599383e079ed1bb6c538c"
+}

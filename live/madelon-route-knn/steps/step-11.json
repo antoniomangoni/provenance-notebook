@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "madelon-route-knn",
+  "at": "2026-11-16T11:45:33.646Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 34400,
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-10",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-9",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:798bcd2c51e9b7a4ca80fa5245cfec416480e6c135fc256ea75bf3b406e04f72"
+}
