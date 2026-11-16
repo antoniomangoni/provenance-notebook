@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:52:50.717Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only: adopt prior vote-trail's stab screen + RF/KNN soft vote, compare screen variants by honest nested CV, lock best, seal screen milestone",
+  "reasoning": "Building on the prior vote trail's step-21, whose vote_lib.py defines the pilot-only stab_screen (bootstrap-stability F test, ≤50 features) and nested_vote_cv (honest nested CV re-fitting screen, grids and vote weight inside each outer fold). Its screen comparisons on pilot were 'as expected', so I expect a stab screen + soft vote to clear the screen-milestone floor on pilot. Plan: (1) copy vote_lib.py into this workspace, (2) calibrate runtime on one nested-CV run (prints only), (3) run a pilot-only comparison of screens {top20F, stab.5, stab.3, stab.2} over seeds 0-1 and pick the winner by pre-set rule (highest mean cv_auc, tie-break lower sd), then decide Manhattan vs Euclidean KNN on the winner (switch only if it beats Euclid by >0.005), (4) write the locked procedure's {cv_auc (mean over seeds 0-2), n_features (full-pilot screen)} to out/metrics.json. All of this reads pilot.csv only; heldout stays sealed. Success rule fixed in advance: cv_auc >= 0.7 and n_features <= 50 → lock; otherwise replace the plan and search differently (e.g., interaction features or different screen family).",
+  "expectations": [
+    {
+      "name": "screen-search-runs",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "cv-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "nfeat-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet-vote@sha256:bdd5084c643457a7d2fecff44d40b629f4364a02f4a1cfa4e38ce500dab6b2a5#step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:e8b831355d9be9d308c379ca1ae9d20e0c288e3c32020797b3d0c253b9dbc871"
+}

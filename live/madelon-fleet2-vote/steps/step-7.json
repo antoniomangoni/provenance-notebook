@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:51:30.028Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "find /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad -maxdepth 2 -name \"*madelon*\" -type d 2>/dev/null; echo ---; find /tmp/claude-1000 -maxdepth 6",
+  "command": {
+    "shown": "find /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad -maxdepth 2 -name \"*madelon*\" -type d 2>/dev/null; echo ---; find /tmp/claude-1000 -maxdepth 6 -type d -name \"*fleet-vote*\" 2>/dev/null | head; echo ---; tail -5 /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleet2/fleet-madelon-fleet2-vote.log 2>/dev/null",
+    "digest": "sha256:21026be28e3c4c5f8829e0c6be81046317960f37010e9515cc58f871c7d2c3ad"
+  },
+  "code": {
+    "ref": "commit:d0db295304755ba1ba39a5d028a98c7e5b6898c5"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:16770f7dc10a83850ec85a500015a798fafa78fc470a6eed7e2b0c246141862d"
+}

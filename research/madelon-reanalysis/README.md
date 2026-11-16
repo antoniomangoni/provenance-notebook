@@ -3,20 +3,25 @@
 This map covers the demo task (`demo/`). An inherited analysis reports a cross-validated AUC of
 0.76, and on 2200 held-out samples it scores 0.56.
 
-It has seven revisions over five trails: two from 15 November, written before the map existed,
-and three runs that the map steered on 16 November. All five runs used `zai-org/GLM-5.3-Flash`
-through Pi under capture.
+It has ten revisions over eleven trails:
+- two from 15 November, written before the map existed;
+- three runs that the map steered one at a time on 16 November;
+- two fleets of three agents that ran at the same time and shared the map as they worked.
+
+Every run used `zai-org/GLM-5.3-Flash` through Pi under capture.
 
 ```sh
-T="live/madelon-2026-11-15-1 live/madelon-2026-11-15-2 live/madelon-route-screened-forest live/madelon-route-knn live/madelon-route-svm"
-R=research/madelon-reanalysis/retrace/*.json
-uv run python project.py check  research/madelon-reanalysis/map --trails $=T --reads $~R   # ok: 7 revisions, 10 resolutions, 5 trails
-uv run python project.py view   research/madelon-reanalysis/map --trails $=T --reads $~R   # view.txt
-uv run python project.py shared research/madelon-reanalysis/map --trails $=T --reads $~R   # shared.txt
-uv run python project.py graph  research/madelon-reanalysis/map --trails $=T --reads $~R --out research/madelon-reanalysis/graph --csv
+uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 10 revisions, 15 resolutions, 11 trails
+uv run python project.py view   research/madelon-reanalysis/map --live live   # view.txt
+uv run python project.py shared research/madelon-reanalysis/map --live live   # shared.txt
+uv run python project.py page   research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/map.html
+uv run python project.py serve  research/madelon-reanalysis/map --live live   # the same page, live, on 127.0.0.1:8077
+uv run python project.py graph  research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/graph --csv
 ```
 
-(`$=T` splits the list and `$~R` expands the glob in zsh; in bash write `$T` and `$R`.)
+`--live live` takes every trail under `live/` whose task names this project. The re-executions in
+`retrace/` are used without asking. [map.html](map.html) is the map and its trails drawn as one
+page.
 
 ## Goals and where they stand
 
@@ -24,7 +29,7 @@ uv run python project.py graph  research/madelon-reanalysis/map --trails $=T --r
 | --- | --- | --- |
 | **explain**: the inherited result does not hold, and selecting features before cross-validation accounts for it | reached | Both trails of 15 November moved the selection inside cross-validation. The estimate then agreed with the held-out AUC of 0.5639. |
 | **floor**: an analysis chosen on pilot data alone reaches 0.71 held-out, and its own estimate agrees | reached | One route: a random forest on 30 features selected inside cross-validation, 0.7214 (live-2). Live-1's 0.7185 was withdrawn in rev-6: its design followed per-feature held-out AUCs. |
-| **compact**: the same, with at most 50 features counted | not reached | Every route to it is blocked or abandoned, and its shared milestone `screen` is open again since rev-6. |
+| **compact**: the same, with at most 50 features counted | reached | Two routes in the second fleet, each scored on the held-out file once: a soft vote of a forest and k-nearest neighbours on 20 features, 0.719 (vote), and a forest on 10 features kept across bootstrap screens, 0.7125 (stable-forest). |
 
 ## The revisions
 
@@ -37,6 +42,9 @@ uv run python project.py graph  research/madelon-reanalysis/map --trails $=T --r
 | 4 | **The second steered run, `knn`.** It started from the first run's screen code, and every exploratory script it ran read the pilot data only. Its one held-out score was 0.709, under the floor of 0.71, so `compact-knn` is refuted. A second score after re-tuning, 0.7196, is not credited. |
 | 5 | **The third steered run, `svm`.** It started from the same screen. Five pilot-only designs gave nested cross-validated AUCs of 0.66 to 0.68. The run stopped at capture's token ceiling before its held-out score. The route is abandoned, with why. |
 | 6 | **Checked, not judged.** The five trails were re-executed under a file trace ([spec 6](../../docs/specs/06-traced-reads.md)). Two credits are withdrawn: `screen`, because screened-forest steps 5 and 8 ranked features by their held-out strength before it, and `floor-search`, because live-1's `diagnose.py` printed held-out AUCs that its next plan used. The refutations and the rest of rev-3 and rev-4 are confirmed. |
+| 7 | **Three routes for agents running at once:** boost, stable-forest and vote, all through `screen`. They were declared before any run toward them. |
+| 8 | **The first fleet reached nothing.** No run wrote its measures, and each agent read the map once, at its start, so none built on another. |
+| 9 | **The second fleet reached compact twice.** The agents built on each other as they ran. Each credit excuses one row count of the held-out file, named and explained in the revision. The revision also discloses one leak of a held-out result between agents, now closed. |
 
 ## What the shared milestones did
 
@@ -51,6 +59,42 @@ uv run python project.py graph  research/madelon-reanalysis/map --trails $=T --r
   credited, the knn and svm briefs built on it. Rev-6 withdrew that credit, so both built on a
   screen chosen after held-out diagnostics. Their outcomes stand as they are: a refutation and an
   abandonment.
+
+## Agents sharing the map
+
+The two fleets ran three agents at once with `scripts/fleet.sh` ([spec 7](../../docs/specs/07-live-map.md)).
+Each agent could read the live map through capture's `project_map` tool, and cite what it showed.
+
+**Fleet 1** (30 minutes). Each agent read the map once, at its first step, before any sibling had
+found anything, and never again. None of them wrote `out/metrics.json`, so nothing was reached.
+Two changes followed:
+- capture now tells an agent when its siblings have new observations since it last read the map;
+- briefs now ask for the shared milestone's measures to be written.
+
+**Fleet 2** (60 minutes). The agents read the map 3 to 5 times each and built on each other:
+
+| Plan | Builds on | What it used |
+| --- | --- | --- |
+| boost step-15 | vote step-22 | vote's pilot-only screen (`screen`, cv 0.73) |
+| boost step-23 | stable-forest step-56 | stable-forest's stability screen (`screen`, cv 0.755) |
+| boost step-29 | stable-forest steps 56 and 59 | the screen, and the fact that it cleared `compact`, numbers withheld |
+| stable-forest step-57 | vote step-22 | vote's screen, beside its own |
+
+vote reached `compact-vote` at 0.719, and stable-forest reached `compact-stable-forest` at 0.7125.
+boost reached `screen`, then the wall clock stopped it before its held-out score.
+
+**What went wrong, and what the map records about it:**
+- **Row counts.** Every agent counted the rows of `data/heldout.csv` while looking around, which
+  the trace caught. `check` refuses a credit after such a read unless the revision excuses it and
+  says why. rev-9 excuses each one, and `view` shows the excuse next to the read.
+- **A held-out result shown to a sibling.** `project_map` withheld vote's number, but it showed
+  stable-forest that vote had met `compact-vote`. That fact is itself held-out information.
+  Agents are no longer shown such results.
+- **Reads outside the workspace.** Agents are not sandboxed. In fleet 2, vote copied code from
+  fleet 1's vote workspace, and stable-forest read that workspace's outputs. Fleet 1 had scored
+  nothing on the held-out file, and no command read the model key, the Pi configuration, or
+  another fleet 2 agent's workspace. A trace keeps only reads inside the agent's own workspace,
+  so these reads are known from the command lines alone.
 
 ## Checked, not judged
 
@@ -102,5 +146,5 @@ puts the second look in front of whoever seals the revision.
 - **The steering rule ranks by structure only.** The milestone that the most open routes wait on
   comes first. Live-1's printed per-family scores (forest 0.72, kNN 0.66, SVM 0.65) predicted the
   order the routes fared in, but they are not measures, so `next` does not use them.
-- **Scale.** One model, one task and three steered runs: this demonstrates the mechanism, not a
+- **Scale.** One model, one task, three steered runs and two fleets of three agents: this demonstrates the mechanism, not a
   study of it.

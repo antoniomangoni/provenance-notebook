@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T15:20:27.889Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only: compare ET/stability screens by honest GBM RF CV before locking",
+  "reasoning": "Building on fleet2-vote's provisional screen milestone (cv_auc 0.73 with n_features 20, stability screen + soft vote, step-22): bootstrap-stability screens work on this data. I compare three pilot-only importance-screening procedures (single ET forest top-30; bootstrap ET-frequency k_per=30 at freq>=0.5 cap 30; freq>=0.4 cap 40) under three evaluations: honest (procedure refit inside each outer fold) with GBM tuned on a 16-point grid including max_features subsampling and max_bins, honest with RF (mechanism reference, expect ~0.76), and literal fixed-pilot-screen nested GBM (leaky, printed for reference). Expectation stated in reasoning: at least one screen+GBM procedure reaches honest CV >= 0.70; if none does, I will not score heldout this round and will instead widen the GBM search or change screen family.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:58b277671a9c15e1e45479358361a25319ef10f60173d463f5541aaf6524f770"
+}

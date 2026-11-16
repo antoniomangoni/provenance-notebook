@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "id": "step-32",
+  "seq": 32,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T14:57:34.625Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code -1",
+  "exit_code": -1,
+  "duration_ms": 120039,
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:out_search3.log",
+      "digest": "sha256:bf458454a9b9c2ab3e328e5c425d3db2e201014a5e1b78871c5d782ba61d65eb"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+    },
+    {
+      "ref": "file:screen_search3.py",
+      "digest": "sha256:d6e14788d13c4ff1248ec103e05df885c5cd47ca67a34de437f4df33add90927"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-31",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:c2757d909fc4062c4a3dc66a7ef5192de47ef8bfe92c350d7a79eb75750b6f73"
+}

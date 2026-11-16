@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-37",
+  "seq": 37,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:08:54.409Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uptime; ps -eo pid,pcpu,pmem,rss,etime,comm --sort=-pcpu | head -12; echo ---; tail -1 out_search3.log",
+  "command": {
+    "shown": "uptime; ps -eo pid,pcpu,pmem,rss,etime,comm --sort=-pcpu | head -12; echo ---; tail -1 out_search3.log",
+    "digest": "sha256:239798e8783d0fb1ce700b3a66feefd3e4fe27aea629d13920345956d5a12430"
+  },
+  "code": {
+    "ref": "commit:6c5768d4f149bba160b42130a5e5d0a563348b50"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:54d63173b603133fadceba441e910005da2067dc40d73d2f0f5379f738b518c1"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T14:51:37.232Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "find /tmp/claude-1000/-home-antoniomangoni-code-almanaque -name \"screen_search2.py\" -o -name \"screen_search.py\" 2>/dev/null | head; echo ===; find /tmp/claude-1000/-home-antoniomangoni-code-almanaque ",
+  "command": {
+    "shown": "find /tmp/claude-1000/-home-antoniomangoni-code-almanaque -name \"screen_search2.py\" -o -name \"screen_search.py\" 2>/dev/null | head; echo ===; find /tmp/claude-1000/-home-antoniomangoni-code-almanaque -maxdepth 6 -type d -name \"*stable-forest*\" 2>/dev/null | head",
+    "digest": "sha256:c5823205c09285404381569cfe70c0c30cd25b49b6d95e10a18506db33f2d699"
+  },
+  "code": {
+    "ref": "commit:274339e2043b2d70ec0154f030f0bffd683ca45f"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:f6dc9d42217001dd9eb2dd036dbda75aee6da70c98d53bcbe1026341636b5449"
+}

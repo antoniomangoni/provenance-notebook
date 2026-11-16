@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-2",
+  "seq": 2,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T14:51:22.041Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Survey workspace, inherited analysis, data, and prior vote-trail exploration before designing the screen.",
+  "reasoning": "No commands have run yet in this fresh workspace. I need to see analysis.py, the data layout, and the prior madelon-fleet-vote trail's pilot-only screen-comparison results (its observations step-16/18/20/21 were 'as expected' under a screen-comparison plan, ending with a locked vote_lib.py), so I can build on the locked procedure instead of redoing the search. Only pilot-only artifacts exist there; I will not open any sealed-input outputs (heldout scores) from other trails.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:9a572a91d94efaec9fe487c0b4983ba5f90053eaa98c6de61791308bc86a3ae4"
+}

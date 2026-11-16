@@ -1,0 +1,52 @@
+{
+  "version": 2,
+  "id": "step-23",
+  "seq": 23,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T15:04:16.119Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run locked pilot-top20F + RF/Manhattan-KNN soft-vote analysis: nested CV on pilot, score heldout once, write all four measures.",
+  "reasoning": "The screen milestone is sealed pilot-only (cv_auc 0.73, 20 features). The final analysis reuses the prior vote trail's locked library (builds_on step-21): screen = 20 features with the highest F statistic, chosen on pilot data alone; model = soft vote of a 500-tree random forest and a StandardScaler+k-NN with Manhattan distance on the screened features. Deployment mirrors the nested-CV procedure exactly: tune RF max_features/min_samples_leaf and KNN k/weights by 4-fold inner CV on the full pilot, pick the vote weight on out-of-fold blends, fit both models on the full screened pilot. The nested cv_auc (seeds 0-2, deterministic) must reproduce 0.73; heldout.csv is loaded only after all pilot-side choices are fixed, and scored exactly once. Prediction from pilot evidence: |gap| should be small because the estimate is honest nested CV (the map's nested milestone showed honest CV tracks holdout within 0.05), and holdout should land near 0.73 given the estimate cleared 0.70 on pilot — but the RF-only and KNN-only single models on screened features both missed the floor on heldout, so holdout could fall short of 0.71; that risk is exactly what this sealed run decides. If holdout_auc >= 0.71 and gap within ±0.05, compact-vote is reached. If it misses, I report the honest numbers and stand behind the nested-CV estimate, since further retuning after seeing heldout is forbidden.",
+  "expectations": [
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-high",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-low",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "nfeat-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    },
+    {
+      "name": "cv-consistency",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet-vote@sha256:bdd5084c643457a7d2fecff44d40b629f4364a02f4a1cfa4e38ce500dab6b2a5#step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:e730f76cd0ddf06961bb87696ec78265cbb8d9c041e38fb34364e5d5db1d262d"
+}

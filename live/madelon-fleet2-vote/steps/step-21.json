@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-21",
+  "seq": 21,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T15:01:45.351Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python search.py top20F 2 man > out/search/top20F_2man.log 2>&1 && cat out/search/top20F_2man.log && cat > lock.py <<'EOF' import json import numpy as np from vote_lib import f_screen tab = np.",
+  "command": {
+    "shown": "uv run python search.py top20F 2 man > out/search/top20F_2man.log 2>&1 && cat out/search/top20F_2man.log && cat > lock.py <<'EOF'\nimport json\nimport numpy as np\nfrom vote_lib import f_screen\n\ntab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = tab[:, :-1], tab[:, -1]\nres = [json.load(open(f\"out/search/top20F_{s}man.json\")) for s in (0, 1, 2)]\nmeans = [r[\"mean\"] for r in res]\ncv_auc = float(np.mean(means))\nn_features = len(f_screen(X, y, 20))\nprint(\"locked (top20F + manhattan-knn vote) per-seed means:\", [round(m, 4) for m in means])\nprint(\"folds per seed:\", [[round(a, 4) for a in r[\"folds\"]] for r in res])\nmetrics = {\"cv_auc\": round(cv_auc, 4), \"n_features\": n_features}\nimport pathlib\npathlib.Path(\"out\").mkdir(exist_ok=True)\npathlib.Path(\"out/metrics.json\").write_text(json.dumps(metrics, indent=2) + \"\\n\")\nprint(json.dumps(metrics))\nEOF\nuv run python lock.py",
+    "digest": "sha256:8cb6963201056151d42e8116e058ecec857b7bafdc0bcd3b3838a4b7460856ab"
+  },
+  "code": {
+    "ref": "commit:04b8af464f5eb0a8f4a3bbb34f499e29c315809d"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-13",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d04b086bf64d1b9c987223fc7788ac18c3625e99492fd04bdae297365a402ff5"
+}

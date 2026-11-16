@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-39",
+  "seq": 39,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:09:35.643Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "sleep 420; pgrep -f screen_search3.py >/dev/null && echo RUNNING || echo DONE; grep -v \"majority set\" out_search3.log | tail -12",
+  "command": {
+    "shown": "sleep 420; pgrep -f screen_search3.py >/dev/null && echo RUNNING || echo DONE; grep -v \"majority set\" out_search3.log | tail -12",
+    "digest": "sha256:725f54e389614a3442078e747e0e1fd890c68f23b26446ef431296abe8b8dc80"
+  },
+  "code": {
+    "ref": "commit:36d904d9ef766622dec508c09de4b6b6e9b23c8e"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:e9b11450a691f9108b756fe849ea8df7d99d7fa5d9a1f14dadf5a2341f5c1231"
+}

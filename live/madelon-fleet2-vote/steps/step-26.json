@@ -1,0 +1,124 @@
+{
+  "version": 2,
+  "id": "step-26",
+  "seq": 26,
+  "trail": "madelon-fleet2-vote",
+  "at": "2026-11-16T15:10:19.931Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 322355,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:0259981b8a40a7cf159ec05cfdb26a9ca2d90ffd901e1386fead2e23a066a7da"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:0259981b8a40a7cf159ec05cfdb26a9ca2d90ffd901e1386fead2e23a066a7da"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.73
+    },
+    {
+      "name": "holdout_auc",
+      "value": 0.719
+    },
+    {
+      "name": "gap",
+      "value": 0.0111
+    },
+    {
+      "name": "n_features",
+      "value": 20
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:.gitignore",
+      "digest": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84"
+    },
+    {
+      "ref": "file:analysis.py",
+      "digest": "sha256:d0b3e3e7812159a275cc2d38747f97c57df87833039e1b6e3a9a71ec85d9d774"
+    },
+    {
+      "ref": "file:calib.py",
+      "digest": "sha256:28045699fee1938ad0b9c7deb9d55ec990e1898f2985c7f1733991eb56d4cb63"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    },
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:lock.py",
+      "digest": "sha256:66483d908ae87b3c3cbdc6f30195cc81fe8746aaa909cdf8926e205e7a5e7b9c"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+    },
+    {
+      "ref": "file:search.py",
+      "digest": "sha256:29c225c2414dccd70af92e840e1438b5b3b01eae344296e46ce3a6215f871c79"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+    },
+    {
+      "ref": "file:vote_lib.py",
+      "digest": "sha256:cbdcb04f5e9952418c7af00229647215bb4b4c48800574ed763b157de28ac779"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "holdout-floor",
+      "measured": 0.719,
+      "held": true
+    },
+    {
+      "expectation": "gap-high",
+      "measured": 0.0111,
+      "held": true
+    },
+    {
+      "expectation": "gap-low",
+      "measured": 0.0111,
+      "held": true
+    },
+    {
+      "expectation": "nfeat-cap",
+      "measured": 20,
+      "held": true
+    },
+    {
+      "expectation": "cv-consistency",
+      "measured": 0.73,
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-25",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:284ef429a23b5cc1a97b8d99e35a6820c739d7388dabce4faf5a1b1e9c139be8"
+}

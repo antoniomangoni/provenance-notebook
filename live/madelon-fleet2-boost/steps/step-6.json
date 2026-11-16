@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T14:53:13.872Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only exploration of screen candidates and GBM settings via nested CV",
+  "reasoning": "Pilot-only exploration to choose the screen and GBM settings. Building on step-7 (inherited leaky F30+LR: cv 0.761 vs holdout 0.5639, so a fixed F-top-k screen carries selection-overfit risk) and step-19 (RF on 30 features selected inside CV cleared the floor with agreement, suggesting importance/bagged screens are more reliable than plain F-top-k). I will write two scripts, run both with uv, inspect printed diagnostics, and choose the screen + GBM grid for the locked procedure. This run touches pilot only; heldout is not opened. Expected in reasoning (not yet a claimed milestone): individual feature signals are modest (OOF AUC ~0.55-0.70), best screen+GBM nested CV lands >= 0.70 with a modest leak-bias; if nothing reaches 0.70 on pilot, that changes the route's feasibility and I will reassess before any heldout scoring.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-19",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:acc3846e38d06db9051a1c0c8e50d4998086b704dfee1e2bede6f0329714b790"
+}

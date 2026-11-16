@@ -1,10 +1,10 @@
-Research map of madelon-reanalysis, revision 6 (2026-11-16T14:06:32Z, agent:claude-code/claude-opus-5-5).
-5 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
+Research map of madelon-reanalysis, revision 9 (2026-11-16T15:53:51Z, agent:claude-code/claude-opus-5-5).
+11 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
 
 Goals:
   ✓ explain: The inherited result does not hold, and selecting features before cross-validation accounts for it
   ✓ floor: An analysis chosen on pilot data alone reaches a held-out AUC of 0.71, and its own estimate agrees
-  ○ compact: An analysis chosen on pilot data alone reaches a held-out AUC of 0.71 with at most 50 features, and its own estimate agrees
+  ✓ compact: An analysis chosen on pilot data alone reaches a held-out AUC of 0.71 with at most 50 features, and its own estimate agrees
 
 Routes:
   explain (done, for explain): reproduce* ✓ → miss* ✓ → nested* ✓
@@ -17,12 +17,18 @@ Routes:
       a search over six model families (logistic, L1 logistic, RBF SVM, k-nearest neighbours, random forest, gradient boosting) with SelectKBest inside cross-validation, tuned on pilot data alone
   selected-forest (done, for floor): reproduce* ✓ → miss* ✓ → nested* ✓ → floor-selected-forest ✓
       SelectKBest of 30 features inside cross-validation, then a random forest of 100 trees
-  knn (blocked, for compact): reproduce* ✓ → miss* ✓ → screen* ○ → compact-knn ✗
+  knn (blocked, for compact): reproduce* ✓ → miss* ✓ → screen* ✓ → compact-knn ✗
       a screen fitted on pilot data alone, then k-nearest neighbours
-  screened-forest (blocked, for compact): reproduce* ✓ → miss* ✓ → screen* ○ → compact-forest ✗
+  screened-forest (blocked, for compact): reproduce* ✓ → miss* ✓ → screen* ✓ → compact-forest ✗
       a screen fitted on pilot data alone, then a random forest
-  svm (abandoned, for compact): reproduce* ✓ → miss* ✓ → screen* ○ → compact-svm ○
+  svm (abandoned, for compact): reproduce* ✓ → miss* ✓ → screen* ✓ → compact-svm ○
       a screen fitted on pilot data alone, then an RBF support vector machine. Abandoned: Five pilot-only designs of a screen and an RBF SVM gave nested cross-validated AUCs of 0.66 to 0.68 (madelon-route-svm steps 19 to 33), under the forest's 0.7267 on the same screen, and the agent's last plan expected a held-out AUC under the floor. The run stopped at the token ceiling before scoring the held-out file, so compact-svm is neither reached nor refuted.
+  boost (open, for compact): reproduce* ✓ → miss* ✓ → screen* ✓ → compact-boost ○
+      a screen fitted on pilot data alone, then gradient boosting (scikit-learn's HistGradientBoostingClassifier), tuned on pilot data alone
+  stable-forest (done, for compact): reproduce* ✓ → miss* ✓ → screen* ✓ → compact-stable-forest ✓
+      a screen repeated on bootstrap resamples of the pilot data, keeping the features chosen in most of them, then a random forest
+  vote (done, for compact): reproduce* ✓ → miss* ✓ → screen* ✓ → compact-vote ✓
+      a screen fitted on pilot data alone, then a soft vote of a random forest and k-nearest neighbours
 
 Milestones and what reached them:
   ✓ reproduce: The inherited cross-validated AUC is reproduced (cv_auc >= 0.75)
@@ -44,7 +50,13 @@ Milestones and what reached them:
   ✓ floor-selected-forest: A random forest on 30 features selected inside cross-validation clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05)
       reached by probe:madelon-2026-11-15-2 step-19: as expected
         before it, a sealed input: step-6 read on re-execution, step-10 read on re-execution, step-14 read on re-execution
-  ○ screen: A screen fitted on pilot data alone keeps at most 50 features, and a model on them has a nested cross-validated AUC of at least 0.70 (n_features <= 50, cv_auc >= 0.7)
+  ✓ screen: A screen fitted on pilot data alone keeps at most 50 features, and a model on them has a nested cross-validated AUC of at least 0.70 (n_features <= 50, cv_auc >= 0.7)
+      reached by probe:madelon-fleet2-boost step-25: as expected
+        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.)
+      reached by probe:madelon-fleet2-stable-forest step-56: as expected
+        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.)
+      reached by probe:madelon-fleet2-vote step-22: as expected
+        before it, a sealed input: step-5 read (excused: It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design.)
   ✗ compact-knn: k-nearest neighbours on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
       refuted by probe:madelon-route-knn step-30: contradicted: holdout_auc 0.709, expected >= 0.71
   ✗ compact-forest: A random forest on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
@@ -53,8 +65,16 @@ Milestones and what reached them:
       refuted by probe:madelon-route-screened-forest step-36: contradicted: holdout_auc 0.6989, expected >= 0.71
         before it, a sealed input: step-5 read on re-execution, step-8 read on re-execution, step-11 read on re-execution, step-14 read on re-execution, step-29 read on re-execution
   ○ compact-svm: An RBF support vector machine on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
+  ○ compact-boost: Gradient boosting on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
+  ✓ compact-stable-forest: A random forest on features that a pilot-only screen keeps in most bootstrap resamples clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
+      reached by probe:madelon-fleet2-stable-forest step-59: as expected
+        before it, a sealed input: step-3 read (excused: wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design.)
+  ✓ compact-vote: A soft vote of a random forest and k-nearest neighbours on the screened features clears the floor, and its estimate agrees (holdout_auc >= 0.71, gap <= 0.05, gap >= -0.05, n_features <= 50)
+      reached by probe:madelon-fleet2-vote step-26: as expected
+        before it, a sealed input: step-5 read (excused: It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design.)
 
 Next, the most shared first:
+  compact-boost: next on boost; on 1 route
   floor-forest: next on forest; on 1 route
   floor-l1: next on l1; on 1 route
   floor-search: next on search; on 1 route

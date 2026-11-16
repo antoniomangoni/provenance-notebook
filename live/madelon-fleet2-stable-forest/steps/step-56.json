@@ -1,0 +1,77 @@
+{
+  "version": 2,
+  "id": "step-56",
+  "seq": 56,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:37:54.485Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 410243,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:ae2fd314d86c3e80c7b69db11f3ee1965e41c19a86a88b79051e2b49fc0ab6f6"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:ae2fd314d86c3e80c7b69db11f3ee1965e41c19a86a88b79051e2b49fc0ab6f6"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.7554
+    },
+    {
+      "name": "n_features",
+      "value": 10
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+    },
+    {
+      "ref": "file:screen_lock.py",
+      "digest": "sha256:a5c768f5077925f8b92c10a464943bc42af32c2f4868c3401b0c5c98f11a53a8"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "cv-auc-floor",
+      "measured": 0.7554,
+      "held": true
+    },
+    {
+      "expectation": "n-features-cap",
+      "measured": 10,
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-55",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-54",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:67fa9f70e1293c28f25b23d794fe4131b480d310a3a060a6faa0ea66656f680a"
+}

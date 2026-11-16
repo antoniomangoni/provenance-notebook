@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T15:19:33.067Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only: compare bagged-ET screens with tuned GBM (honest vs leaky CV)",
+  "reasoning": "Round 2 taught me: honest ET-importance-selection + RF reaches 0.766 on pilot (matches the sealed floor-selected-forest success), while GBM on the same screen is only 0.689 with my first grid, and F-based/leader-based screens honestly sit at 0.60-0.66. Next I compare screens (single ET forest vs bagged-ET frequencies, k=30/40, deduped vs not) under (a) honest procedure refit-in-fold with GBM tuned via a wider grid, (b) literal fixed-pilot-screen nested GBM (leaky, for reference), (c) RF reference. All pilot-only; heldout untouched. Expectation in reasoning: some bagged-ET screen + better-tuned GBM reaches honest CV >= 0.70-0.73; if no screen+GBM combination reaches 0.70 honest on pilot, I will not proceed to heldout scoring with this route but reassess (the route needs cv >= 0.70 honestly to keep the gap within 0.05).",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:827f75d78710c7b482c1fe012cafc5c9a2c2161dd6f1b46c002cd5491ceaa07b"
+}

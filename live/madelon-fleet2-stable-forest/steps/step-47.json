@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-47",
+  "seq": 47,
+  "trail": "madelon-fleet2-stable-forest",
+  "at": "2026-11-16T15:17:18.181Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "kill -9 1664146 1664149 2>/dev/null; sleep 1; pgrep -f screen_search3.py || echo all-killed",
+  "command": {
+    "shown": "kill -9 1664146 1664149 2>/dev/null; sleep 1; pgrep -f screen_search3.py || echo all-killed",
+    "digest": "sha256:1d10a11c9a6f0c723d503aa123bfbd77cbe9871b36139df8452f193a463b7ee8"
+  },
+  "code": {
+    "ref": "commit:36d904d9ef766622dec508c09de4b6b6e9b23c8e"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:ccf25a8ad56d54cc9984c80b68bf0c72b10d6534d75314214043bfc23ae2dfb0"
+}

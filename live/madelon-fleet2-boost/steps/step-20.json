@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "madelon-fleet2-boost",
+  "at": "2026-11-16T15:34:08.065Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat > explore_lock.py <<'EOF' \"\"\"Pilot-only: last screen-variant check before locking (honest 1x5-fold GBM).\"\"\" import time import numpy as np from sklearn.base import clone from sklearn.ensemble impo",
+  "command": {
+    "shown": "cat > explore_lock.py <<'EOF'\n\"\"\"Pilot-only: last screen-variant check before locking (honest 1x5-fold GBM).\"\"\"\nimport time\nimport numpy as np\nfrom sklearn.base import clone\nfrom sklearn.ensemble import ExtraTreesClassifier, HistGradientBoostingClassifier\nfrom sklearn.model_selection import GridSearchCV, StratifiedKFold\nfrom sklearn.metrics import roc_auc_score\n\nT = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = T[:, :-1], T[:, -1]\nouter = StratifiedKFold(5, shuffle=True, random_state=1)\ninner = StratifiedKFold(3, shuffle=True, random_state=2)\n\ndef screen_bstab(Xs, ys, k_per=30, thr=0.5, cap=30, n_b=64, trees=150, seed=0):\n    rng = np.random.RandomState(seed)\n    freq = np.zeros(Xs.shape[1])\n    for b in range(n_b):\n        idx = rng.randint(0, Xs.shape[0], Xs.shape[0])\n        m = ExtraTreesClassifier(n_estimators=trees, random_state=seed + b, n_jobs=8).fit(Xs[idx], ys[idx])\n        freq[np.argsort(-m.feature_importances_)[:k_per]] += 1\n    freq /= n_b\n    cand = np.where(freq >= thr)[0]\n    cand = cand[np.argsort(-freq[cand])]\n    return cand[:cap] if len(cand) > cap else cand\n\ngbm = HistGradientBoostingClassifier(max_iter=300, l2_regularization=1.0, early_stopping=False, random_state=0)\ngrid = {\"learning_rate\": [0.03, 0.1], \"max_leaf_nodes\": [4, 8], \"min_samples_leaf\": [15, 40], \"max_features\": [1.0, 0.5]}\n\nfor name, kw in [(\"k20thr.5cap20\", dict(k_per=20, thr=0.5, cap=20)),\n                 (\"k30thr.6cap30\", dict(k_per=30, thr=0.6, cap=30))]:\n    t0 = time.time()\n    aucs, featsets = [], []\n    for tr, te in outer.split(X, y):\n        idx = screen_bstab(X[tr], y[tr], **kw)\n        g = GridSearchCV(clone(gbm), grid, cv=inner, scoring=\"roc_auc\", n_jobs=-1)\n        g.fit(X[tr][:, idx], y[tr])\n        aucs.append(roc_auc_score(y[te], g.best_estimator_.predict_proba(X[te][:, idx])[:, 1]))\n        featsets.append(len(idx))\n    print(f\"{name}: GBM honest {np.mean(aucs):.4f} +- {np.std(aucs):.4f}  k_in_fold={featsets}  ({time.time()-t0:.0f}s)\", flush=Tr",
+    "digest": "sha256:544c8d77728a396f53abdca6a43d106f8f8f6da3014c04dc5a5f5b0d479fa0ac"
+  },
+  "code": {
+    "ref": "commit:76a47309fa0599c236bc3b304b20ab3414a06a05"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-15",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:c3523529f1c7536f14dc6b2385c40469d20a172cf8d32de5aaf0a719abde3e09"
+}
