@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:16:31.751Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Fix diagnostic sort key and rerun RF hyperparameter leaderboard on pilot",
+  "reasoning": "Diagnostic-only failure: rows.sort compared non-comparable tuple elements on equal cv means. Sorting by mean with a key fixes it. Same expectations as before (exit ok); this diagnostic writes no metrics.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-16",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-18",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:00415867f7f40d24111bbdb58525abaa4956f00ffbb1233f33c68e70589b1cfc"
+}

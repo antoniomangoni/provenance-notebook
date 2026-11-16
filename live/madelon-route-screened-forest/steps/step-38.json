@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-38",
+  "seq": 38,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:35:26.546Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/landscape.py\" <<'EOF' import numpy as np, itertools, time, warnings warnings.filterwarnings(\"ignore\") from sklearn.feature_selection import SelectKBest, f_classif from ",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/landscape.py\" <<'EOF'\nimport numpy as np, itertools, time, warnings\nwarnings.filterwarnings(\"ignore\")\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.metrics import roc_auc_score\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\nXp, yp = load(\"data/pilot.csv\")\nXh, yh = load(\"data/heldout.csv\")\nrng = np.random.RandomState(0)\n\nF, _ = f_classif(Xp, yp)\nF50 = np.argsort(-F)[:50]\n\n# ---- (A) final-fit landscape: fit on all 400 pilot, score heldout ----\nprint(\"(A) final-fit (400 train) -> heldout AUC landscape:\")\nfor K in (7, 11, 15, 20, 25, 40, 50):\n    sub = np.argsort(-F)[:K]\n    for depth, mf, tag in ((None, \"sqrt\", \"rf-dflt\"), (4, 0.5, \"rf-d4\"), (6, 0.5, \"rf-d6\"), (4, 0.7, \"rf-d4w\")):\n        m = RandomForestClassifier(n_estimators=1000, max_depth=depth, max_features=mf,\n                                   random_state=0, n_jobs=-1).fit(Xp[:, sub], yp)\n        a = roc_auc_score(yh, m.predict_proba(Xh[:, sub])[:, 1])\n        print(f\"    K={K:2} {tag:8} -> {a:.4f}\", end=\"\")\n    print()\n\n# ---- (B) pilot 5-fold CV (screen inside folds): ExtraTrees vs RF, same grid ----\nfolds = StratifiedKFold(5, shuffle=True, random_state=0)\nprint(\"(B) pilot 5-fold cv, ExtraTrees grid (top 8):\")\nt0 = time.time(); rows = []\nfor K in (15, 25, 50):\n    for depth in (3, 4, 6, None):\n        for mf in (0.5, 0.7, 1.0):\n            p = make_pipeline(SelectKBest(f_classif, k=K),\n                              ExtraTreesClassifier(n_estimators=1000, max_depth=depth, max_features=mf,\n                                                   random_state=0, n_jobs=-1))\n            s = cross_val_score(p, Xp, yp, cv=folds, scoring=\"roc_auc\")\n            rows.append((s.mean(), K, depth, mf))\nrows.sort(key=lambda r: -r[0])\nfor ",
+    "digest": "sha256:40859866dd581638ac2a6e09bbfcb7fe6fa3148b346b5fafdbe2adc654f4a17d"
+  },
+  "code": {
+    "ref": "commit:75c42200d2139f69aec7c896cb15a39163d7d01e"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-37",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:c526f133d49528a3c48b6abfdc9d36e76150264258ad2d24f13c018e91aba865"
+}

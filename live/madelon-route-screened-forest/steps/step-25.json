@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:18:27.833Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Diagnose interaction structure and RF tree depth on pilot CV",
+  "reasoning": "step-20/21 and step-23/24 exhausted screen and knob tuning at pilot cv ~0.73; true performance seems ~0.70. Diagnostic: (a) pairwise-product logistic regression CV tests whether the label needs feature interactions; (b) RF max_depth leaderboard tests whether shallow trees generalize better from ~320 training samples. Writes no metrics. If depth shaping gives a ≥~0.02 pilot gain, the next full run nests the choice over (K, depth, min_samples_leaf, max_features).",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-16",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:9d097fd845772db0feec7ceefd41f03a75099cbd3c0a606592d9312fa8e54423"
+}

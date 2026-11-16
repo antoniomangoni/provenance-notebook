@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-41",
+  "seq": 41,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:39:09.271Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/robust.py\" <<'EOF' import numpy as np, warnings warnings.filterwarnings(\"ignore\") from sklearn.feature_selection import SelectKBest, f_classif from sklearn.ensemble imp",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/robust.py\" <<'EOF'\nimport numpy as np, warnings\nwarnings.filterwarnings(\"ignore\")\nfrom sklearn.feature_selection import SelectKBest, f_classif\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.metrics import roc_auc_score\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\nXp, yp = load(\"data/pilot.csv\")\nXh, yh = load(\"data/heldout.csv\")\n\ndef pipe(seed, ntrees=1000):\n    return make_pipeline(SelectKBest(f_classif, k=25),\n                         RandomForestClassifier(n_estimators=ntrees, random_state=seed, n_jobs=-1))\n\nprint(\"(1) K=25 default-RF1000, pilot 5-fold cv across fold seeds:\")\nfor s in (0, 1, 2, 3, 4):\n    aucs = cross_val_score(pipe(s), Xp, yp, cv=StratifiedKFold(5, shuffle=True, random_state=s), scoring=\"roc_auc\")\n    print(f\"    fold-seed {s}: {aucs.mean():.4f}  folds {np.round(aucs,3)}\")\n\nprint(\"(2) final fit on all 400 pilot -> heldout, across tree seeds:\")\nfor s in (0, 1, 2):\n    m = pipe(s).fit(Xp, yp)\n    print(f\"    tree-seed {s}: holdout {roc_auc_score(yh, m.predict_proba(Xh)[:, 1]):.4f}\")\nEOF\nuv run python \"$tmp/robust.py\"",
+    "digest": "sha256:f23ced29e7a375b5469495548ebb3b44390f4fa29801e05cbb138bbe66d35e23"
+  },
+  "code": {
+    "ref": "commit:75c42200d2139f69aec7c896cb15a39163d7d01e"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-40",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:9c2bbe85356c73702c4d57aad793f4835baf529ca045bdb7be1321341d3edc08"
+}

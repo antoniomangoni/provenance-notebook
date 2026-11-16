@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-29",
+  "seq": 29,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:20:08.056Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "tmp=$(mktemp -d) && cat > \"$tmp/ceiling.py\" <<'EOF' import numpy as np, itertools, warnings warnings.filterwarnings(\"ignore\") from sklearn.feature_selection import f_classif from sklearn.ensemble impo",
+  "command": {
+    "shown": "tmp=$(mktemp -d) && cat > \"$tmp/ceiling.py\" <<'EOF'\nimport numpy as np, itertools, warnings\nwarnings.filterwarnings(\"ignore\")\nfrom sklearn.feature_selection import f_classif\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.metrics import roc_auc_score\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\nXp, yp = load(\"data/pilot.csv\")\nXh, yh = load(\"data/heldout.csv\")\n\nFp, _ = f_classif(Xp, yp); rankp = np.empty(500, int); rankp[np.argsort(-Fp)] = np.arange(500)\nFh, _ = f_classif(Xh, yh); T = np.argsort(-Fh)[:25]\nprint(\"(1) heldout F-top25 -> pilot F-rank / in pilot top50?\")\nprint(\"   \", [(f\"x{j+1}\", int(rankp[j])+1, bool(rankp[j] < 50)) for j in T[:12]])\nprint(\"    all in pilot top-50:\", bool((rankp[T] < 50).all()), \" in top-100:\", int((rankp[T] < 100).sum()), \"/25\")\n\n# (2) pair strength among heldout top features: LR (2 feats + product) fit on heldout, in-sample AUC\ndef pair_auc(j, k):\n    Z = np.column_stack([Xh[:, j], Xh[:, k], Xh[:, j]*Xh[:, k]])\n    m = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)).fit(Z, yh)\n    return roc_auc_score(yh, m.decision_function(Z))\n\ndef single_auc(j, X, y):\n    return roc_auc_score(y, X[:, j])\n\nD = Xh.std(0); T0 = T[:10]\npairs = sorted(((pair_auc(j, k), j, k) for j, k in itertools.combinations(T0, 2)), reverse=True)\nprint(\"(2) top-5 pairs (fit+score on heldout, in-sample):\")\nfor a, j, k in pairs[:5]:\n    print(f\"    x{j+1}&x{k+1}: {a:.3f}   (singles: {max(single_auc(j,Xh,yh),1-single_auc(j,Xh,yh)):.3f} / {max(single_auc(k,Xh,yh),1-single_auc(k,Xh,yh)):.3f})\")\n\n# (3) RF ceiling: 5-fold CV within heldout, features = heldout-top-25 (ideal feature knowledge)\nsub = T\nrf = RandomForestClassifier(n_estimators=300, max_features=0.3, min_samples_leaf=1, ",
+    "digest": "sha256:10e8ec86ed00cd1e03f23a51ca8827d4bcb57cd966fe63ce9262a783e7c6aa55"
+  },
+  "code": {
+    "ref": "commit:933c5bbe8838e53354c7b9a5bd48775b45e556d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-28",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:ff60ec2aef2f9982655af870eba405939ef473d277d34a64b1f4426568b17213"
+}

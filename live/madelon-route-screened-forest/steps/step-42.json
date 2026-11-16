@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-42",
+  "seq": 42,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:39:41.061Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 31790,
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-41",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-40",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:426274fde0a4bc602604fbeb186d59210671511514971c5442f41900d5f00783"
+}

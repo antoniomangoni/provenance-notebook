@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "id": "step-34",
+  "seq": 34,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:23:36.164Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run final nested analysis: tuned RF grid inside nested CV, fit final on all pilot",
+  "reasoning": "step-31/32/33: candidate space on pilot saturates at ~0.736; the tuned regime (depth 3-6, mf 0.5-0.7, K 25-50) is the best-defensible procedure. Nested CV over this grid gives honest cv_auc ~0.72-0.74; the final fit gains the 320→400 sample bonus invisible to CV — previous finals measured ~0.70-0.71, tuned configs should push holdout to ~0.71-0.74, keeping |gap| within 0.05. If holdout still lands below 0.71, the route's premise needs re-examination with a fundamentally different lever (not more knob tuning).",
+  "expectations": [
+    {
+      "name": "n-features-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    },
+    {
+      "name": "cv-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-agreement",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-not-negative",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-16",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-21",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:f2c1c856cfe22a2df6e05cddbb22d8d1bceec8d333bfe890ba14fa36f9b1e2aa"
+}

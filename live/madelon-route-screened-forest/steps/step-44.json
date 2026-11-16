@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-44",
+  "seq": 44,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:39:55.974Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python analysis.py && echo --- && cat out/metrics.json",
+  "command": {
+    "shown": "uv run python analysis.py && echo --- && cat out/metrics.json",
+    "digest": "sha256:dfdda582a852ca137de036a5cafb9276d50cedcd961ea41050038b3c98747823"
+  },
+  "code": {
+    "ref": "commit:8a92d17d02a27bbaa2382268f0b7fdec03e06f32"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-43",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:ab329d5739732a7a5ea7dcb59957543321e28babc47d81d0e8bcea97d6c7ad01"
+}

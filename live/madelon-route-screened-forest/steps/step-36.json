@@ -1,0 +1,82 @@
+{
+  "version": 2,
+  "id": "step-36",
+  "seq": 36,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:34:19.183Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "contradicted: holdout_auc 0.6989, expected >= 0.71",
+  "exit_code": 0,
+  "duration_ms": 631410,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:0afa108145d582907454b477c511ab684191359ce3c8b135242d607a45b6f5a2"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:0afa108145d582907454b477c511ab684191359ce3c8b135242d607a45b6f5a2"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.7251
+    },
+    {
+      "name": "holdout_auc",
+      "value": 0.6989
+    },
+    {
+      "name": "gap",
+      "value": 0.0262
+    },
+    {
+      "name": "n_features",
+      "value": 50
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "n-features-cap",
+      "measured": 50,
+      "held": true
+    },
+    {
+      "expectation": "cv-floor",
+      "measured": 0.7251,
+      "held": true
+    },
+    {
+      "expectation": "holdout-floor",
+      "measured": 0.6989,
+      "held": false
+    },
+    {
+      "expectation": "gap-agreement",
+      "measured": 0.0262,
+      "held": true
+    },
+    {
+      "expectation": "gap-not-negative",
+      "measured": 0.0262,
+      "held": true
+    }
+  ],
+  "outcome": "contradicted",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-35",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-34",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:7dcf1a6af04d6eb1210df5e718444fea79e3dd0b5a75fb83a42fd6d070ff9ece"
+}

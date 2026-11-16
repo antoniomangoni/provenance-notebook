@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:11:50.444Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Diagnose feature-label signal in pilot vs heldout to understand the 0.5639 holdout collapse",
+  "reasoning": "The inherited LR on top-30 pilot-F features scored 0.5639 on heldout — near chance. To design a screen+RF that reaches ≥0.71, I need to know whether pilot-selected features retain signal on heldout at all (regime change) or whether LR misses nonlinear/interaction structure that an RF can capture. Diagnostic only; route measures come later in the final analysis.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:d9a4b801a0445b3c4d32c0577ad492752dc44ee3b3d15e14274e40a27611bbb7"
+}

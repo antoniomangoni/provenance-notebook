@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:13:22.437Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Replace analysis.py: pilot-only K-screen (nested choice) + random forest; run and record honest metrics",
+  "reasoning": "Diagnostics step-9 showed: real features are within pilot top-11 (screenable), nested-CV RF reaches ~0.72 on pilot with K=25 best, while the inherited LR on an outside-CV-selected list collapsed to 0.5639. The corrected procedure (nested K-grid {10,25,50} + RF300) should give cv_auc >= 0.70, and the final all-pilot fit should score within 0.05 of that on heldout (rf trained on 400 vs CV's ~320 samples, so expect holdout ≈ 0.72-0.75, gap slightly negative or near zero).",
+  "expectations": [
+    {
+      "name": "n-features-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    },
+    {
+      "name": "cv-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-agreement",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-not-negative",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "prev": "sha256:a45db173a2c356617a65561fbef321496c43d32377408b6036cbeca80362e2ae"
+}

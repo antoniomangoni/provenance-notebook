@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:11:58.083Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "writing=$(mktemp -d) && cat > \"$writing/diag.py\" <<'EOF' import numpy as np from pathlib import Path from sklearn.feature_selection import f_classif from sklearn.metrics import roc_auc_score def load(",
+  "command": {
+    "shown": "writing=$(mktemp -d) && cat > \"$writing/diag.py\" <<'EOF'\nimport numpy as np\nfrom pathlib import Path\nfrom sklearn.feature_selection import f_classif\nfrom sklearn.metrics import roc_auc_score\n\ndef load(p):\n    t = np.loadtxt(p, delimiter=\",\", skiprows=1)\n    return t[:, :-1], t[:, -1]\n\nXp, yp = load(\"data/pilot.csv\")\nXh, yh = load(\"data/heldout.csv\")\nprint(\"pilot\", Xp.shape, \"pos\", int((yp==1).sum()), \"neg\", int((yp==-1).sum()))\nprint(\"heldout\", Xh.shape, \"pos\", int((yh==1).sum()), \"neg\", int((yh==-1).sum()))\n\n# F-stats fitted on pilot only, then check those features on heldout (diagnostic)\nF, p = f_classif(Xp, yp)\norder = np.argsort(-F)\ntop30 = order[:30]; top50 = order[:50]; top100 = order[:100]\nprint(\"pilot F top10 idx:\", top10 := order[:10], \"\\n  F:\", np.round(F[top10],1))\nprint(\"pilot F stats: top30 range F\", round(F[top30].min(),1), \"-\", round(F[top30].max(),1),\n      \"| rank50 min\", round(F[order[49]],1))\n\n# single-feature sign-adjusted AUC on each dataset for the pilot-selected features\ndef signed_auc(x, y):\n    a = roc_auc_score(y, x)\n    return max(a, 1-a)\n\ndef expr_auc(feats, X, y, name):\n    aucs = np.array([signed_auc(X[:, j], y) for j in feats])\n    print(f\"{name}: mean {aucs.mean():.3f} median {np.median(aucs):.3f} \"\n          f\">=0.55: {(aucs>=0.55).sum()}/{len(feats)} max {aucs.max():.3f} min {aucs.min():.3f}\")\n\nfor k, feats in [(\"top30\", top30), (\"top50\", top50), (\"top100\", top100)]:\n    expr_auc(feats, Xp, yp, f\"{k} on pilot\")\n    expr_auc(feats, Xh, yh, f\"{k} on heldout\")\n\n# How many of the top-pilot features are strong on heldout individually?\n# And conversely: are the strongly-heldout features also rated high on pilot? (rank agreement)\nFh, _ = f_classif(Xh, yh)\norderh = np.argsort(-Fh)\nfor k in (30, 50, 100):\n    overlap = len(set(order[:k]) & set(orderh[:k]))\n    print(f\"pilot-F top{k} ∩ heldout-F top{k}: {overlap}\")\n\n# variance sanity check\nprint(\"feature std pilot mean\", Xp.std(0).mean().round(2), \"heldout\", Xh.std(0).mean().round(2))\nprint(\"",
+    "digest": "sha256:9265cb8e1ee7616c8978a54db8120c6bfb7009f6bd6700f91b38b98238f6ce58"
+  },
+  "code": {
+    "ref": "commit:5719c219805378bb7938e10c0007f09e2def35d4"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-4",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:6c400d218e64843aa24a9805acc18c05d276b4a2fe748dcfcc9be7d9ff3f13af"
+}

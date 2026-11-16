@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:14:13.499Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Fix double-transform scoring bug and re-run corrected nested-CV RF analysis",
+  "reasoning": "step-12 failed on a double-transform bug (the pipeline already screens; I screened X_new again before predict_proba), so exit was not ok and metrics.json was not written. Same procedure, fixed scoring line: score X_new through the pipeline directly. The printed fold AUCs (mean ~0.727) already aim at cv_auc >= 0.70.",
+  "expectations": [
+    {
+      "name": "n-features-cap",
+      "measure": "n_features",
+      "comparison": "le",
+      "threshold": 50
+    },
+    {
+      "name": "cv-floor",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    },
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-agreement",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-not-negative",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-10",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-12",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:10c0c6e66ecbf4f968e43dab0c572348732aea2bd3a4b12f80bcea90f4108be8"
+}

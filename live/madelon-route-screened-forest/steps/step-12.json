@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "madelon-route-screened-forest",
+  "at": "2026-11-16T11:14:03.114Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 1; no fresh out/metrics.json with n_features, cv_auc, holdout_auc, gap",
+  "exit_code": 1,
+  "duration_ms": 27456,
+  "checks": [],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-11",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-10",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d3f1c64328356d8c35ca65acf8e5ef52d441980104d06bfee08a105397aacbea"
+}
