@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "madelon-fleet3-boost",
+  "at": "2026-11-16T17:19:15.695Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only: write boost_lib.py + explore_boost.py, compare 4 screen variants by nested-CV AUC of tuned HistGBM",
+  "reasoning": "The screen milestone (vote trail step-22: nested cv_auc 0.73, 20 features) is sealed; my route adds GBM. Pilot-only comparison of 4 screen variants through identical honest nested CV (screen inside outer folds, 24-config GBM grid tuned in inner folds) lets me lock the best variant on pilot evidence alone, exactly as the vote trail did. No heldout access; results land in out/search/*.json.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:5950d41cd99265cbdda78d979021d0da1b704c8389a02bc8a4c4d58c7310180a"
+}
