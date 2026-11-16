@@ -395,3 +395,18 @@ def test_readers_exits_2_on_a_wrong_command_line():
                  ["texts", "dir", "--store", "s", "--log", "l", "--out", "o", "extra"]):  # fmt: skip
         done = subprocess.run([sys.executable, "readers.py", *args], cwd=ROOT, check=False, capture_output=True, text=True)
         assert done.returncode == 2 and done.stdout == "" and done.stderr.startswith("usage: readers.py"), args
+
+
+def test_the_committed_table_is_the_grade_of_the_committed_answers(tmp_path):
+    """Every call that was made is a line, five for each model and presentation, and the table is
+    what the grader writes from those lines today."""
+    answers = [json.loads(line) for line in (EVIDENCE / "answers.jsonl").read_text().splitlines()]
+    models = ["berget/zai-org/GLM-5.3-Flash", "berget/google/gemma-4-31B-it"]
+    assert [(line["model"], line["repeat"], line["presentation"]) for line in answers] == [
+        (model, repeat, presentation) for model in models for repeat in range(1, 6) for presentation in readers.PRESENTATIONS
+    ]
+    assert all(line["answer"] == readers.parse(line["reply"]) for line in answers if line["reply"] is not None)
+    for name in ("view.txt", "baseline.txt", "answers.jsonl"):
+        (tmp_path / name).write_bytes((EVIDENCE / name).read_bytes())
+    assert readers.grade(tmp_path, ROOT / "evidence" / "questions.json", LIVE) == []
+    assert (tmp_path / "table.md").read_text().replace(str(ROOT) + "/", "") == (EVIDENCE / "table.md").read_text()

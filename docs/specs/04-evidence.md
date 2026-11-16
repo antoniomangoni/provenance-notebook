@@ -119,8 +119,8 @@ made twice, once with the default and once with `--model google/gemma-4-31B-it`:
 each model, in the same `answers.jsonl`.
 
 A presentation longer than one argument allows (128 kB on Linux) cannot be passed on the
-command line. Step 4 of the sequence finds how Pi 0.84.1 takes it, on standard input or as a
-file, and records the choice here.
+command line. Pi 0.84.1 in print mode reads the prompt from standard input, and `readers.py`
+gives it that way (found in step 4 of the sequence).
 
 ### `readers.py grade DIR --questions FILE --trail TRAIL`
 
