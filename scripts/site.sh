@@ -8,6 +8,8 @@
 #   trail.html    the reviewer's page of the live trail, with code diffs and what each run opened
 #   fleet.html    the page of a trail whose commands were traced as they ran
 #   map.html      the research map and its trails
+#   synthetic.html the second project's map, whose routes Kimi K3.1 Pro chose
+#   *.txt         each project's belief report, and the second project's forecast scores
 #   example.html  the constructed example, whose step 4 is a change of approach
 set -euo pipefail
 
@@ -27,6 +29,11 @@ uv run --quiet python trail.py view live/madelon-2026-11-15-1 --store live/store
 uv run --quiet python trail.py view live/madelon-fleet2-vote --store live/store --sealed data/heldout.csv --out "$OUT/fleet.html"
 uv run --quiet python trail.py view examples/churn-model-2026-11-11 --store examples/store --out "$OUT/example.html"
 uv run --quiet python project.py page "$MAP/map" --live live --out "$OUT/map.html"
+SYN=research/synthetic-interactions
+uv run --quiet python project.py page "$SYN/map" --live live --out "$OUT/synthetic.html"
+cp "$MAP/beliefs.txt" "$OUT/madelon-beliefs.txt"
+cp "$SYN/beliefs.txt" "$OUT/synthetic-beliefs.txt"
+cp "$SYN/forecasts/scores.txt" "$OUT/synthetic-scores.txt"
 
 cat >"$OUT/index.html" <<'EOF'
 <!doctype html>
@@ -46,17 +53,22 @@ a{color:var(--accent)}
 .card:hover,.card:focus-visible{border-color:var(--accent)}
 .card strong{color:var(--accent);font-size:1.05rem}
 .card span{display:block;color:var(--muted);font-size:.92rem;margin-top:.2rem}
+.more{color:var(--muted);font-size:.92rem;margin:-.4rem 0 1rem 1.1rem}
 </style></head><body><main>
 <h1>Provenance notebook</h1>
-<p class="lead">A record of an AI-assisted research task that a reviewer who was not there can read and check. These four pages are generated from the step files in the repository. Nothing on them was written by hand.</p>
-<a class="card" href="trail.html"><strong>The reviewer's page of a live trail</strong>
+<p class="lead">A record of an AI-assisted research task that a reviewer who was not there can read and check. Each page below is generated from the step files in the <a href="https://github.com/antoniomangoni/provenance-notebook">repository</a>; only this index is written by hand. Start with the first.</p>
+<a class="card" href="trail.html"><strong>1. The reviewer's page of a live trail</strong>
 <span>An agent re-analyses an inherited result on the Madelon data. Read why the plan changed at step 14, which code each run used, and which runs had opened the held-out file before each plan was proposed.</span></a>
-<a class="card" href="map.html"><strong>The research map</strong>
-<span>Twelve trails toward three goals, drawn as a metro map: the milestones each route passes, the trails that reached them, and every credit that was later withdrawn, with why.</span></a>
-<a class="card" href="fleet.html"><strong>A trail traced as it ran</strong>
+<a class="card" href="map.html"><strong>2. The research map</strong>
+<span>Fifteen trails toward three goals, drawn as a metro map: the milestones each route passes, the trails that reached them, and every credit that was later withdrawn, with why.</span></a>
+<p class="more">How sure each mark is: <a href="madelon-beliefs.txt">the belief report</a> (text). Every ✓ and ✗ at the floor is within noise of it.</p>
+<a class="card" href="synthetic.html"><strong>3. A second project, with a known truth</strong>
+<span>Synthetic data, so each analysis's true score is known. Before each of three rounds of three agents, a second model (Kimi K3.1 Pro) forecast every open milestone and chose the routes. Over 18 settled forecasts, no forecaster beat a coin flip.</span></a>
+<p class="more"><a href="synthetic-scores.txt">The forecast scores</a> and <a href="synthetic-beliefs.txt">the belief report</a> (text); <a href="https://github.com/antoniomangoni/provenance-notebook/blob/main/research/synthetic-interactions/README.md">what each round showed</a>.</p>
+<a class="card" href="fleet.html"><strong>4. A trail traced as it ran</strong>
 <span>One of three agents that worked at the same time and built on each other's steps. Each run shows the files it opened, recorded while it happened.</span></a>
-<a class="card" href="example.html"><strong>The constructed example</strong>
+<a class="card" href="example.html"><strong>5. The constructed example</strong>
 <span>Eight steps written to stage the brief's question: why did they change approach at step 4?</span></a>
 </main></body></html>
 EOF
-echo "site.sh: wrote $OUT/index.html and four pages"
+echo "site.sh: wrote $OUT/index.html, five pages and three reports"
