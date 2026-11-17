@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T06:43:51.577Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python -c \" import numpy as np t = np.loadtxt('data/pilot.csv', delimiter=',', skiprows=1) print('pilot shape', t.shape) print('label counts:', np.unique(t[:,-1], return_counts=True)) print('hd",
+  "command": {
+    "shown": "uv run python -c \"\nimport numpy as np\nt = np.loadtxt('data/pilot.csv', delimiter=',', skiprows=1)\nprint('pilot shape', t.shape)\nprint('label counts:', np.unique(t[:,-1], return_counts=True))\nprint('hdr cols:', 500)\n\"",
+    "digest": "sha256:efc4755daf27c9effb5f32523b82fae68c33c80fe75fb83ae2fe3d8cb538bf4a"
+  },
+  "code": {
+    "ref": "commit:43df4027d2c961399dbb042b8acdfa2d380cbe63"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:2897505442c0f17a4d612375eac5a7b11cb28f5015a0b3dba327b0cb7f3f37e4"
+}

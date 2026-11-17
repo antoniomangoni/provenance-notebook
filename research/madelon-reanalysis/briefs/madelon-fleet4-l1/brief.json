@@ -1,0 +1,23 @@
+{
+  "route": "l1",
+  "rev": 11,
+  "map": "sha256:538f535530485a592904141c02db76ccd97034df10e380fed7e2cd0f6a3db50b",
+  "builds_on": [
+    "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+    "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11"
+  ],
+  "workspace_from": "the code snapshot of step-10 in madelon-reanalysis/probe:madelon-2026-11-15-2, 8340002",
+  "workspace": {
+    ".gitignore": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84",
+    "README.md": "sha256:e3795db195a5b68535d2a216b60def3e0e240f5f9710d4697c18153207341a74",
+    "analysis.py": "sha256:99134e263cc450ab5e0c2e3f6bd328fc4f351fc16a58900667b59e5e52069dfc",
+    "data/heldout.csv": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1",
+    "data/pilot.csv": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238",
+    "pyproject.toml": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39",
+    "uv.lock": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+  },
+  "alongside": [
+    "forest",
+    "boost"
+  ]
+}

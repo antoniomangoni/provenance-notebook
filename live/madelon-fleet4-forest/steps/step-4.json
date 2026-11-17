@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T06:43:20.998Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ls -la && echo ---- && ls -la data out 2>/dev/null && echo ---- && cat analysis.py 2>/dev/null | head -80",
+  "command": {
+    "shown": "ls -la && echo ---- && ls -la data out 2>/dev/null && echo ---- && cat analysis.py 2>/dev/null | head -80",
+    "digest": "sha256:d3ac09b2784e2ba7bf13217cdd273cad9b3c36029ae6b2b6f5b1dae5bb8ef33a"
+  },
+  "code": {
+    "ref": "commit:43df4027d2c961399dbb042b8acdfa2d380cbe63"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:13712cd4aa0f4dd54edf9d9f5ecbb15bff91a1f6447cf9f3854f17c39ab6cb68"
+}

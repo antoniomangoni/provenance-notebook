@@ -1,34 +1,41 @@
-Forecasts over madelon-reanalysis, scored against revision 11 and the trails.
+Forecasts over madelon-reanalysis, scored against revision 12 and the trails.
 Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.
-Each forecaster is compared with code-only forecasters on the same questions: code:base-rate, the Laplace rate
-of what was settled before the question was asked, and code:blanket, the milestone's Markov blanket alone.
+Each forecaster is compared with code-only forecasters on the same questions: code:even, 0.5 every time;
+code:base-rate, the Laplace rate of what was settled before the question was asked; code:blanket, the
+milestone's Markov blanket alone; code:pooled, every milestone measured on the same criterion, anywhere on
+the map. A difference in Brier score is given with its standard error, and is within noise under 1.645 of them.
 
-Not asked: 5 milestone and 14 plan questions.
+Not asked: 5 milestone and 20 plan questions.
   floor-l1 at rev-0: its first resolution, in rev-1, was withdrawn later
   floor-forest at rev-0: its first resolution, in rev-1, was withdrawn later
   floor-search at rev-2: it first appeared with its resolution
   floor-selected-forest at rev-2: it first appeared with its resolution
   screen at rev-2: its first resolution, in rev-3, was withdrawn later
   plans: 3 its first run failed
-  plans: 8 its first run inconclusive
-  plans: 3 never run
+  plans: 12 its first run inconclusive
+  plans: 5 never run
 
 gemma-backtest.json: by agent:pi/google/gemma-4-31B-it at 2026-11-16T23:32:34Z
   milestone questions settled: 8 (backtest); held 6
     agent:pi/google/gemma-4-31B-it: Brier 0.246, log loss 0.997 bits, n 8
-    code:base-rate: Brier 0.311, log loss 1.274 bits, n 8
-    code:blanket: Brier 0.313, log loss 1.206 bits, n 8
-      held  reproduce at rev-0: p 0.80; base-rate 0.50, blanket 0.50
-      held  miss at rev-0: p 0.90; base-rate 0.50, blanket 0.50
-      held  nested at rev-0: p 0.60; base-rate 0.50, blanket 0.50
-      held  screen at rev-8: p 0.85; base-rate 0.67, blanket 0.67
-      missed  compact-knn at rev-3: p 0.10; base-rate 0.77, blanket 0.50
-      missed  compact-forest at rev-2: p 0.60; base-rate 0.90, blanket 0.50
-      held  compact-stable-forest at rev-8: p 0.20; base-rate 0.67, blanket 0.24
-      held  compact-vote at rev-8: p 0.15; base-rate 0.67, blanket 0.24
+    code:even: Brier 0.250, log loss 1.000 bits, n 8; the forecaster is -0.004 ± 0.104 from it, within noise
+    code:base-rate: Brier 0.311, log loss 1.274 bits, n 8; the forecaster is -0.065 ± 0.151 from it, within noise
+    code:blanket: Brier 0.313, log loss 1.206 bits, n 8; the forecaster is -0.067 ± 0.057 from it, within noise
+    code:pooled: Brier 0.339, log loss 1.691 bits, n 8; the forecaster is -0.094 ± 0.129 from it, within noise
+      held  reproduce at rev-0: p 0.80; base-rate 0.50, blanket 0.50, pooled 0.50 ‡ its run was made before rev-0 was written
+      held  miss at rev-0: p 0.90; base-rate 0.50, blanket 0.50, pooled 0.50 ‡ its run was made before rev-0 was written
+      held  nested at rev-0: p 0.60; base-rate 0.50, blanket 0.50, pooled 0.50 ‡ its run was made before rev-0 was written
+      held  screen at rev-8: p 0.85; base-rate 0.67, blanket 0.67, pooled 0.67 ‡ compact-forest, compact-knn, after it on a route, already resolved
+      missed  compact-knn at rev-3: p 0.10; base-rate 0.77, blanket 0.50, pooled 0.58
+      missed  compact-forest at rev-2: p 0.60; base-rate 0.90, blanket 0.50, pooled 1.00
+      held  compact-stable-forest at rev-8: p 0.20; base-rate 0.67, blanket 0.24, pooled 0.49
+      held  compact-vote at rev-8: p 0.15; base-rate 0.67, blanket 0.24, pooled 0.49
+    ‡ 4 of 8: the outcome was known, or followed from the map, when the question's revision was written, so these are not forecasts.
+      on the other 4: agent:pi/google/gemma-4-31B-it Brier 0.433; code:even Brier 0.250; code:base-rate Brier 0.406; code:blanket Brier 0.410; code:pooled Brier 0.463
   plan questions settled: 14 (backtest); held 8
     agent:pi/google/gemma-4-31B-it: Brier 0.180, log loss 0.750 bits, n 14
-    code:base-rate: Brier 0.287, log loss 1.111 bits, n 14
+    code:even: Brier 0.250, log loss 1.000 bits, n 14; the forecaster is -0.070 ± 0.052 from it, within noise
+    code:base-rate: Brier 0.287, log loss 1.111 bits, n 14; the forecaster is -0.107 ± 0.059 from it
       missed  madelon-2026-11-15-2 step-5: p 0.60; base-rate 0.50
       held  madelon-2026-11-15-2 step-17: p 0.30; base-rate 0.33 † after step-6, step-10, step-14
       held  madelon-fleet2-boost step-23: p 0.90; base-rate 0.50 † after step-3
@@ -43,9 +50,9 @@ gemma-backtest.json: by agent:pi/google/gemma-4-31B-it at 2026-11-16T23:32:34Z
       missed  madelon-route-svm step-20: p 0.30; base-rate 0.44 † after step-5
       missed  madelon-route-svm step-23: p 0.15; base-rate 0.40 † after step-5
       held  madelon-route-svm step-31: p 0.85; base-rate 0.36 † after step-5
-    † 12 of 14: an earlier run of the trail is known to have opened data/heldout.csv, so what it printed may be in the text shown.
-      on the other 2: agent:pi/google/gemma-4-31B-it Brier 0.425; code:base-rate Brier 0.217
-  pending compact-boost at rev-11: p 0.60, code:blanket 0.49
-  pending floor-forest at rev-11: p 0.10, code:blanket 0.75
-  pending floor-l1 at rev-11: p 0.10, code:blanket 0.75
-  pending floor-search at rev-11: p 0.90, code:blanket 0.75
+    † 12 of 14: an earlier run of the trail is known to have opened a sealed input, so what it printed may be in the text shown.
+      on the other 2: agent:pi/google/gemma-4-31B-it Brier 0.425; code:even Brier 0.250; code:base-rate Brier 0.217
+  pending compact-boost at rev-11: p 0.60; code:blanket 0.49, code:pooled 0.59
+  pending floor-forest at rev-11: p 0.10; code:blanket 0.75, code:pooled 0.59
+  pending floor-l1 at rev-11: p 0.10; code:blanket 0.75, code:pooled 0.59
+  pending floor-search at rev-11: p 0.90; code:blanket 0.75, code:pooled 0.59

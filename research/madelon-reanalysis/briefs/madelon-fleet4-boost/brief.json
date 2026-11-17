@@ -1,0 +1,27 @@
+{
+  "route": "boost",
+  "rev": 11,
+  "map": "sha256:538f535530485a592904141c02db76ccd97034df10e380fed7e2cd0f6a3db50b",
+  "builds_on": [
+    "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+    "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22"
+  ],
+  "workspace_from": "the code snapshot of step-21 in madelon-reanalysis/probe:madelon-fleet2-vote, 04b8af4",
+  "workspace": {
+    ".gitignore": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84",
+    "README.md": "sha256:e3795db195a5b68535d2a216b60def3e0e240f5f9710d4697c18153207341a74",
+    "__pycache__/vote_lib.cpython-314.pyc": "sha256:c984a854f6a3cbbde73426719eb2c5024d624dae012afa35f4ca3036dc061334",
+    "analysis.py": "sha256:6e5ff6c4525f223ac9af4a8912ebdce301e112400746d80e679034e3960db670",
+    "calib.py": "sha256:28045699fee1938ad0b9c7deb9d55ec990e1898f2985c7f1733991eb56d4cb63",
+    "data/heldout.csv": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1",
+    "data/pilot.csv": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238",
+    "pyproject.toml": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39",
+    "search.py": "sha256:29c225c2414dccd70af92e840e1438b5b3b01eae344296e46ce3a6215f871c79",
+    "uv.lock": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+    "vote_lib.py": "sha256:cbdcb04f5e9952418c7af00229647215bb4b4c48800574ed763b157de28ac779"
+  },
+  "alongside": [
+    "l1",
+    "forest"
+  ]
+}

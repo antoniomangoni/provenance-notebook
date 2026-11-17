@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:25:23.931Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "for t in 1 2 4; do echo \"threads=$t\"; OMP_NUM_THREADS=$t OPENBLAS_NUM_THREADS=$t timeout 240 uv run python - <<'EOF' import time, numpy as np from sklearn.ensemble import HistGradientBoostingClassifie",
+  "command": {
+    "shown": "for t in 1 2 4; do echo \"threads=$t\"; OMP_NUM_THREADS=$t OPENBLAS_NUM_THREADS=$t timeout 240 uv run python - <<'EOF'\nimport time, numpy as np\nfrom sklearn.ensemble import HistGradientBoostingClassifier\ntab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1); X, y = tab[:, :-1], tab[:, -1]\nfor shape in [(320, 11), (400, 20)]:\n    t0=time.time()\n    m = HistGradientBoostingClassifier(max_iter=300, early_stopping=False, random_state=0).fit(X[:shape[0], :shape[1]], y[:shape[0]])\n    print(f\"  fit300 {shape}: {time.time()-t0:.2f} s\")\nEOF\ndone; echo \"exit=$?\"",
+    "digest": "sha256:212cbbbc2b5d43b98cb696d9e14e7d4deecf6b455f593927c1b7317bb9ba7e13"
+  },
+  "code": {
+    "ref": "commit:c678d295d074c80d1c30e1115700034e2c5c6c27"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-14",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a90d76ad1c97ab8dae0a55b734f484fbc3cf60ab69aac6846825faeb39a96b41"
+}

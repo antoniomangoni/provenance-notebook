@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-29",
+  "seq": 29,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:33:54.433Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only sweep of HistGB capacity on fixed top20F + RF reference; out/sweep.json",
+  "reasoning": "Step-25 contradicted step-23's expectation of cv_auc >= 0.70: all screen variants sat at 0.65-0.67 with one near-chance fold, while vote/fleet2-boost precedents reached 0.73/0.7645 on the same screens. This is a model-capacity problem, not a screen problem (top20F with a deterministic 20-feature screen still underperformed its RF/KNN precedent). Before any lock I sweep HistGB capacity (iterations, learning rate, leaves, min leaf, l2, bins) on a fixed top20F screen over the same 5 folds as a diagnostic, with RF on identical folds as a sanity reference; results go to out/sweep.json so the runner does not mistake a selection-leaked fixed-screen CV for a milestone estimate. Outcome decides the GBM grid for the re-run of the honest screen comparison.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-23",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-25",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:934c9c37416831bf30c9bde2b211029bce9f3fea738f76a3234a0f75e2e074b0"
+}

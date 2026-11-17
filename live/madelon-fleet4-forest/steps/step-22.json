@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-22",
+  "seq": 22,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T07:24:13.332Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only search 3: hyperparameter-randomized RF mixtures vs fixed configs, paired 3x5 CV",
+  "reasoning": "The first locked procedure was honest (nested gap 0.024) but its all-500 RF missed the floor; diagnosis from pilot evidence: single-config trees overfit noise on 400 samples and inner tuning adds selection noise. Correction to test, still an RF on all 500 features with no screen: per-tree randomization of (max_features, min_samples_leaf) — mixtures rand8/rand12 — against the fixed winners (gini/entropy) and a bootstrap-off variant, all on identical 3x5 pilot folds, 1000 trees each. Heldout is not read. Predeclared decision rule: lock a mixture only if it beats the fixed winner by more than 2 paired SEs; otherwise keep the fixed config as the locked learner. Expected: the best model's pooled pilot-CV AUC >= 0.74 (comfortably above the floor), giving the corrected locked analysis for one final heldout scoring.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "best-pilot-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.74
+    }
+  ],
+  "prev": "sha256:9959ac9d01f42bd2dd7725a65b6340c46212629a7371f29ed1fbea4ea7e6b1cc"
+}

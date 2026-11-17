@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:43:28.579Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Survey the inherited l1 workspace and pilot data design, without touching heldout.csv",
+  "reasoning": "The map establishes the first three milestones (reproduce, miss, nested) are done for the l1 route by probe:madelon-2026-11-15-2; my workspace is that trail's step-10 code snapshot. Before designing anything I need to see analysis.py, the data layout (pilot only), and the environment. I will not open data/heldout.csv: it may only be read by the final analysis, scored once. Builds on the nested milestone of probe:madelon-2026-11-15-2 (its workspace is what I inherited).",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:4b0211b7d367805100856f6a4efd32823dd5d25abaa9217e4d3a7c535c6b919f"
+}

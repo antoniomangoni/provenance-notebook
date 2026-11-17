@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T06:43:35.927Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Survey workspace code snapshot (vote step-21): screen code, analysis.py, git state, pilot-only data layout",
+  "reasoning": "Before designing anything I need to know what the inherited snapshot contains: which pilot-only screens (stab screen, top20F) are implemented, what the old analysis.py does, and the repo/git state. I will only look at code and data/pilot.csv; I will not open or count data/heldout.csv, since the map's revisions flag even row counts on it before a design is locked.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-boost@sha256:346c8e5e3c95bf1b3288c4710b9fa25905b6107a50ab3fadcb76cc612d529340#step-25",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:063f5cc468fcf4e46401845819a909301d1828f5bf03070ad72e22c8bb7b579b"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:24:58.342Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "timeout 120 uv run python - <<'EOF' import time t0=time.time() import numpy as np from sklearn.ensemble import HistGradientBoostingClassifier from sklearn.metrics import roc_auc_score print(\"imports\",",
+  "command": {
+    "shown": "timeout 120 uv run python - <<'EOF'\nimport time\nt0=time.time()\nimport numpy as np\nfrom sklearn.ensemble import HistGradientBoostingClassifier\nfrom sklearn.metrics import roc_auc_score\nprint(\"imports\", round(time.time()-t0,1))\nt0=time.time()\ntab = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = tab[:, :-1], tab[:, -1]\nprint(\"loadtxt\", X.shape, round(time.time()-t0,1))\nt0=time.time()\nm = HistGradientBoostingClassifier(max_iter=300, early_stopping=False, random_state=0).fit(X[:, :20], y)\nprint(\"fit300 on 400x20:\", round(time.time()-t0,1), \"s\")\nt0=time.time()\nfrom vote_lib import stab_screen\nf5 = stab_screen(X, y, thr=0.5)\nf3 = stab_screen(X, y, thr=0.3)\nprint(\"stab screens:\", len(f5), sorted(f5.tolist()), \"|\", len(f3), \"in\", round(time.time()-t0,1), \"s\")\nt0=time.time()\nm = HistGradientBoostingClassifier(max_iter=300, early_stopping=False, random_state=0).fit(X[:, f5], y)\nprint(\"fit300 on screened:\", round(time.time()-t0,1), \"s\")\nEOF\necho \"exit=$?\"",
+    "digest": "sha256:dc2e85b6d04f07e16089aa50dc83dfa6323461b89d3580f58a00a5051934d2c1"
+  },
+  "code": {
+    "ref": "commit:c678d295d074c80d1c30e1115700034e2c5c6c27"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-14",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:0682dab99da6e1835678d99bb021c468dc6ed030b2644e572256ae557041c40c"
+}

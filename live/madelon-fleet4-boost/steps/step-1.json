@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-1",
+  "seq": 1,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T06:43:10.472Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:session_start",
+  "summary": "Commands run in a sandbox that hides the map and the other trails",
+  "text": "Every command runs in bwrap: the filesystem is read-only except the workspace and uv's cache, and these are hidden under empty tmpfs: /home/antoniomangoni/.pi, /home/antoniomangoni/code/provenance-notebook, /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleet4, /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/pi-live. The project_map tool runs outside the sandbox.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d5a58348025b104aba1d97c78a2cdc626faf2e77497d0b34ca63b662817a787b"
+}

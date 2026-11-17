@@ -3,18 +3,19 @@
 This map covers the demo task (`demo/`). An inherited analysis reports a cross-validated AUC of
 0.76, and on 2200 held-out samples it scores 0.56.
 
-It has twelve revisions over twelve trails:
+It has thirteen revisions over fifteen trails:
 - two from 15 November, written before the map existed;
 - three runs that the map steered one at a time on 16 November;
 - two fleets of three agents that ran at the same time and shared the map as they worked;
-- one agent that ran in a sandbox ([below](#the-sandboxed-run)).
+- one agent that ran in a sandbox ([below](#the-sandboxed-run));
+- three agents that ran at once in the sandbox, to settle forecasts ([below](#fleet-4)).
 
 Rev-10 checked every credit again across agents ([below](#checked-across-agents)).
 
 Every run used `zai-org/GLM-5.3-Flash` through Pi under capture.
 
 ```sh
-uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 12 revisions, 15 resolutions, 12 trails
+uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 13 revisions, 15 resolutions, 15 trails
 uv run python project.py view   research/madelon-reanalysis/map --live live   # view.txt
 uv run python project.py shared research/madelon-reanalysis/map --live live   # shared.txt
 uv run python project.py page   research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/map.html
@@ -50,6 +51,7 @@ page.
 | 9 | **The second fleet reached compact twice.** The agents built on each other as they ran. Each credit excuses one row count of the held-out file, named and explained in the revision. The revision also discloses one leak of a held-out result between agents, now closed. |
 | 10 | **Checked across agents.** The first version 2 revision ([spec 8](../../docs/specs/08-rests-on.md)). Every rev-9 credit rested, through `builds_on`, on sibling runs that had opened the held-out file. Each such read is excused, with why. Nothing is withdrawn. |
 | 11 | **The sandboxed run reached nothing.** One agent on `boost`, every command in the sandbox. The wall clock stopped it inside its first search, which the file trace had slowed about thirteen times. `boost` stays open. |
+| 12 | **Fleet 4 settled no forecast.** Three agents on `l1`, `forest` and `boost`, in the sandbox, each stopped by the wall clock inside a run. `forest` scored the held-out file once, at 0.694, but its metrics file held a nested object, so the trail has no measure and `floor-forest` is neither credited nor refuted. It was not rerun. |
 
 ## What the shared milestones did
 
@@ -133,7 +135,7 @@ workspaces.
 ## The sandboxed run
 
 One agent ran on `boost` in that sandbox for 30 minutes (`live/madelon-fleet3-boost`, 13 steps,
-rev-11). It is the only run of a model in the sandbox.
+rev-11). It was the first run of a model in the sandbox; [fleet 4](#fleet-4) ran three more.
 
 **What the sandbox did.**
 - `uv`, Python and git worked inside it, and the agent read the map through `project_map`.
@@ -163,6 +165,33 @@ for untraced runs is too short.
 **What it does not show.** An agent trying to leave the sandbox, or a held-out score from a
 sandboxed run. The sandbox hides named places. The rest of the machine stays readable and the
 network open.
+
+## Fleet 4
+
+Three agents ran on `l1`, `forest` and `boost` at once, in the sandbox and under the trace, for 60
+minutes (`live/madelon-fleet4-*`, rev-12). The run was made to settle forecasts. A second model and
+three code forecasters had each given `floor-l1`, `floor-forest` and `compact-boost` a probability
+before any run toward them ([below](#how-sure-the-marks-are)).
+
+It settled none. The wall clock stopped each agent inside a run.
+
+| Agent | Steps | Where it stopped |
+| --- | --- | --- |
+| l1 | 21 | In a pilot-only comparison of L1 designs (step-20), which had been running for 48 minutes. |
+| forest | 27 | In a second run of its final analysis (step-26), with a changed forest. |
+| boost | 35 | In a pilot-only nested estimate (step-34). Two earlier searches each ran out their own limit of 20 minutes. It then timed one fit on one, two and four threads (3.1, 4.2 and 4.7 seconds under the trace) and ran on one thread from there. |
+
+**The score the map does not hold.** `forest` chose its design on pilot data and scored the
+held-out file once, at step-18. The run took 17 minutes and printed `cv_auc` 0.718, `holdout_auc`
+0.694 and `gap` 0.024: under the floor. Its `out/metrics.json` also held a nested object,
+`final_config`, and capture reads measures only from one object of names to numbers (the note at
+step-20). So step-19 has no measures. `check` credits and refutes from measures alone, and
+`floor-forest` stays open. The number is in the session transcript and in the agent's reasoning at
+step-25, as text. It was not rerun to have the measures written: that would be a second run on the
+held-out file, made knowing the first. The agent's own step-26 was such a second look, and the
+wall clock stopped it.
+
+No run of `l1` or `boost` opened the held-out file, by the traces of the runs that finished.
 
 ## Checked, not judged
 
@@ -207,36 +236,71 @@ puts the second look in front of whoever seals the revision.
 declared in [beliefs/assumptions.json](beliefs/assumptions.json): a held-out AUC near 0.71 on
 1,100 rows of each class has a standard error of 0.0109. Every resolution at the floor is within
 noise: `floor-selected-forest` stands 1.05 standard errors above it, `compact-vote` 0.83,
-`compact-stable-forest` 0.23, and `compact-knn` was refuted 0.09 below it. `compact` was reached
-by two of the four routes scored on the held-out file. The chance that at least one of the two
-truly clears the floor is 0.80 if their errors are shared and 0.92 if independent.
+`compact-stable-forest` 0.23, and `compact-knn` was refuted 0.09 below it. For `compact-vote` to
+clear the floor at 95%, it would take 4.0 times the rows; for `compact-stable-forest`, 51 times.
 
-For `compact-boost`, the one open milestone with scored siblings, the blanket's four scores
-(mean 0.7098) give it an even chance, 0.49. The three open `floor` routes have no scored sibling
-but `floor-selected-forest`, so their 0.75 is a crude rate. Ranked by what settling each would
-tell about its goal, `compact-boost` comes first (0.019 bits), as `next` also puts it. Both goals
-are already near certain under these assumptions, so no open run would tell much.
+`compact` was reached by two of the four routes scored on the held-out file. How sure that is
+depends on how related the routes are, which four scores cannot say:
+
+| If the routes' true AUCs are | P(at least one credited route truly clears the floor) |
+| --- | --- |
+| unrelated (a flat prior on each) | 0.80 with shared errors, 0.92 with independent ones |
+| drawn about a shared mean | 0.75 |
+| one value | 0.49 |
+
+The four scores differ by a standard deviation of 0.0084, under the 0.0109 error of one score, so
+they do not tell the routes apart. The report also counts the looks: 32 runs in 12 trails opened
+the held-out file.
+
+A milestone's Markov blanket follows the order of the routes: what comes before it, what comes
+after, and what else leads to the same place. It leaves out what that order does not carry. The
+`compact` scores bear on the open `floor` milestones, which are measured on the same criterion
+over the same file, and they sit outside those blankets. So the report gives each open milestone
+two numbers: from its blanket, and from every score on the same criterion across the map. For
+`compact-boost` they are 0.49 and 0.59. For the three open `floor` milestones they are 0.75, a
+crude rate from one scored sibling, and 0.59. The ranking by what settling each would tell about
+its goal says nothing here: every value is under 0.02 bits, in the order `next` gives.
+
+### The forecaster
 
 [forecasts/scores.txt](forecasts/scores.txt) scores a second model, Gemma 4 31B on Berget, asked
 26 questions once each, with no tools: the 8 milestones whose first resolution stands, each at
 the revision before it, the 4 open ones, and the 14 plans whose first run settled them. Code
-built each text and checked it was blind to its outcome, and code scored every answer. Five
-milestone questions could not be asked, because the credit was later withdrawn or the milestone
-appeared with its resolution. On the settled ones:
+built each text and scored every answer. Five milestone questions could not be asked, because
+the credit was later withdrawn or the milestone appeared with its resolution.
 
-| Questions | Gemma 4 31B | code:base-rate | code:blanket |
-| --- | --- | --- | --- |
-| 8 milestones | Brier 0.246 | 0.311 | 0.313 |
-| 14 plans | 0.180 | 0.287 | |
-| the 2 plans no earlier run had opened the held-out file before | 0.425 | 0.217 | |
+A [review](../../docs/specs/11-beliefs-review.md) of the first scores found that most of the 22
+settled questions were not forecasts. Four milestone outcomes were known when the question's
+revision was written (‡): rev-0 was written the day after the runs that settle `reproduce`, `miss`
+and `nested`, and `screen` at rev-8 followed from the milestones after it. Twelve plans came after
+their trail had opened the held-out file (†). `score` now marks both and scores the rest apart,
+beside a coin flip:
 
-The model's lead on plans comes from trails that had already opened the held-out file. On
-`madelon-route-screened-forest` step-43 it answered 0.9 after reading, in the agent's own
-reasoning, held-out scores that step-41 printed. Both the model and the blanket gave
-`compact-stable-forest` and `compact-vote` 0.15 to 0.24 at rev-8, after two refutations. Both
-were then reached, within noise of the floor. For the open milestones, the model gives
-`compact-boost` 0.60, `floor-search` 0.90, and `floor-l1` and `floor-forest` 0.10; a later run
-scores them.
+| Questions | Gemma 4 31B | code:even | code:base-rate | code:blanket | code:pooled |
+| --- | --- | --- | --- | --- | --- |
+| 8 milestones | Brier 0.246 | 0.250 | 0.311 | 0.313 | 0.339 |
+| the 4 not marked ‡ | 0.433 | 0.250 | 0.406 | 0.410 | 0.463 |
+| 14 plans | 0.180 | 0.250 | 0.287 | | |
+| the 2 not marked † | 0.425 | 0.250 | 0.217 | | |
+
+On the six real forecasts the model did worse than the coin flip. On all 8 milestones it stands
+0.004 ± 0.104 below it, within noise. `code:pooled` did no better than `code:blanket`, and at
+rev-2 it gave 1.00 from two scores 0.003 apart and missed: a predictive from two scores is too
+sure of itself. On `madelon-route-screened-forest` step-43 the model answered 0.9 after reading,
+in the agent's own reasoning, held-out scores that step-41 printed.
+
+The four open milestones carried the only forecasts made before their outcomes, and the code
+forecasters' values were committed before [fleet 4](#fleet-4) started:
+
+| Milestone | Gemma 4 31B | code:blanket | code:pooled | After fleet 4 |
+| --- | --- | --- | --- | --- |
+| `floor-l1` | 0.10 | 0.75 | 0.59 | open: no held-out score |
+| `floor-forest` | 0.10 | 0.75 | 0.59 | open: scored 0.694, under the floor, but not as a measure |
+| `compact-boost` | 0.60 | 0.49 | 0.59 | open: no held-out score |
+| `floor-search` | 0.90 | 0.75 | 0.59 | not run |
+
+No forecast is settled. The one score that was printed agrees with the model's 0.10 against the
+code forecasters. It is one score, and the map does not hold it.
 
 ## Limits
 
@@ -253,8 +317,10 @@ scores them.
   comes first. Live-1's printed per-family scores (forest 0.72, kNN 0.66, SVM 0.65) predicted the
   order the routes fared in, but they are not measures, so `next` does not use them.
 - **The trace is slow.** It cost about thirteen times on the one command measured both ways
-  ([above](#the-sandboxed-run)), and it ended the sandboxed run before it scored anything.
-- **Beliefs are advisory and rest on assumptions.** A declared standard error, a flat prior, and
-  routes taken as independent. The forecasts are 22 backtests, too few to rank forecasters.
-- **Scale.** One model, one task, three steered runs, two fleets of three agents and one sandboxed run: this demonstrates
+  ([above](#the-sandboxed-run)). No sandboxed agent, of four, recorded a held-out score before
+  its wall clock.
+- **Beliefs are advisory and rest on assumptions.** A declared standard error, and a range over
+  how related the routes are. Of 22 settled forecasts, 6 were real forecasts, all backtests. No
+  forecast made before its outcome has been settled.
+- **Scale.** One model, one task, three steered runs, three fleets of three agents and one sandboxed run: this demonstrates
   the mechanism, not a study of it.

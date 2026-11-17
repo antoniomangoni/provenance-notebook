@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "id": "step-23",
+  "seq": 23,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:26:24.899Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Rerun pilot-only screen comparison: GBM 100iter/bins64, 6-config grid, stab05/stab03/top20F, 1 seed; lock best",
+  "reasoning": "Supersedes step-7: the run timed out because a max_iter=300 HistGB fit costs 7.7 s here even single-threaded (bisection: uv ok 2.5 s, loadtxt 0 s, fits 3-8 s, 13 ms/iter floor). Revised budget: max_iter=100, max_bins=64 gives ~1 s/fit, so 3 variants x 5 outer x (6 configs x 4 inner + 1) fits finish in ~7 min. Expectation unchanged and still grounded in the sealed/established precedents (stab screen 20 feats cv 0.73 vote step-22; stability screen 10 feats + tuned GBM cv 0.7645 fleet2-boost step-25; stab05 locks 11 features on this pilot, stab03 18), so the chosen variant's nested cv_auc should be >= 0.70 with n_features <= 50, written to out/metrics.json.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "pilot-nested-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-7",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-13",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-boost@sha256:346c8e5e3c95bf1b3288c4710b9fa25905b6107a50ab3fadcb76cc612d529340#step-25",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-56",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:c2cbb77e88a73e6815e8be59a3d40398758c2fa715bb4cdd62a79c6e1bfa84ae"
+}

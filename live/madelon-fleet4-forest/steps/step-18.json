@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-18",
+  "seq": 18,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T07:05:29.170Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "timeout 1500 uv run python analysis.py 2>&1 | tail -20 && echo \"--- metrics ---\" && cat out/metrics.json",
+  "command": {
+    "shown": "timeout 1500 uv run python analysis.py 2>&1 | tail -20 && echo \"--- metrics ---\" && cat out/metrics.json",
+    "digest": "sha256:a5c42fcaa319506c078eedfa357bfc6c9197032649d393a1dedd703cea366b03"
+  },
+  "code": {
+    "ref": "commit:a407f48ad98c732f906d647034b03ab28a7c6eda"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-17",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8f605121b3d3ea374dcbc7a4d1f0769aa6038f3a7d8068cbbb6ed72cd74cb997"
+}

@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:44:20.539Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only nested-CV comparison of L1 designs: screens x feature-space variants (mains vs pairwise interactions)",
+  "reasoning": "Established: main-effects logistic on top-k F features gives cv 0.564 / holdout 0.5639 (nested milestone, probe:madelon-2026-11-15-2#step-11) — estimate agrees but far below the 0.71 floor. Madelon's class function is XOR-like; linear mains cannot reach the floor, so my L1 route needs interaction features chosen on pilot alone. I will compare candidate L1 designs by repeated nested CV on data/pilot.csv ONLY (outer 2x5 folds, inner 4-fold tuning of C): screens top-k by F-score (k 10/20/30) and MI (k 20), over feature spaces mains, mains+pairwise products, binarized+pairwise sign products. Everything (k, C grid, feature space) is evaluated on pilot alone; heldout.csv is not opened. Informally, I expect mains-only variants near ~0.6 and the best interaction variant to clear 0.65 nested-cv AUC on pilot; if not, I will supersede with richer interactions. The formal expectation for this exploration run is only that it completes.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:05e9bfda4f39090cc622b6a716fc7ca1345c430f013b3cb9fb675149ae94b118"
+}

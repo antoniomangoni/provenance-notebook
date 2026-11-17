@@ -6,7 +6,9 @@ Usage: beliefs.py COMMAND MAP --live DIR [options]
 The map is a small belief network: a milestone is a variable, a route is the AND of its path and a
 goal the OR of its routes. A milestone's Markov blanket is the milestone before it on each of its
 routes, what comes after it (the next milestone, or the goal), and the other milestones that lead
-there. Nothing else on the map bears on it, so the blanket is what a forecaster is shown.
+there. It is what a forecaster is shown. It follows the order of the routes, so it leaves out what
+that order does not carry: milestones measured on the same criterion over the same sealed file bear
+on each other from anywhere on the map. code:pooled forecasts from those, beside code:blanket.
 
 Nothing here changes the map. A ✓ or ✗ is still what `project.py check` recomputes from the trails;
 this module only says how far a criterion's measure stands from its threshold, in standard errors
@@ -64,7 +66,13 @@ def noise(directory: Path) -> dict[str, dict]:
     path = directory.parent / "beliefs" / "assumptions.json"
     if not path.exists():
         return {}
-    return {entry["measure"]: entry for entry in json.loads(path.read_text())["noise"]}
+    found = {entry["measure"]: entry for entry in json.loads(path.read_text())["noise"]}
+    for measure, entry in found.items():
+        if not isinstance(entry["se"], int | float) or isinstance(entry["se"], bool) or entry["se"] <= 0:
+            raise Usage(f"{path}: the standard error of {measure} is not a positive number")
+        if not project.ACTOR.fullmatch(entry.get("by", "")):
+            raise Usage(f"{path}: {measure} is declared by {entry.get('by')!r}, which is not an actor")
+    return found
 
 
 # ---------------------------------------------------------------------------------------------
@@ -132,41 +140,96 @@ def p_true(node: dict, step: dict, sizes: dict) -> float:
     return p
 
 
+GRID = 300  # steps of the between-route spread, from 0 to 3 standard errors
+
+
+def pooled(values: list[float], se: float, criterion: dict, credited: list[int]) -> tuple[float, float]:
+    """P(at least one credited route truly meets the criterion) when the routes' true values are
+    related: each drawn about a shared mean with a spread tau, each score its true value with error
+    se, errors independent. First with tau 0, every route sharing one true value; then with a flat
+    prior on the mean and on tau from 0 to 3 se, summed on a fixed grid. A flat prior on each true
+    value alone, as p_true takes, is tau without limit."""
+    n, centre = len(values), mean(values)
+    scatter = sum((value - centre) ** 2 for value in values)
+    total = weights = 0.0
+    for i in range(GRID + 1):
+        tau = 3 * se * i / GRID
+        spread = tau * tau + se * se  # the variance of one score about the shared mean
+        weight = spread ** (-(n - 1) / 2) * math.exp(-scatter / (2 * spread))
+        pull = se * se / spread  # how far a score is drawn to the shared mean
+        left = math.sqrt((1 - pull) * se * se)  # the error left in a true value once the mean is known
+        some = norm = 0.0
+        for j in range(-40, 41):  # the shared mean, four of its standard errors either side
+            shared = centre + j / 10 * math.sqrt(spread / n)
+            misses = 1.0
+            for k in credited:
+                at = pull * shared + (1 - pull) * values[k]
+                misses *= 1 - (NORMAL.cdf(margin(criterion, at, left)) if left else float(margin(criterion, at, 1.0) >= 0))
+            some += math.exp(-((j / 10) ** 2) / 2) * (1 - misses)
+            norm += math.exp(-((j / 10) ** 2) / 2)
+        total += weight * some / norm
+        weights += weight
+    return NORMAL.cdf(margin(criterion, centre, se / math.sqrt(n))), total / weights
+
+
+def rows_needed(away: float) -> str:
+    """How many times the rows would bring a measure this many standard errors from its threshold to
+    1.645 of them, were it to stay where it is: the error falls as the root of the rows."""
+    times = (Z95 / abs(away)) ** 2 if away else math.inf
+    return "no number of rows" if times == math.inf else f"{times:.1f} times the rows" if times < 10 else f"{times:,.0f} times the rows"
+
+
 def laplace(hits: int, n: int) -> float:
     return (hits + 1) / (n + 2)
+
+
+def from_scores(revision: dict, node_id: str, others: list[str], trails: project.Trails, sizes: dict, whose: str) -> tuple[float, str] | None:
+    """P(the node is reached) from the scores of other milestones: for each noisy criterion, a normal
+    predictive over those measured on the same criterion. None when any criterion has fewer than two."""
+    nodes = {n["id"]: n for n in revision["nodes"]}
+    same = ("measure", "comparison", "threshold")
+    p, how = 1.0, []
+    for criterion in noisy(nodes[node_id], sizes):
+        values = []
+        for other in others:
+            found = evidence(revision, other, trails)
+            shared = any(all(c[k] == criterion[k] for k in same) for c in nodes[other]["criteria"])
+            if shared and found and criterion["measure"] in project.measures(found[1]):
+                values.append(project.measures(found[1])[criterion["measure"]])
+        if len(values) < 2:
+            return None
+        centre, spread = mean(values), stdev(values) * math.sqrt(1 + 1 / len(values))
+        p *= NORMAL.cdf(margin(criterion, centre, spread))
+        how.append(f"{criterion['measure']} of {len(values)} {whose}: mean {centre:.4f}, predictive sd {spread:.4f}")
+    return (p, "; ".join(how)) if how else None
 
 
 def predictive(revision: dict, node_id: str, trails: project.Trails, sizes: dict) -> tuple[float, str]:
     """P(the node is reached), from its blanket alone. For each noisy criterion, a normal predictive
     over the co-parents scored on the same criterion; with fewer than two of them, the Laplace rate
     of the blanket's resolved milestones."""
-    nodes = {n["id"]: n for n in revision["nodes"]}
     near = blanket(revision, node_id)
-    p, how = 1.0, []
-    for criterion in noisy(nodes[node_id], sizes):
-        values = []
-        for other in near["co_parents"]:
-            same = [
-                c
-                for c in nodes[other]["criteria"]
-                if {k: c[k] for k in ("measure", "comparison", "threshold")}
-                == {k: criterion[k] for k in ("measure", "comparison", "threshold")}
-            ]
-            found = evidence(revision, other, trails)
-            if same and found and criterion["measure"] in project.measures(found[1]):
-                values.append(project.measures(found[1])[criterion["measure"]])
-        if len(values) < 2:
-            how = []
-            break
-        centre, spread = mean(values), stdev(values) * math.sqrt(1 + 1 / len(values))
-        p *= NORMAL.cdf(margin(criterion, centre, spread))
-        how.append(f"{criterion['measure']} of {len(values)} co-parents: mean {centre:.4f}, predictive sd {spread:.4f}")
-    if how:
-        return p, "; ".join(how)
+    scored = from_scores(revision, node_id, near["co_parents"], trails, sizes, "co-parents")
+    if scored:
+        return scored
     resolved = [last_resolution(revision, n) for n in near["parents"] + near["co_parents"]]
     resolved = [r for r in resolved if r]
     rate = laplace(sum(r["holds"] for r in resolved), len(resolved))
     return rate, f"Laplace rate of the blanket: {sum(r['holds'] for r in resolved)} of {len(resolved)} resolved milestones hold"
+
+
+def base_rate(revision: dict) -> float:
+    """The Laplace rate of every resolution of a revision."""
+    return laplace(sum(r["holds"] for r in revision["resolutions"]), len(revision["resolutions"]))
+
+
+def pooled_predictive(revision: dict, node_id: str, trails: project.Trails, sizes: dict) -> tuple[float, str]:
+    """P(the node is reached), from every milestone of the revision measured on the same criterion,
+    wherever it stands on the map; with fewer than two, the revision's base rate. Beside the blanket's
+    forecast, it tests whether the blanket is the right scope."""
+    others = [n["id"] for n in revision["nodes"] if n["id"] != node_id]
+    scored = from_scores(revision, node_id, others, trails, sizes, "milestones with the same criterion")
+    return scored or (base_rate(revision), "the base rate of the revision's resolutions")
 
 
 def node_p(revision: dict, node: str, trails: project.Trails, sizes: dict) -> float:
@@ -225,7 +288,8 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
         f"  Taken as measured without error: {', '.join(measured) or 'none'}.",
         "  A flat prior on each true value; errors independent between criteria and between routes, unless said.",
         "",
-        "Resolutions at a noisy criterion (P that the true value meets it; within noise when under 1.645 SE):",
+        "Resolutions at a noisy criterion (P that the true value meets it; within noise when under 1.645 SE, with",
+        "how many times the rows would tell the value from the threshold, were it to stay where it is):",
     ]
     for resolution in last["resolutions"]:
         node = nodes[resolution["node"]]
@@ -236,7 +300,7 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
                 continue
             value, se = found[criterion["measure"]], sizes[criterion["measure"]]["se"]
             away = margin(criterion, value, se)
-            flag = ", within noise" if abs(away) < Z95 else ""
+            flag = f", within noise ({rows_needed(away)})" if abs(away) < Z95 else ""
             lines.append(
                 f"  {MARKS['reached' if resolution['holds'] else 'refuted']} {node['id']}: {project.criterion_text(criterion)}, "
                 f"measured {view.number(value)}: {away:+.2f} SE, P {NORMAL.cdf(away):.2f}{flag} "
@@ -245,7 +309,7 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
     lines += ["", f"Goals, and the routes scored on {sealed}:"]
     for goal in last["goals"]:
         mark = "✓" if now["goals"][goal["id"]] else "○"
-        scored, credited, below = [], [], []
+        scored, credited, below, ends = [], [], [], []
         for route in (r for r in last["routes"] if r["goal"] == goal["id"]):
             end = nodes[route["path"][-1]]
             found = evidence(last, end["id"], trails)
@@ -260,6 +324,8 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
             )
             shown = ", ".join(f"{c['measure']} {view.number(values[c['measure']])}" for c in criteria if c["measure"] in values)
             scored.append(f"      {MARKS['reached' if resolution['holds'] else 'refuted']} {route['id']}: {shown}, P {p:.2f}; {bounds}")
+            if len(criteria) == 1 and criteria[0]["measure"] in values:
+                ends.append((criteria[0], values[criteria[0]["measure"]], resolution["holds"]))
             if resolution["holds"]:
                 credited.append(p)
                 below += [
@@ -278,7 +344,33 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
                 if len(below) == len(credited)
                 else f"      {len(credited) - len(below)} of {len(credited)} credited routes clear the threshold at their 95% bound."
             )
-    lines += ["", "Open milestones, their Markov blanket and P(reached) from the blanket alone:"]
+        same = ("measure", "comparison", "threshold")
+        if credited and len(ends) == len(scored) > 1 and all(all(c[k] == ends[0][0][k] for k in same) for c, _, _ in ends):
+            criterion, found = ends[0][0], [value for _, value, _ in ends]
+            se = sizes[criterion["measure"]]["se"]
+            one, partial = pooled(found, se, criterion, [k for k, end in enumerate(ends) if end[2]])
+            lines.append(
+                f"      Were the routes' true values related, not each free: P {one:.2f} if all {len(found)} share one value, "
+                f"P {partial:.2f} if each is drawn about a shared mean."
+            )
+            apart = stdev(found)
+            lines.append(
+                f"      The scores differ by a standard deviation of {apart:.4f}, "
+                + (
+                    f"under the {view.number(se)} error of one score: they do not tell the routes apart."
+                    if apart < se
+                    else f"over the {view.number(se)} error of one score."
+                )
+            )
+    if last.get("sealed_inputs"):
+        opened = {}
+        for probe, steps in trails.steps.items():
+            count = sum(1 for step in steps if step["kind"] == "run" and trails.read(probe, step, last["sealed_inputs"]))
+            if count:
+                opened[probe.split(":", 1)[1]] = count
+        lines += ["", f"Runs that opened {sealed}: {sum(opened.values())} in {len(opened)} trails. Each is a look at what the marks are scored on."]
+        lines += [f"  {', '.join(f'{name} {count}' for name, count in sorted(opened.items()))}"] if opened else []
+    lines += ["", "Open milestones, their Markov blanket, and P(reached) from the blanket alone and from the whole map:"]
     rows = project.ranked(last)
     for row in rows:
         near = blanket(last, row["node"])
@@ -301,6 +393,8 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
             lines.append(f"      {label}: {', '.join(said) or 'nothing'}")
         p, how = predictive(last, row["node"], trails, sizes)
         lines.append(f"      P(reached) {p:.2f}: {how}")
+        p, how = pooled_predictive(last, row["node"], trails, sizes)
+        lines.append(f"      from the whole map, P(reached) {p:.2f}: {how}")
     lines += [
         "",
         "Which open milestone tells most about its goal, in bits (an upper bound: routes taken as independent,",
@@ -308,7 +402,7 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
     ]
     order = {row["node"]: n for n, row in enumerate(rows, 1)}
     lines.append(
-        "  P(some route truly meets the goal), open routes at their P(reached): "
+        "  P(some route, credited or not, truly meets the goal), open routes at their P(reached): "
         + ", ".join(f"{g['id']} {goal_p(last, g['id'], trails, sizes):.2f}" for g in last["goals"])
     )
     scored_rows = sorted(
@@ -319,6 +413,12 @@ def show(revs: list[dict], trails: project.Trails, sizes: dict) -> list[str]:
         detail = ", ".join(f"{bit:.3f} about {goal}" for goal, bit in about.items())
         lines.append(
             f"  {node}: {bits:.3f} bits ({detail}); P(reached) {node_p(last, node, trails, sizes):.2f}; next gives it {order[node]}"
+        )
+    if scored_rows and scored_rows[0][0] < 0.05:
+        agrees = [node for _, node in scored_rows] == [row["node"] for row in rows]
+        lines.append(
+            "  Every value is under 0.05 bits: no open milestone tells much about its goal. "
+            + ("The order is next's." if agrees else "The order is not next's.")
         )
     return lines
 
@@ -443,6 +543,19 @@ def saw(text: str) -> str:
 # Questions, outcomes and scores
 
 
+def known_before(asked: dict, node: str, first: dict, trails: project.Trails) -> list[str]:
+    """Why a milestone's outcome was known, or followed from the map, at the revision it is asked at."""
+    reasons = []
+    _, step = trails.cite(first["cites"], asked["project"])
+    if datetime.fromisoformat(step["at"]) < datetime.fromisoformat(asked["at"]):
+        reasons.append(f"its run was made before rev-{asked['rev']} was written")
+    after = {m for r in asked["routes"] if node in r["path"] for m in r["path"][r["path"].index(node) + 1 :]}
+    resolved = sorted(after & {r["node"] for r in asked["resolutions"]})
+    if resolved:
+        reasons.append(f"{', '.join(resolved)}, after it on a route, already resolved")
+    return reasons
+
+
 def milestone_questions(revs: list[dict], trails: project.Trails) -> tuple[list[dict], list[str]]:
     """A milestone is asked about at the last revision before each time it goes from unresolved to
     resolved, and at the last revision when it is the next milestone of an open route. Its outcome is
@@ -476,6 +589,7 @@ def milestone_questions(revs: list[dict], trails: project.Trails) -> tuple[list[
                         "settled_by": ref,
                         "holds": first["holds"],
                         "settled_at": revs[k]["at"],
+                        "known": known_before(revs[k - 1], node, first, trails),
                         "_text": text,
                     }
                 )
@@ -533,10 +647,37 @@ def baselines(question: dict, revs: list[dict], trails: project.Trails, plans: l
     """Code-only forecasts from what was known when the question was asked."""
     if question["kind"] == "milestone":
         pinned = revs[question["rev"]]
-        rate = laplace(sum(r["holds"] for r in pinned["resolutions"]), len(pinned["resolutions"]))
-        return {"code:base-rate": rate, "code:blanket": predictive(pinned, question["node"], trails, sizes)[0]}
+        return {
+            "code:even": 0.5,
+            "code:base-rate": base_rate(pinned),
+            "code:blanket": predictive(pinned, question["node"], trails, sizes)[0],
+            "code:pooled": pooled_predictive(pinned, question["node"], trails, sizes)[0],
+        }
     known = [q for q in plans if q["settled_at"] < question["asked_at"]]
-    return {"code:base-rate": laplace(sum(q["holds"] for q in known), len(known))}
+    return {"code:even": 0.5, "code:base-rate": laplace(sum(q["holds"] for q in known), len(known))}
+
+
+MARKED = {
+    "milestone": ("‡", "the outcome was known, or followed from the map, when the question's revision was written, so these are not forecasts."),
+    "plan": ("†", "an earlier run of the trail is known to have opened a sealed input, so what it printed may be in the text shown."),
+}
+
+
+def marked(question: dict) -> str:
+    """Why a settled question is not a clean forecast; empty when nothing is known against it."""
+    if question["kind"] == "milestone":
+        return "; ".join(question.get("known", []))
+    return f"after {', '.join(question['after_sealed'])}" if question.get("after_sealed") else ""
+
+
+def against(mine: list[float], theirs: list[float]) -> str:
+    """The mean difference of two forecasters' Brier scores on the same questions, with its standard error."""
+    apart = [a - b for a, b in zip(mine, theirs, strict=True)]
+    if len(apart) < 2:
+        return ""
+    error = stdev(apart) / math.sqrt(len(apart))
+    shown = round(mean(apart), 3) + 0.0  # so a difference of nothing is +0.000, never -0.000
+    return f"; the forecaster is {shown:+.3f} ± {error:.3f} from it" + (", within noise" if abs(mean(apart)) < Z95 * error else "")
 
 
 def brier(p: float, hit: bool) -> float:
@@ -556,8 +697,10 @@ def score(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Pat
     lines, errors = [f"Forecasts over {revs[-1]['project']}, scored against revision {revs[-1]['rev']} and the trails."], []
     lines += [
         "Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.",
-        "Each forecaster is compared with code-only forecasters on the same questions: code:base-rate, the Laplace rate",
-        "of what was settled before the question was asked, and code:blanket, the milestone's Markov blanket alone.",
+        "Each forecaster is compared with code-only forecasters on the same questions: code:even, 0.5 every time;",
+        "code:base-rate, the Laplace rate of what was settled before the question was asked; code:blanket, the",
+        "milestone's Markov blanket alone; code:pooled, every milestone measured on the same criterion, anywhere on",
+        "the map. A difference in Brier score is given with its standard error, and is within noise under 1.645 of them.",
         "",
         f"Not asked: {len(left_m)} milestone and {len(left_p)} plan questions.",
         *(f"  {line}" for line in left_m),
@@ -584,9 +727,10 @@ def score(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Pat
                 unanswered += 1
                 continue
             if "holds" not in question:
+                base = baselines(question, revs, trails, plans, sizes)
                 pending.append(
-                    f"  pending {label(forecast)}: p {forecast['p']:.2f}, code:blanket "
-                    f"{baselines(question, revs, trails, plans, sizes)['code:blanket']:.2f}"
+                    f"  pending {label(forecast)}: p {forecast['p']:.2f}; code:blanket {base['code:blanket']:.2f}, "
+                    f"code:pooled {base['code:pooled']:.2f}"
                 )
                 continue
             backtest = "backtest" if kept["at"] > question["settled_at"] else "forecast"
@@ -599,28 +743,34 @@ def score(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Pat
                 continue
             kinds = sorted({row[3] for row in mine})
             lines.append(f"  {kind} questions settled: {len(mine)} ({', '.join(kinds)}); held {sum(r[0]['holds'] for r in mine)}")
-            for who in [kept["by"], *mine[0][2]]:
+            whos = [kept["by"], *mine[0][2]]
+
+            def scores(who: str, chosen: list, by: str = kept["by"]) -> list[float]:
+                return [brier(row[1] if who == by else row[2][who], row[0]["holds"]) for row in chosen]
+
+            for who in whos:
                 ps = [(row[1] if who == kept["by"] else row[2][who], row[0]["holds"]) for row in mine]
+                apart = "" if who == kept["by"] else against(scores(kept["by"], mine), scores(who, mine))
                 lines.append(
-                    f"    {who}: Brier {mean(brier(p, h) for p, h in ps):.3f}, log loss {mean(log_loss(p, h) for p, h in ps):.3f} bits, n {len(ps)}"
+                    f"    {who}: Brier {mean(brier(p, h) for p, h in ps):.3f}, "
+                    f"log loss {mean(log_loss(p, h) for p, h in ps):.3f} bits, n {len(ps)}{apart}"
                 )
+            symbol, meaning = MARKED[kind]
             for question, p, base, _ in mine:
-                others = ", ".join(f"{who.split(':')[1]} {value:.2f}" for who, value in base.items())
-                after = f" † after {', '.join(question['after_sealed'])}" if question.get("after_sealed") else ""
-                lines.append(f"      {'held' if question['holds'] else 'missed'}  {label(question)}: p {p:.2f}; {others}{after}")
-            marked = [row for row in mine if row[0].get("after_sealed")]
-            if marked:
-                lines.append(
-                    f"    † {len(marked)} of {len(mine)}: an earlier run of the trail is known to have opened {', '.join(sealed)}, "
-                    "so what it printed may be in the text shown."
-                )
-                clean = [row for row in mine if not row[0].get("after_sealed")]
-                if clean:
-                    said = "; ".join(
-                        f"{who} Brier {mean(brier(row[1] if who == kept['by'] else row[2][who], row[0]['holds']) for row in clean):.3f}"
-                        for who in [kept["by"], *clean[0][2]]
-                    )
-                    lines.append(f"      on the other {len(clean)}: {said}")
+                others = ", ".join(f"{who.split(':')[1]} {value:.2f}" for who, value in base.items() if who != "code:even")
+                why = f" {symbol} {marked(question)}" if marked(question) else ""
+                lines.append(f"      {'held' if question['holds'] else 'missed'}  {label(question)}: p {p:.2f}; {others}{why}")
+            subsets = []
+            flagged = [row for row in mine if marked(row[0])]
+            if flagged:
+                lines.append(f"    {symbol} {len(flagged)} of {len(mine)}: {meaning}")
+                subsets.append(("on the other", [row for row in mine if not marked(row[0])]))
+            if len(kinds) > 1:
+                subsets.append(("made before the outcome,", [row for row in mine if row[3] == "forecast"]))
+            for name, chosen in subsets:
+                if chosen:
+                    said = "; ".join(f"{who} Brier {mean(scores(who, chosen)):.3f}" for who in whos)
+                    lines.append(f"      {name} {len(chosen)}: {said}")
         lines += pending
     return lines, errors
 
@@ -640,7 +790,12 @@ def rebuild_open(forecast: dict, revs: list[dict], trails: project.Trails) -> di
         if first:
             if project.unpinned(first["cites"]) in cited:
                 return None
-            question |= {"holds": first["holds"], "settled_at": later["at"], "settled_by": project.unpinned(first["cites"])}
+            question |= {
+                "holds": first["holds"],
+                "settled_at": later["at"],
+                "settled_by": project.unpinned(first["cites"]),
+                "known": known_before(revs[rev], forecast["node"], first, trails),
+            }
             break
     return question
 

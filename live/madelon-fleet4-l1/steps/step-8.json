@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:43:32.289Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "git log --oneline -20 && echo === && wc -l data/pilot.csv && head -1 data/pilot.csv | tr ',' '\\n' | tail -3 && awk -F, 'NR>1{print $NF}' data/pilot.csv | sort | uniq -c",
+  "command": {
+    "shown": "git log --oneline -20 && echo === && wc -l data/pilot.csv && head -1 data/pilot.csv | tr ',' '\\n' | tail -3 && awk -F, 'NR>1{print $NF}' data/pilot.csv | sort | uniq -c",
+    "digest": "sha256:11e04e5b3efad5da633c000758f48e1b4d59576a601e1af63c0a52d3a93e414c"
+  },
+  "code": {
+    "ref": "commit:803f63d1b701a3fef2d9acb0dbc9543b395d2045"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:9cdccc8becbe9a1906efdcd814b5c4e5010216f01fa3f185e16af7e5d3173b5f"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:47:00.906Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cd /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleet4/notebook-madelon-fleet4-l1.1wYy3B && uv run python - <<'EOF' 2>&1 | grep -v Warning impor",
+  "command": {
+    "shown": "cd /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/fleet4/notebook-madelon-fleet4-l1.1wYy3B && uv run python - <<'EOF' 2>&1 | grep -v Warning\nimport sklearn, numpy as np\nfrom sklearn.linear_model import LogisticRegression\nprint(\"sklearn\", sklearn.__version__)\nrng = np.random.default_rng(0)\nX = rng.normal(size=(60, 5)); y = (X[:,0]*X[:,1] > 0).astype(float)*2-1\nfor kw in [dict(penalty=\"l1\"), dict(l1_ratio=1)]:\n    clf = LogisticRegression(solver=\"liblinear\", C=0.5, max_iter=1000, **kw).fit(X, y)\n    print(kw, \"nnz=\", int(np.sum(np.abs(clf.coef_)>1e-9)), \"acc=\", clf.score(X,y))\nEOF",
+    "digest": "sha256:c83944ceda608a1698c4a978e693685303ede1eab0f31ceaf5be9c68b9cbe0aa"
+  },
+  "code": {
+    "ref": "commit:da15335738b5d5db16aa516148117fe4b7528912"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-10",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d4e7d355dbb7614df84f8d4ecb3726e26a91ef8e4438601195219edc843ffcd3"
+}

@@ -88,9 +88,9 @@ The brief's criterion can be checked, so the entry checks it three ways.
   tenth of the transcript's.
 - A person who did not see the task answers the brief's question from the view, in the video.
 
-Every live attempt is committed: twelve trails. Two were the task itself, three were steered one
-at a time by a research map, six ran as two fleets of three agents sharing that map, and one ran
-in a sandbox.
+Every live attempt is committed: fifteen trails. Two were the task itself, three were steered one
+at a time by a research map, six ran as two fleets of three agents sharing that map, one ran in a
+sandbox, and three ran in the sandbox to settle forecasts.
 
 ## What was built
 
@@ -121,11 +121,14 @@ Built during the week, beyond the plan:
    one tool, and build on each other's steps. Numbers from a held-out file are withheld, what one
    agent wrote reaches another marked as text and not instructions, and each command runs in a
    sandbox that hides the map and the other trails.
-8. **Beliefs over the map, and a second model as forecaster** ([spec 10](specs/10-beliefs.md)).
-   `beliefs.py` says how far each ✓ and ✗ stood from its threshold, in declared standard errors:
-   every one at the held-out floor is within noise. A second model forecasts milestones from
-   their Markov blanket and plans from their trail. Code checks that the text is blind to the
-   outcome and scores the forecasts against code-only forecasters. The marks never change.
+8. **Beliefs over the map, and a second model as forecaster** ([spec 10](specs/10-beliefs.md),
+   [spec 11](specs/11-beliefs-review.md)). `beliefs.py` says how far each ✓ and ✗ stood from its
+   threshold, in declared standard errors: every one at the held-out floor is within noise. A
+   second model forecasts milestones from their Markov blanket and plans from their trail. Code
+   builds the text, marks a question whose outcome was already known, and scores the rest against
+   code-only forecasters, each difference with its error. On the real forecasts the model did
+   worse than a coin flip, and the run made to settle its open forecasts settled none. The marks
+   never change.
 
 One task type, one agent host, one model. Left out, and said so: redaction and keyed digests for
 hidden values in capture, signing by the capture host, resuming a trail in a second session,

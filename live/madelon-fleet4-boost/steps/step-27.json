@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-27",
+  "seq": 27,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:33:54.362Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "rm -f out/metrics.json && echo removed",
+  "command": {
+    "shown": "rm -f out/metrics.json && echo removed",
+    "digest": "sha256:9aa3b4acba1ae34947a03705e33db2ecfd4ee3407c1222cdf6953b754e7f7cc9"
+  },
+  "code": {
+    "ref": "commit:b240cd2e80ecf7345ab59ba31c5fcaa63693598b"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:1fa107bd7109794fbe5b4cd598f819c6f8b93a120588a6024d287a5fdc15186f"
+}

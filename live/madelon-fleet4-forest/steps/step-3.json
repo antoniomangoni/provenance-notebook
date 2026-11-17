@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T06:43:20.088Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Inspect the inherited workspace: analysis.py, data files, environment; pilot-only",
+  "reasoning": "The map establishes reproduce and miss are already done (probe:madelon-2026-11-15-2#step-7, cited). My route starts at floor-forest. Before designing anything I need to see the inherited analysis.py, the shape of data/pilot.csv (columns, rows, label coding) and the uv environment. I will only look at pilot data and code; heldout.csv is only touched by the final analysis run.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:b1983eaeea9e562203f5fa76a6f6376060efa3381e68c48f444c2c024edeae59"
+}

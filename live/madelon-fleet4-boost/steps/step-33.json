@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-33",
+  "seq": 33,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:37:58.492Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only validation: frozen stab05 screen (11 feats) + nested 3x5 GBM tuning -> cv_auc to out/metrics.json",
+  "reasoning": "Following the route's method literally - a screen fitted on pilot data alone, then GBM tuned on pilot data alone - I freeze the bootstrap-majority stab screen (thr=0.5, 11 features, matching the sealed 10-feature stability precedents) on the whole pilot, and estimate a HistGradientBoostingClassifier (grid: lr {0.05,0.1} x leaves {15,31}, 200 iters, 64 bins, min leaf 5) by nested 3x5-fold CV with the grid retuned inside every outer fold, on the locked features only. The pilot sweep just showed fixed-screen GBM at 0.745-0.757 on 20 features and the sealed stab+GBM precedent measured 0.7645 with 10 features, so the honest nested estimate should be >= 0.70 with n_features = 11 <= 50. A leaky reference (repeated CV of the tuned config) is reported alongside to bound the screen-selection optimism. Heldout is never read; out/metrics.json gets flat pilot-only numbers only.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "pilot-locked-screen-nested-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-boost@sha256:346c8e5e3c95bf1b3288c4710b9fa25905b6107a50ab3fadcb76cc612d529340#step-25",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-56",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:5e794d3fb5f4175c19d7f970ae730469716a523f5c150f2ef59af0bd2861a8c2"
+}

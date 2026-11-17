@@ -1,6 +1,8 @@
 # Spec 10: beliefs over the research map, and a second model as forecaster
 
-Branch `spec/10-beliefs`, from `main`.
+Branch `spec/10-beliefs`, from `main`. [Spec 11](11-beliefs-review.md) reviews what this spec's run
+showed: four of its milestone questions were not forecasts, and its range for a goal takes the
+routes as unrelated.
 
 A research map marks a milestone ✓ or ✗ when one observation's measures meet its criteria or miss
 one. `check` recomputes that, so the mark is honest about what was measured. It says nothing about

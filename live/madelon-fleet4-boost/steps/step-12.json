@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:04:47.240Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "timeout 1200 uv run python explore_boost.py > explore_out.txt 2> explore_err.txt; echo \"exit=$?\"; echo \"--- stdout ---\"; cat explore_out.txt; echo \"--- stderr ---\"; tail -5 explore_err.txt; rm -f expl",
+  "command": {
+    "shown": "timeout 1200 uv run python explore_boost.py > explore_out.txt 2> explore_err.txt; echo \"exit=$?\"; echo \"--- stdout ---\"; cat explore_out.txt; echo \"--- stderr ---\"; tail -5 explore_err.txt; rm -f explore_out.txt explore_err.txt",
+    "digest": "sha256:859105253ef01290d61b0a2fb90d91101459c2460b47ba2b8da7f7c5280604a2"
+  },
+  "code": {
+    "ref": "commit:c678d295d074c80d1c30e1115700034e2c5c6c27"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:feef9d410486bf180d853b2396836119419430d6f97f7d07be658a780b210708"
+}

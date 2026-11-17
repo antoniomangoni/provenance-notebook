@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:47:12.902Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only nested CV round 2: k tuned inside CV, pairwise/triple/sign products and k-means-distance L1 designs",
+  "reasoning": "Explore1 (pilot only, 2x5 nested CV): best was F-top-10 + pairwise products at 0.685, mains-only F10 0.662, all engineered variants below 0.69 — short of the 0.71 floor. Clear monotone trend: smaller k better; pairwise products add ~0.02 over mains. Next pilot-only round explores stronger but still L1-compatible feature spaces, now tuning k inside the inner CV: (a) pairwise products with k tuned in {6,8,10,12,15}; (b) binarized sign pairs, same k grid; (c) mains+pairs+sign-pairs; (d) mains+pairs+triples on top-8; (e) k-means distance/RBF features over top-20 (motivated by the vote trail's Manhattan-KNN success). Current working expectation (informal, not declared): at least one variant's nested CV approaches or passes 0.71; mains-limited ceiling is evidently ~0.66-0.69, so if interactions cannot reach ~0.71 the L1 route would need a different judgement. Heldout.csv stays unopened.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:c54dc576429d8ab6d478834e7321eff7c859c6ed32d0cf21d5acae05ec4ed349"
+}

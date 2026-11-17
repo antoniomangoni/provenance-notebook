@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:43:29.762Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ls -la && echo --- && ls -la data/ out/ 2>/dev/null && echo --- && cat README.md 2>/dev/null | head -40",
+  "command": {
+    "shown": "ls -la && echo --- && ls -la data/ out/ 2>/dev/null && echo --- && cat README.md 2>/dev/null | head -40",
+    "digest": "sha256:b27e222b332638f073448a54d47f64bbc3085143e0819e7831ee24fb2281db4c"
+  },
+  "code": {
+    "ref": "commit:803f63d1b701a3fef2d9acb0dbc9543b395d2045"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:aea07f6ef037e6c48ed10c94d80a8fa013bd6471b8b2878dd7502130c5037d3a"
+}
