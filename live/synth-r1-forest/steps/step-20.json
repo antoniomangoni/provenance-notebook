@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:08:45.113Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final: augmented RF scores heldout once; holdout >= 0.8, |gap| <= 0.05",
+  "reasoning": "The chosen analysis — RandomForestClassifier(400 trees, max_features=27, min_samples_leaf=3) on 12 raw features plus all 78 pairwise products, selected entirely on pilot data (repeated means 0.8928 with per-seed spread ±0.002, vs raw-feature incumbent 0.8104 and pairs-route evidence 0.8923) — is now locked. analysis.py is rewritten with the same CV protocol as every prior run (seed-0 stratified 5-fold, n_jobs=1); default mode stays pilot-only; --final opens data/heldout.csv for its single scoring. Expect the 3000-sample holdout near the pilot estimate 0.893 with tiny sampling error; selection over a small config family costs ≲0.005. Expectations: holdout_auc >= 0.80 (wide margin expected ~0.88-0.90) and gap = cv - holdout within ±0.05.",
+  "expectations": [
+    {
+      "name": "holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:34596e03c79695f09f737913cae49b7dd564d6cb9c24e3141653879e6ebf46e4"
+}

@@ -150,21 +150,92 @@ tells a forecaster where the signal is, so Kimi starts with that hint and the co
 not. It was found after round 1's answers were in. Kimi was not asked again, because a second
 asking would be chosen after seeing the first.
 
-RESULT
+## What happened
+
+**Round 1 (rev-1).** Kimi chose `pairs`, `boost` and `forest`. All three agents cleared the floor
+within 25 minutes. Each first ran the inherited analysis pilot-only, then made a pilot-only
+estimate, then scored the held-out file once:
+
+| Route | cv_auc | holdout_auc | Replicated |
+| --- | --- | --- | --- |
+| pairs | 0.8923 | 0.8923 | 0.8969 |
+| boost | 0.8343 | 0.8538 | 0.8627 |
+| forest | 0.8931 | 0.8983 | 0.9003 |
+
+**Round 2 (rev-2).** Kimi chose the three routes left, `logistic`, `l1` and `knn`, which the
+table above put far below the floor at default settings. Every agent read the pairs result
+through `project_map` and built on it, so each reached the interaction:
+
+| Route | What the agent ran | holdout_auc | Replicated | Credited |
+| --- | --- | --- | --- | --- |
+| knn | k-nearest neighbours on raw features and pairwise products, F screen and k chosen in CV | 0.8405 | 0.8507 | yes |
+| l1 | L1 logistic regression on raw features and pairwise products, C tuned in CV | 0.9079 | 0.9115 | yes |
+| logistic | an RBF-kernel logistic regression | 0.8667 | not run | no |
+
+The logistic route is "a logistic regression on the features as given". The agent's own
+diagnostics showed that this caps at 0.63, so it switched to a kernel method. Rev-2 declines the
+two logistic credits by judgment, and says so.
+
+**The design did not hold.** The routes were chosen to sit far below, near and far above the
+floor at default settings. Tuned agents that read each other's results put every route far above
+it: the five replicated results stand 6 to 14 standard errors over 0.80. No settled outcome is
+near the threshold, and **every one of the 15 settled forecasts held**. A forecaster that always
+said yes would have scored best.
+
+## The predictions
+
+| Prediction | Verdict | Numbers (Brier; difference ± its standard error) |
+| --- | --- | --- |
+| P1, far from the threshold: Kimi beats the coin flip | **failed** | round 1: 0.286, +0.036 ± 0.081 (n 10); round 2: 0.387, +0.137 ± 0.123 (n 4) |
+| P1, far from the threshold: `code:blanket` beats the coin flip | **held in round 2**, nothing to go on in round 1 | round 1: 0.250, every value 0.50 (n 10); round 2: 0.056, −0.194 ± 0.032 (n 4) |
+| P1, near the threshold: nothing beats the coin flip | **too few to tell** | n 0 |
+| P2, P(true value meets it) beats the coin flip | **held, trivially** | 0.000 (n 5): every margin was over 6 standard errors |
+| P3, Kimi beats `code:blanket` after the parent is resolved | **too few to tell** | n 0: no `-cv` milestone was resolved before its round |
+
+**What it says about Madelon.** It is consistent with the explanation, and does not test its
+other half:
+- **Far from the threshold, the blanket helped.** In round 2 the blanket forecaster read three
+  sibling scores far above the floor and gave the open held-out milestones 1.00. It was right.
+  On Madelon every sibling score sat at the floor, and it was not.
+- **The structure that carried the information was the agents', not the map's.** Siblings
+  predicted each other because agents read each other's results and copied what worked.
+- **Kimi forecast from method names and did worse than a coin flip.** It expected a linear model
+  and kNN to fail, as they would have at default settings, and did not foresee the agents adapting.
+- **Kimi as chooser** picked the three routes that would reach the goal first, with a stated
+  reason. It changed nothing here, because every route was run.
+
+The near-threshold half, that nothing beats a coin flip there, is still tested only by Madelon.
+
+**Limits.**
+- **The settled forecasts are too few to rank forecasters.** There are 15, all held, 4 of them
+  where the code forecasters had anything to go on.
+- **The project's name gave Kimi a hint** (above).
+- **The author of the map knew the default-setting truths** before declaring it, and sealed every
+  revision. `check` decided every credit; the declined logistic credits and the accepted method
+  claims are judgments, named in rev-1 and rev-2.
 
 ## Testing
 
-- `make_data` builds the recorded digests.
-- `--all-open` leaves Madelon's default questions unchanged.
-- `choose` refuses a route that is not open and records the digest.
-- `replicate` runs a snapshot against a replacement file.
-- The grouping by margin matches hand values.
-- The new project's committed outputs equal a rebuild.
+- `make_data` builds the recorded digests, and the committed pilot and held-out files. It needs
+  NumPy, which the repository's environment does not have, so it is skipped there; it runs with
+  `uv run --project demo/workspace`.
+- `--all-open` asks the 13 milestones of rev-0, and leaves Madelon's default questions unchanged.
+- `choose` refuses a route that is not open, too many routes, and an answer not in the asked form,
+  and the committed round 1 choice's digest equals a rebuild.
+- The grouping by margin matches a hand value.
+- The new project's committed `beliefs.txt`, `forecasts/scores.txt`, `view.txt` and `shared.txt`
+  equal a rebuild.
+- `replicate.py` is not tested in CI: it needs each trail's environment and scikit-learn. Its
+  output is committed as `replication.json`, which the score rebuild reads.
+
+**The nomination text is built from the trails as they stood at its revision** (`as_of`). The
+first version used every trail on disk. The rebuild test caught that the committed round 1 digest
+no longer matched once round 1's agents had written steps.
 
 ## Target files
 
 - `demo2/`
 - `beliefs.py`, `replicate.py`, `tests/`
 - `research/synthetic-interactions/`
-- `live/synthetic-interactions-*`
+- `live/synth-r1-*`, `live/synth-r2-*`
 - this spec, and the docs that name the project

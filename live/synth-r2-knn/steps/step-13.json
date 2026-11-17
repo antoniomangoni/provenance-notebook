@@ -1,0 +1,99 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "synth-r2-knn",
+  "at": "2026-11-17T09:18:16.220Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 18132,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:d6986763314e0ea32718f1de0fe03a2d8d6dc07d0e4161a579d55a244c82c29c"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:d6986763314e0ea32718f1de0fe03a2d8d6dc07d0e4161a579d55a244c82c29c"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.8568
+    },
+    {
+      "name": "holdout_auc",
+      "value": 0.8405
+    },
+    {
+      "name": "gap",
+      "value": 0.0163
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:analysis.py",
+      "digest": "sha256:8e52d3e72f670e4e5873ef55fdf8714157ac3a92d6c6c22e1592d756945b5c75"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    },
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "knn-cv",
+      "measured": 0.8568,
+      "held": true
+    },
+    {
+      "expectation": "knn-holdout-floor",
+      "measured": 0.8405,
+      "held": true
+    },
+    {
+      "expectation": "gap-upper",
+      "measured": 0.0163,
+      "held": true
+    },
+    {
+      "expectation": "gap-lower",
+      "measured": 0.0163,
+      "held": true
+    },
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-12",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-11",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:054a009d6c43f036ae56648a6eeb4ec890482053093b75d732f4eea4f47ca592"
+}

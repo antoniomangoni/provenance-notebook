@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r2-knn",
+  "at": "2026-11-17T09:16:55.971Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only nested-CV KNN (k, weights, feature screen chosen in inner folds); write cv_auc alone",
+  "reasoning": "Route knn: nested-CV k-nearest-neighbours on pilot alone. The pairs trail (step-14) established on pilot data that the signal lives strongly in pairwise products (logistic on pairwise products: cv_auc 0.8923), so I offer KNN two candidate feature sets inside the inner CV: the 12 raw features, and raw + all 66 pairwise products, each univariately screened (SelectKBest f_classif, screen size a hyperparameter). The pipeline (ExpandProducts -> StandardScaler -> SelectKBest -> KNeighborsClassifier) guarantees the screen is refit per fold, so nothing leaks; inner 4-fold GridSearchCV (n_jobs=1) picks expansion, screen size, k in [5,11,21,41,81] and weighting; outer 5-fold cross_val_score over the grid search yields the nested cv_auc. Pilot-only run writes only cv_auc to out/metrics.json. Expectation: a local, non-parametric method over interaction-rich features should reach the 0.80 pilot floor; if it falls short I will revisit the grid on pilot only.",
+  "expectations": [
+    {
+      "name": "knn-cv-threshold",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:2ad63b15d43916e6994c0fdf99c7532f1bb86021e05b632d8486a11401723b7d"
+}

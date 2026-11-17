@@ -1,0 +1,19 @@
+{
+  "route": "pairs",
+  "rev": 0,
+  "map": "sha256:ab4cc8fcc86c70ccbf33a813459543bb3ac604c101c702cda9665e1dc93b40e1",
+  "builds_on": [],
+  "workspace_from": "the demo's workspace",
+  "workspace": {
+    "README.md": "sha256:61bab99d7a0d4db393379c874f14797cda00f9216c2c890490621348280e5128",
+    "analysis.py": "sha256:f2bd3a32958c24374b574a80b5cd27ef4e3fbd7d1fa5d5ca429f06b289a49e0b",
+    "data/heldout.csv": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34",
+    "data/pilot.csv": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164",
+    "pyproject.toml": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9",
+    "uv.lock": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+  },
+  "alongside": [
+    "boost",
+    "forest"
+  ]
+}

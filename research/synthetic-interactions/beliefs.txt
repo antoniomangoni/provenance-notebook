@@ -1,0 +1,44 @@
+Beliefs over synthetic-interactions, revision 2 (2026-11-17T09:27:04Z, agent:claude-code/claude-opus-5-5).
+Advisory: nothing here changes a ✓ or ✗. P is a probability under the assumptions below.
+
+Assumptions:
+  holdout_auc: standard error 0.0081, declared by agent:claude-code/claude-opus-5-5: data/heldout.csv holds 1,498 samples labelled 1 and 1,502 labelled 0; the Hanley-McNeil standard error of an AUC of 0.80 on them is 0.0081 (beliefs.py se --auc 0.8 --pos 1498 --neg 1502). It is the error of scoring one fixed model once, not of refitting it.
+  Taken as measured without error: cv_auc, gap.
+  A flat prior on each true value; errors independent between criteria and between routes, unless said.
+
+Resolutions at a noisy criterion (P that the true value meets it; within noise when under 1.645 SE, with
+how many times the rows would tell the value from the threshold, were it to stay where it is):
+  ✓ boost-holdout: holdout_auc >= 0.8, measured 0.8538: +6.64 SE, P 1.00 (synth-r1-boost step-22)
+  ✓ forest-holdout: holdout_auc >= 0.8, measured 0.8983: +12.14 SE, P 1.00 (synth-r1-forest step-22)
+  ✓ pairs-holdout: holdout_auc >= 0.8, measured 0.8923: +11.40 SE, P 1.00 (synth-r1-pairs step-17)
+  ✓ knn-holdout: holdout_auc >= 0.8, measured 0.8405: +5.00 SE, P 1.00 (synth-r2-knn step-13)
+  ✓ l1-holdout: holdout_auc >= 0.8, measured 0.9079: +13.32 SE, P 1.00 (synth-r2-l1 step-22)
+
+Goals, and the routes scored on data/heldout.csv:
+  ✓ floor: 5 of 5 scored routes credited
+      ✓ l1: holdout_auc 0.9079, P 1.00; 95% bound 0.8946
+      ✓ knn: holdout_auc 0.8405, P 1.00; 95% bound 0.8272
+      ✓ forest: holdout_auc 0.8983, P 1.00; 95% bound 0.8850
+      ✓ boost: holdout_auc 0.8538, P 1.00; 95% bound 0.8405
+      ✓ pairs: holdout_auc 0.8923, P 1.00; 95% bound 0.8790
+      P(at least one credited route truly meets it): 1.00 (errors shared) to 1.00 (independent)
+      5 of 5 credited routes clear the threshold at their 95% bound.
+      Were the routes' true values related, not each free: P 1.00 if all 5 share one value, P 1.00 if each is drawn about a shared mean.
+      The scores differ by a standard deviation of 0.0296, over the 0.0081 error of one score.
+
+Runs that opened data/heldout.csv: 8 in 6 trails. Each is a look at what the marks are scored on.
+  synth-r1-boost 1, synth-r1-forest 2, synth-r1-pairs 2, synth-r2-knn 1, synth-r2-l1 1, synth-r2-logistic 1
+
+Open milestones, their Markov blanket, and P(reached) from the blanket alone and from the whole map:
+  ○ logistic-cv: next on logistic
+      before it: baseline ✓
+      leading to the same place: nothing
+      after it: logistic-holdout ○
+      P(reached) 0.67: Laplace rate of the blanket: 1 of 1 resolved milestones hold
+      from the whole map, P(reached) 0.93: the base rate of the revision's resolutions
+
+Which open milestone tells most about its goal, in bits (an upper bound: routes taken as independent,
+and one run taken to settle the milestone). Beside it, the order project.py next gives, the most shared first:
+  P(some route, credited or not, truly meets the goal), open routes at their P(reached): floor 1.00
+  logistic-cv: 0.000 bits (0.000 about floor); P(reached) 0.67; next gives it 1
+  Every value is under 0.05 bits: no open milestone tells much about its goal. The order is next's.

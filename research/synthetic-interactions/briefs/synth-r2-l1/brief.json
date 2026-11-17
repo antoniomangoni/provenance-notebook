@@ -1,0 +1,21 @@
+{
+  "route": "l1",
+  "rev": 1,
+  "map": "sha256:caa8c6029d7d5f40893eb67579e07d851d3d395aca02fc8a1745cdf5455c3fd9",
+  "builds_on": [
+    "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9"
+  ],
+  "workspace_from": "the code snapshot of step-8 in synthetic-interactions/probe:synth-r1-pairs, e0c3be7",
+  "workspace": {
+    "README.md": "sha256:61bab99d7a0d4db393379c874f14797cda00f9216c2c890490621348280e5128",
+    "analysis.py": "sha256:8679ea654dcc9224f69792630141200ed01297973e733f124c3dffb14854ebc6",
+    "data/heldout.csv": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34",
+    "data/pilot.csv": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164",
+    "pyproject.toml": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9",
+    "uv.lock": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+  },
+  "alongside": [
+    "logistic",
+    "knn"
+  ]
+}

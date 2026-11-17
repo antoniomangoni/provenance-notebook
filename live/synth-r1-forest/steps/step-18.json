@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-18",
+  "seq": 18,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:04:24.462Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "n_jobs=1 uv run python tune_forest2.py",
+  "command": {
+    "shown": "n_jobs=1 uv run python tune_forest2.py",
+    "digest": "sha256:3454397761b7ab2f11cb90b9a9a71a96f2652890c018a1cf0bd278b6390ca7c1"
+  },
+  "code": {
+    "ref": "commit:22bebae70b8032d0090c6fa3d632687c47b805eb"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-16",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:4b56f1ff95e7a278c8e0e67d93465615827fd458ec1ffaeee08fa20dcfe64873"
+}

@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:03:56.389Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Rewrite analysis.py as the chosen HistGB, run once to score heldout, write cv/holdout/gap",
+  "reasoning": "Boost-holdout milestone, the single held-out scoring. Every choice was made on pilot.csv alone: features are the 12 raw columns; model HistGradientBoostingClassifier(lr=0.06, max_leaf_nodes=15, l2=0, max_iter=500, early_stopping=True, validation_fraction=0.25, n_iter_no_change=20, seed 0), selected in two pilot-only grids (9 + 8 configs, all clustering 0.61-0.83, chosen 0.8343). I rewrite analysis.py to compute the same seed-0 5-fold CV on pilot (expect 0.8343 again), refit on all 1000 pilot rows, and score data/heldout.csv once, writing cv_auc, holdout_auc and gap (cv less holdout) as one flat JSON object. Expect holdout_auc >= 0.8 (given pairs-route step-14 evidence that interactions generalize: their pairwise logistic hit 0.8923 cv) and |gap| <= 0.05; the CV std was ~0.023, so a modest optimism of the CV estimate is possible but should stay well inside the window. Run once, single-threaded.",
+  "expectations": [
+    {
+      "name": "final-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "boost-holdout",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "cv-reproducible",
+      "measure": "cv_auc",
+      "comparison": "eq",
+      "threshold": 0.8343
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:686aa1c466d044d186fb3ec56a5266c1516c7668a60308ad897e2c29cae402d7"
+}

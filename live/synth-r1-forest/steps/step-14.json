@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-14",
+  "seq": 14,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:03:58.474Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Refine RF config near the winner; keep if repeated CV improves",
+  "reasoning": "Seed-0 CV is 0.8152 but the floor is 0.80, so I want a wider margin before the one held-out scoring. The screen showed max_features=1.0 with min_samples_leaf=3 best (0.8152/0.8030/0.8131 over seeds 0/1/2); refinement will search a tight grid around it (max_features 0.75-1.0, leaves 2-5, split 2-5, entropy) at 400 trees, then test the top 2 at 1000 trees over seeds 0,1,2. Adopt the new config only if its repeated mean beats the incumbent 0.8104; write the adopted config's seed-0 cv_auc to out/metrics.json (only). Expectation: near-boundary refinement on 1000 rows typically adds ~0.005-0.01; expect refined cv >= 0.81 and adopt only on improvement, so the conservative expectation is cv_auc >= 0.80 (floor) with exit_ok — the incumbent already stands at 0.8152 if nothing improves.",
+  "expectations": [
+    {
+      "name": "cv-floor-guard",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:29069d9478cc0ec43487bbba1c2b529246e868d355eac196944cd4fa9f9f2103"
+}

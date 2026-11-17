@@ -38,7 +38,7 @@ from a trail (`view.py`), and a research map over many trails (`project.py`).
   wrote. A replacement plan links to the plan it supersedes and the observation that triggered it.
 - *A timeline to walk back through:* the reviewer's page, and `trail.py why TRAIL STEP`.
 
-**What was run.** Fifteen live trails by one model on one constructed task, all committed,
+**What was run.** Twenty-one live trails by one model on two constructed tasks, all committed,
 including the ones that reached nothing. On the first, the plan changes at step 14 after a
 held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
 
@@ -58,6 +58,11 @@ held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
   forecast the map's milestones from their Markov blanket, from text that code built and scored.
   On the six questions that were real forecasts it did worse than a coin flip. Three agents run
   to settle three open forecasts settled none (`research/…/forecasts/scores.txt`).
+- A second project on synthetic data with a known truth tested that. Kimi K3.1 Pro forecast and
+  chose the routes for two rounds of three agents, pushed before each round. The agents read each
+  other's results and every route cleared the floor. All 15 settled forecasts held: Kimi was within
+  noise of a coin flip, and the blanket's code forecaster beat it by 0.19 ± 0.03 in round 2
+  (`research/synthetic-interactions/README.md`).
 
 **What it does not prove.** Who wrote a step, what a read was used for, or that a run used the
 method it claims. Every revision of the map was sealed by an AI agent. The README lists each
@@ -85,7 +90,7 @@ start `uv run python project.py serve research/madelon-reanalysis/map --live liv
 | 1:00 | The "Sealed inputs" section, then "Before this plan was proposed" on the card | The new plan promises one held-out scoring. The trail shows five earlier commands had opened the held-out file. The page reports that. It does not judge it. |
 | 1:25 | The timeline: a measured run with its code diff and "Opened" row | Each result names the commit that produced it and the files its run opened. |
 | 1:40 | Terminal: `cat evidence/madelon-2026-11-15-1/tamper.txt` | Changing a number breaks the chain. Re-chaining passes the check but not the stored metrics file. A full rewrite fails against the head that was cited. |
-| 2:00 | `http://127.0.0.1:8077/` | Fifteen trails on one map. Stations are milestones, lines are routes, and each lane is one agent's trail. |
+| 2:00 | `http://127.0.0.1:8077/` | Fifteen trails on the Madelon map. Stations are milestones, lines are routes, and each lane is one agent's trail. |
 | 2:15 | Hover a station with an amber mark; then the "Withdrawn" table; then `/rev/3` | Every credit is recomputed from the step files. A credit that was withdrawn stays on record with its reason, and any past revision can be opened. |
 | 2:35 | `evidence/README.md`, "The check does not show…" | What we did not find: models answered our questions as well from the raw transcript. The page was a tenth of the length. |
 | 2:50 | `README.md`, "What it does not prove" | The limits are in the README. |

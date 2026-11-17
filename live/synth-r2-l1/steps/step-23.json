@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-23",
+  "seq": 23,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:18:04.833Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Verify final flat metrics.json contains exactly cv_auc, holdout_auc, gap",
+  "reasoning": "Step-22 confirmed every expectation (cv_auc 0.9134, holdout_auc 0.9079, gap 0.0056 within ±0.05), reaching the l1-holdout milestone. A final read of out/metrics.json closes the trail: it must be one flat object with exactly cv_auc, holdout_auc, gap.",
+  "expectations": [
+    {
+      "name": "verify-final-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:466a996ba65d80b89b36f781220d9569cc2d502051ebd6067672d6ae2567782c"
+}

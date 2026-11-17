@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-16",
+  "seq": 16,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:04:15.270Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "RF on raw + pairwise-product features, tuned pilot-only",
+  "reasoning": "Building on pairs@...#step-14 (logistic on pairwise products reached pilot cv_auc 0.8923, evidence the label is driven by pairwise interactions) and boost@...#step-19 (HistGB cv 0.8343, headroom over my incumbent forest cv 0.8152): I extend the forest's feature set with all 78 products xi*xj on top of the 12 raw features — a pre-computed candidate pool that lets axes-aligned trees threshold interaction terms directly. Grid: max_features {9, 27, 90 of 90} x min_samples_leaf {1, 3}, 400 trees, seed-0 5-fold, pilot only, n_jobs=1; then top-2 re-scored over seeds 0,1,2. Adopt the augmented config if its repeated mean beats the incumbent raw-feature repeated mean 0.8104; write the adopted config's seed-0 cv_auc (only) to out/metrics.json. Expectation: if interactions are indeed pairwise, augmented forest CV should rise to ~0.85-0.89; floor cv_auc >= 0.80 with exit_ok regardless (incumbent stands if augmentation disappoints).",
+  "expectations": [
+    {
+      "name": "cv-floor-guard",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-boost@sha256:d5d9ac33217c8f4710868d3aa9c9018f0f7d8074a0d217b0acae9f84fbe70126#step-19",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:38ea5ffaabc68910f281ca8e7607a1827d3f6238bc533f638bc9b30b95d3dafa"
+}

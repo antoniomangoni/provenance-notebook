@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:00:42.603Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Tune a random forest on pilot data only; reach cv_auc >= 0.80",
+  "reasoning": "Baseline logistic CV is 0.6313, so a plain linear fit leaves much of the signal behind; a random forest over the same 12 features should capture interactions. Plan: screen a small grid (max_features x min_samples_leaf x max_depth, 400 trees, n_jobs=1, seed-0 stratified 5-fold AUC) on pilot alone, re-score the top 3 with 5-fold CV over seeds 0,1,2 to pick a stable config, then write the chosen config's seed-0 5-fold cv_auc to out/metrics.json (only) — the same protocol as the inherited analysis so numbers stay comparable. Expectation: an interaction-driven synthetic dataset with balanced labels usually lifts tree ensembles well above the linear 0.63; with 12 features and 1000 rows I expect the best RF to land clearly above 0.8. Risk: if CV is ~0.7-0.78, I will revise the grid (deeper trees, more features per split, more leaves) under a superseding plan.",
+  "expectations": [
+    {
+      "name": "forest-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:4c94353d7a92e11a77abc00d67586de6a451e85eafd7a97f1fd1f4c3a6bc0be5"
+}

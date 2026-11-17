@@ -288,3 +288,20 @@ def test_a_true_margin_is_read_from_the_replicated_held_out_value():
     # (0.8162 - 0.80) / 0.0081 = 2.0, for the milestone and for the one before it on its route.
     margins = beliefs.true_margins(revs[0], truth, {"holdout_auc": {"se": 0.0081}})
     assert margins == pytest.approx({"pairs-holdout": 2.0, "pairs-cv": 2.0})
+
+
+@pytest.mark.parametrize(
+    "command, committed",
+    [
+        (["beliefs.py", "show"], SECOND.parent / "beliefs.txt"),
+        (["beliefs.py", "score", "--truth", str(SECOND.parent / "replication.json")], SECOND.parent / "forecasts" / "scores.txt"),
+        (["project.py", "view"], SECOND.parent / "view.txt"),
+        (["project.py", "shared"], SECOND.parent / "shared.txt"),
+    ],
+)
+def test_a_committed_output_of_the_second_project_equals_a_rebuild(command, committed):
+    script, name, *rest = command
+    done = subprocess.run(
+        [sys.executable, str(ROOT / script), name, str(SECOND), "--live", str(LIVE), *rest], check=True, capture_output=True, text=True, cwd=ROOT
+    )
+    assert done.stdout == committed.read_text()

@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "synth-r1-pairs",
+  "at": "2026-11-17T09:01:28.561Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final: run analysis.py --final once, score heldout, write cv_auc, holdout_auc, gap",
+  "reasoning": "The pairs analysis is chosen entirely on pilot data (step-14: nested cv_auc 0.8923, honest about penalty tuning). The final run only adds the once-only held-out scoring with the CV-selected model refit on all pilot rows. Margin over the 0.80 floor is 0.09; a nested-CV estimate on 1000 samples rarely misses by that much against 3000 held-out rows, so I expect all four measures in range on this single shot.",
+  "expectations": [
+    {
+      "name": "final-run",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "cv-floats-above-0-8",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "holdout-clears-0-8",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "gap-not-above-0-05",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-not-below-0-05",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "prev": "sha256:edbd948478b8e3bc528c1988cd4463b15e2e8e84a97716fb68caf034b3696371"
+}

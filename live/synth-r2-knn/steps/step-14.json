@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-14",
+  "seq": 14,
+  "trail": "synth-r2-knn",
+  "at": "2026-11-17T09:18:19.652Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Verify out/metrics.json is flat and holds the three reported measures",
+  "reasoning": "Verify the deliverable on disk: out/metrics.json should be a single flat JSON object with exactly cv_auc, holdout_auc, gap, matching the reported values (0.8568 / 0.8405 / 0.0163). No thresholds here — the measures were already checked by step-13; this only confirms the file's shape.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:a84c8d5db379b8177f307cada47ee853ad13e7e47c241306c02b7f485b495b70"
+}

@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "synth-r1-pairs",
+  "at": "2026-11-17T09:01:17.749Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pairs-cv: nested-CV logistic on pairwise products, pilot-only, write cv_auc alone",
+  "reasoning": "The inherited main-effects logistic reaches only cv_auc 0.6313 (my step-9), so the signal is plausibly in interactions — the pairs route's 78 interaction features + 12 raw ones with an L2 penalty tuned inside CV should capture it. Nested CV keeps the estimate honest; grid spans C from 0.003 to 30 to cover both ends. Writing {cv_auc} alone; heldout untouched (no --final).",
+  "expectations": [
+    {
+      "name": "pairs-cv-run",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "pairs-cv-at-least-0-8",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "prev": "sha256:46521673bcb19439fe4498f64995a1c97a86f3a9d0f3b6b5fac8e69f8435beb9"
+}

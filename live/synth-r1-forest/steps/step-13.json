@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:03:41.614Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 171022,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:a5cc49009a4cdbf96df2f93b1135d5a74a1c62f5273b576513b528a04a6dc113"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:a5cc49009a4cdbf96df2f93b1135d5a74a1c62f5273b576513b528a04a6dc113"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.8152
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:tune_forest.py",
+      "digest": "sha256:9af1392339d5a415e935f7898237e4d196c092e7b2dfe0a74887a11bd15d0f98"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "forest-cv",
+      "measured": 0.8152,
+      "held": true
+    },
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-12",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-10",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2"
+}

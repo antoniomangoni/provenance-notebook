@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:00:17.853Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run inherited logistic-regression CV on pilot only, write cv_auc alone",
+  "reasoning": "Milestone 1 (baseline): the inherited analysis runs with its CV above chance. The inherited file reads heldout.csv, which may only be opened once at the end, so I rewrite analysis.py in the pilot-only form with the identical model (StandardScaler + LogisticRegression, 5-fold stratified CV, seed 0) and write only cv_auc to out/metrics.json. Chance is 0.5; a 12-feature problem should leave the linear model above 0.6 even if interactions are present.",
+  "expectations": [
+    {
+      "name": "baseline-cv-above-chance",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.6
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:b2f77451194503549e0af5ca307007511f842dca8d3414ea06f6aec061a0a54f"
+}

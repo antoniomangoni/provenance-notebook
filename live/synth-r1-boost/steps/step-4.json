@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:00:02.141Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "pwd && ls -la && echo '--- analysis.py ---' && cat analysis.py && echo '--- data dir ---' && ls -la data/",
+  "command": {
+    "shown": "pwd && ls -la && echo '--- analysis.py ---' && cat analysis.py && echo '--- data dir ---' && ls -la data/",
+    "digest": "sha256:26ddc44de3736656ff73fc77f41e9ab16300b9e835e053dd220a8846b6b4d52c"
+  },
+  "code": {
+    "ref": "commit:09ef6f44b2c23a8bb85d4d10492347664b2759bc"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a024879d4b34d5edfd41df80b85bee98dc62cebdf5020a5310bdf20ad7ac7590"
+}

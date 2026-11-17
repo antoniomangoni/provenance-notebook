@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "id": "step-16",
+  "seq": 16,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:19:43.751Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:project_map",
+  "summary": "Read the project map at revision 1, with 5 other trail heads",
+  "text": "project_map showed map revision 1 (sha256:caa8c6029d7d5f40893eb67579e07d851d3d395aca02fc8a1745cdf5455c3fd9) and these trails at these heads, as project.py status --for synth-r2-logistic prints them:\nprobe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785\nprobe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466\nprobe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87\nprobe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424\nprobe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:b0de270a4417810ba25ba0e205a5a96e5a3e90611862bb4f4f015d7cb1ffcce6"
+}

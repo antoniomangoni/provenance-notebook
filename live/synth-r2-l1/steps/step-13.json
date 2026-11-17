@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:17:32.260Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Verify metrics.json holds only cv_auc; probe L1 semantics (sparsity, l1_ratio equivalence) on pilot",
+  "reasoning": "My route's step-11 reached l1-cv provisionally (cv_auc 0.9134 >= 0.8, written alone), but the run log showed sklearn 1.9 deprecation warnings and an inconsistency: penalty=l1 with default l1_ratio=0.0. Before any final scoring I must confirm out/metrics.json holds only cv_auc, and establish on the pilot (stdout only, no metric writes, heldout untouched) whether those fits were truly L1 — true L1 shows exactly-zero coefficients — and whether the API-correct variant (l1_ratio=1) matches. The corrected code will then be re-run pilot-only before heldout is ever opened.",
+  "expectations": [
+    {
+      "name": "verify-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:9980586ccf72700a777dee92d176e620ccf9ed23d5299d1cd9e0c63a2014140b"
+}
