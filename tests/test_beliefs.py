@@ -281,6 +281,24 @@ def test_the_overseer_s_choice_is_checked_against_the_open_routes():
     assert kept["saw"] == chosen["saw"] and kept["routes"] == ["pairs", "boost", "forest"]
 
 
+def test_every_committed_round_is_what_its_revision_showed():
+    revs, trails = beliefs.load(SECOND, str(LIVE))
+    sizes = beliefs.noise(SECOND)
+    rounds = sorted((SECOND.parent / "oversight").glob("round-*.json"))
+    assert len(rounds) == 3
+    for path in rounds:
+        kept = json.loads(path.read_text())
+        shown = revs[: kept["rev"] + 1]
+        assert kept["saw"] == beliefs.saw(beliefs.nominate_prompt(shown, trails, sizes))
+        forecasts = json.loads((SECOND.parent / "forecasts" / f"kimi-{path.name}").read_text())["forecasts"]
+        assert {f["rev"] for f in forecasts} == {kept["rev"]}
+        assert {f["node"] for f in forecasts} == {q["node"] for q in beliefs.open_questions(revs[kept["rev"]], trails)}
+        for forecast in forecasts:
+            assert beliefs.rebuild_open(forecast, revs, trails)["saw"] == forecast["saw"]
+    # Round 3 asks the two raw-feature routes and the logistic route left open by rev-2.
+    assert len(beliefs.open_questions(revs[3], trails)) == 6
+
+
 def test_a_true_margin_is_read_from_the_replicated_held_out_value():
     revs = project.revisions(SECOND)
     floor = {"measure": "holdout_auc", "comparison": "ge", "threshold": 0.8}
@@ -302,6 +320,10 @@ def test_a_true_margin_is_read_from_the_replicated_held_out_value():
 def test_a_committed_output_of_the_second_project_equals_a_rebuild(command, committed):
     script, name, *rest = command
     done = subprocess.run(
-        [sys.executable, str(ROOT / script), name, str(SECOND), "--live", str(LIVE), *rest], check=True, capture_output=True, text=True, cwd=ROOT
+        [sys.executable, str(ROOT / script), name, str(SECOND), "--live", str(LIVE), *rest],
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
     )
     assert done.stdout == committed.read_text()

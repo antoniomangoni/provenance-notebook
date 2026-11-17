@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-22",
+  "seq": 22,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:23:04.285Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only diagnostic: per-feature univariate AUC and correlation matrix to size knn-raw's headroom",
+  "reasoning": "Two nested-CV attempts placed knn-raw at 0.784 (5-fold) and 0.794 (10-fold); forest-raw's refuted 0.7826 confirms a raw-feature plateau. Before choosing between further honest data-efficiency gains (inner 5-fold for stabler selection, outer 20-fold / LOO for less training-data loss) and reporting the plateau, I need to know why kNN stalls: univariate AUC of each standardised feature and the feature correlation matrix, computed on the pilot only (prints only, no heldout, no metrics.json). If most features carry signal, the plateau is interaction-limited and protocol gains are small; if a few carry all signal, the plateau is dilution-limited and no in-route lever moves it past 0.8.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:33bbe3a3c267dbbfcec4178f81d59512f00703b46a0377a1d39cee7d2950e826"
+}

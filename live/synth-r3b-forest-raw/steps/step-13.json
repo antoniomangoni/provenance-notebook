@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "id": "step-13",
+  "seq": 13,
+  "trail": "synth-r3b-forest-raw",
+  "at": "2026-11-17T13:26:04.819Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Seal forest-raw endpoint: default RF 1000 trees, preregistered rep-10-fold cv, score heldout once, write flat trio",
+  "reasoning": "Milestone forest-raw-cv is refuted on pilot evidence: the best honest configuration (default RandomForest, 1000 trees, pre-registered repeated 10-fold x 5 repeats, seed 0) gives cv_auc 0.7878 (se ~0.0066); seeds moved the rep5x5 mean only ±0.005 (0.7826/0.7871/0.7891), 500 to 1000 trees +0.001, so no in-route dial reaches 0.80. This final run seals the route's endpoint: analysis.py's protocol is fixed to the preregistered repeated 10-fold chosen for fit-size reasons (not to game the estimate), tree count 1000 chosen by pilot CV mean, and --final reads data/heldout.csv exactly once, writing the flat trio cv_auc, holdout_auc, gap. The final model is fitted on all 1000 pilot rows; the 10-fold CV (900-row folds) should if anything slightly understate it, so my prediction is holdout near 0.79, below the 0.80 floor, with the gap well inside ±0.05 since pilot and held-out are fresh draws of the same generator. Baseline machinery already reproduced (0.6330 vs established 0.6313, probe:synth-r1-pairs#step-9). If holdout unexpectedly clears 0.80 with the gap inside tolerance, milestone 2's letter is met even though cv < 0.80, and I will report that precisely.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "cv-pilot",
+      "measure": "cv_auc",
+      "comparison": "eq",
+      "threshold": 0.7878
+    },
+    {
+      "name": "holdout-below-floor",
+      "measure": "holdout_auc",
+      "comparison": "le",
+      "threshold": 0.8
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:9f6e1c1ed4154b50fc54412f35e42af22eae4cf575c75b521d431be1b3667f03"
+}

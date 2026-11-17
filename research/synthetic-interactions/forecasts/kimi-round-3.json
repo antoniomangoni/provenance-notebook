@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "by": "agent:pi/moonshotai/Kimi-K3.1-Pro",
+  "at": "2026-11-17T13:00:09Z",
+  "forecasts": [
+    {
+      "kind": "milestone",
+      "node": "forest-raw-cv",
+      "rev": 3,
+      "saw": "sha256:9f3146e086249d69a0c1d3694c437e1cd824046686e071bffff266a30326d0a3",
+      "p": 0.65,
+      "why": "Synthetic interactions give a random forest a plausible route to substantially outperform the 0.6313 baseline, but the 0.80 CV threshold is demanding with no observed pilot performance."
+    },
+    {
+      "kind": "milestone",
+      "node": "forest-raw-holdout",
+      "rev": 3,
+      "saw": "sha256:c60ccbf05ad430193019fcea6dc0e9f609ff8d45bfcb5a4fdbdfb8006f8c7f41",
+      "p": 0.8,
+      "why": "Multiple sibling models cleared the held-out floor with small estimate gaps, and random forests can capture interactions natively, but the still-open raw-feature CV milestone leaves meaningful uncertainty about both the AUC floor and agreement criteria."
+    },
+    {
+      "kind": "milestone",
+      "node": "knn-raw-cv",
+      "rev": 3,
+      "saw": "sha256:09530984ae930a716ca9eb3ad8d4e3cdd28b865b172dfe722462d514fa0afedf",
+      "p": 0.18,
+      "why": "The baseline AUC is only 0.6313, and raw 12-dimensional KNN without feature selection or constructed interactions is unlikely to gain enough from tuning k and weighting alone to reach 0.80."
+    },
+    {
+      "kind": "milestone",
+      "node": "knn-raw-holdout",
+      "rev": 3,
+      "saw": "sha256:e1073b0bad3bfa048d80f7fc9a0acfe50636657e30e69141264ef92533fc97cf",
+      "p": 0.45,
+      "why": "The sibling KNN’s 0.8405 held-out AUC and small gap show that the floor is attainable with stable estimation, but the raw-feature route has not yet demonstrated the required 0.80 CV AUC and may lose performance on interaction-heavy data."
+    },
+    {
+      "kind": "milestone",
+      "node": "logistic-cv",
+      "rev": 3,
+      "saw": "sha256:74c29bb334b7c63980788f7d9eabc309321c9d7672976ccea3b6a239b0f33b3e",
+      "p": 0.15,
+      "why": "The baseline AUC of 0.6313 is far below the 0.80 threshold, and tuning a logistic regression on interaction-driven data is unlikely to deliver such a large first-attempt improvement."
+    },
+    {
+      "kind": "milestone",
+      "node": "logistic-holdout",
+      "rev": 3,
+      "saw": "sha256:567686273c3c10a3400810acf4f13d22afc7d11358021bf2e31591ddb69e2a2d",
+      "p": 0.3,
+      "why": "Although all five sibling holdout runs succeeded with small gaps, their nonlinear, penalised, or interaction-aware approaches may succeed where a plain logistic regression on the raw features underfits the synthetic interactions and misses the AUC floor."
+    }
+  ]
+}

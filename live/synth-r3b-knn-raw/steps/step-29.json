@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "id": "step-29",
+  "seq": 29,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:24:24.164Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "inconclusive: no fresh out/metrics.json with cv_auc",
+  "exit_code": 0,
+  "duration_ms": 125,
+  "reads": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:78627ac98da25e6b2a3562bd465dde3f3c0d4dbdeb1edcae07395c9bdfe85d64"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "inconclusive",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-28",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-25",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:352a814bba414efdd18f593d7c373fad5abd82c7a9177e076e9ca3e34009ef75"
+}

@@ -1,4 +1,4 @@
-Forecasts over synthetic-interactions, scored against revision 2 and the trails.
+Forecasts over synthetic-interactions, scored against revision 4 and the trails.
 Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.
 Each forecaster is compared with code-only forecasters on the same questions: code:even, 0.5 every time;
 code:base-rate, the Laplace rate of what was settled before the question was asked; code:blanket, the
@@ -44,14 +44,29 @@ kimi-round-2.json: by agent:pi/moonshotai/Kimi-K3.1-Pro at 2026-11-17T09:15:11Z
   pending logistic-cv at rev-1: p 0.10; code:blanket 0.67, code:pooled 0.91
   pending logistic-holdout at rev-1: p 0.20; code:blanket 1.00, code:pooled 1.00
 
+kimi-round-3.json: by agent:pi/moonshotai/Kimi-K3.1-Pro at 2026-11-17T13:00:09Z
+  milestone questions settled: 3 (forecast); held 0
+    agent:pi/moonshotai/Kimi-K3.1-Pro: Brier 0.365, log loss 1.374 bits, n 3
+    code:even: Brier 0.250, log loss 1.000 bits, n 3; the forecaster is +0.115 ± 0.178 from it, within noise
+    code:base-rate: Brier 0.871, log loss 3.907 bits, n 3; the forecaster is -0.506 ± 0.178 from it
+    code:blanket: Brier 0.625, log loss 3.271 bits, n 3; the forecaster is -0.260 ± 0.120 from it
+    code:pooled: Brier 0.909, log loss 4.819 bits, n 3; the forecaster is -0.544 ± 0.150 from it
+      missed  forest-raw-cv at rev-3: p 0.65; base-rate 0.93, blanket 0.67, pooled 0.93
+      missed  forest-raw-holdout at rev-3: p 0.80; base-rate 0.93, blanket 0.99, pooled 0.99
+      missed  knn-raw-cv at rev-3: p 0.18; base-rate 0.93, blanket 0.67, pooled 0.93
+  pending knn-raw-holdout at rev-3: p 0.45; code:blanket 0.99, code:pooled 0.99
+  pending logistic-cv at rev-3: p 0.15; code:blanket 0.67, code:pooled 0.93
+  pending logistic-holdout at rev-3: p 0.30; code:blanket 0.99, code:pooled 0.99
+
 Against the replication sample (50,000 rows, sha256:5ebf670308e5…), each cited run re-run on it:
   ✓ boost-holdout (step-21): recorded holdout_auc 0.8538; replicated holdout_auc 0.8627 meets 0.8; true margin +7.74 SE
   ✓ forest-holdout (step-21): recorded holdout_auc 0.8983; replicated holdout_auc 0.9003 meets 0.8; true margin +12.38 SE
   ✓ pairs-holdout (step-16): recorded holdout_auc 0.8923; replicated holdout_auc 0.8969 meets 0.8; true margin +11.96 SE
   ✓ knn-holdout (step-12): recorded holdout_auc 0.8405; replicated holdout_auc 0.8507 meets 0.8; true margin +6.26 SE
   ✓ l1-holdout (step-21): recorded holdout_auc 0.9079; replicated holdout_auc 0.9115 meets 0.8; true margin +13.77 SE
+  ✗ forest-raw-holdout (step-14): recorded holdout_auc 0.788; replicated holdout_auc 0.7945 misses 0.8; true margin -0.68 SE
 
-P2, calibration: P(true value meets it) from each held-out score, against the replicated outcome: Brier 0.000 against the coin flip's 0.250, n 5; it is -0.250 ± 0.000 from it
+P2, calibration: P(true value meets it) from each held-out score, against the replicated outcome: Brier 0.001 against the coin flip's 0.250, n 6; it is -0.249 ± 0.001 from it
 
 kimi-round-1.json: by agent:pi/moonshotai/Kimi-K3.1-Pro
   P1, true margin at least 1.645 SE: n 10
@@ -71,4 +86,14 @@ kimi-round-2.json: by agent:pi/moonshotai/Kimi-K3.1-Pro
     code:blanket: Brier 0.056; it is -0.194 ± 0.032 from the coin flip
     code:pooled: Brier 0.004; it is -0.246 ± 0.002 from the coin flip
   P1, true margin under 1.645 SE: n 0
+  P3, -holdout milestones asked after their -cv milestone was resolved: n 0
+
+kimi-round-3.json: by agent:pi/moonshotai/Kimi-K3.1-Pro
+  P1, true margin at least 1.645 SE: n 0
+  P1, true margin under 1.645 SE: n 2
+    agent:pi/moonshotai/Kimi-K3.1-Pro: Brier 0.531; it is +0.281 ± 0.109 from the coin flip
+    code:even: Brier 0.250
+    code:base-rate: Brier 0.871; it is +0.621 ± 0.000 from the coin flip
+    code:blanket: Brier 0.715; it is +0.465 ± 0.270 from the coin flip
+    code:pooled: Brier 0.928; it is +0.678 ± 0.057 from the coin flip
   P3, -holdout milestones asked after their -cv milestone was resolved: n 0

@@ -1,5 +1,5 @@
-Research map of synthetic-interactions, revision 2 (2026-11-17T09:27:04Z, agent:claude-code/claude-opus-5-5).
-6 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
+Research map of synthetic-interactions, revision 4 (2026-11-17T13:33:08Z, agent:claude-code/claude-opus-5-5).
+12 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
 
 Goals:
   ✓ floor: An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05
@@ -17,6 +17,10 @@ Routes:
       gradient boosting (scikit-learn's HistGradientBoostingClassifier), tuned on pilot data alone
   pairs (done, for floor): baseline* ✓ → pairs-cv ✓ → pairs-holdout ✓
       a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation
+  forest-raw (blocked, for floor): baseline* ✓ → forest-raw-cv ✗ → forest-raw-holdout ✗
+      a random forest on the twelve features as given, at scikit-learn's default settings (only the number of trees and the seed may change); no products, kernels, feature selection or other constructed features
+  knn-raw (blocked, for floor): baseline* ✓ → knn-raw-cv ✗ → knn-raw-holdout ○
+      k-nearest neighbours on the twelve standardised features as given, with only k (and its weighting) tuned inside cross-validation; no products, kernels, feature selection or other constructed features
 
 Milestones and what reached them:
   ✓ baseline: The inherited analysis runs, and its cross-validated AUC is above chance (cv_auc >= 0.6)
@@ -69,6 +73,16 @@ Milestones and what reached them:
       reached by probe:synth-r1-pairs step-17: as expected
         rests on synth-r1-boost to step-11, synth-r1-forest to step-9
         before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✗ forest-raw-cv: A random forest at default settings on the twelve features as given, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      refuted by probe:synth-r3b-forest-raw step-15: as expected
+        before it, a sealed input: synth-r1-forest#step-4 read, synth-r1-pairs#step-4 read
+  ✗ forest-raw-holdout: A default random forest on the twelve features as given clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+      refuted by probe:synth-r3b-forest-raw step-15: as expected
+        before it, a sealed input: synth-r1-forest#step-4 read, synth-r1-pairs#step-4 read
+  ✗ knn-raw-cv: k-nearest neighbours on the twelve standardised features as given, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      refuted by probe:synth-r3b-knn-raw step-27: contradicted: cv_auc 0.7919, expected >= 0.8
+        before it, a sealed input: synth-r1-forest#step-4 read, synth-r1-pairs#step-4 read
+  ○ knn-raw-holdout: k-nearest neighbours on the twelve features as given clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
 
 Next, the most shared first:
   logistic-cv: next on logistic; on 1 route

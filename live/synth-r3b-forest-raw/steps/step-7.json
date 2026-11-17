@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "synth-r3b-forest-raw",
+  "at": "2026-11-17T13:20:11.974Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "export OMP_NUM_THREADS=1 && for T in 100 500; do uv run python analysis.py --seed 0 --trees $T --repeats 5; done",
+  "command": {
+    "shown": "export OMP_NUM_THREADS=1 && for T in 100 500; do uv run python analysis.py --seed 0 --trees $T --repeats 5; done",
+    "digest": "sha256:aabd70181bc7721f8a32b902d6594e1ff98d8994e6062adfbef13c884844b68b"
+  },
+  "code": {
+    "ref": "commit:a4da6e2e360af83b061efda456832e915845a97c"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [
+    {
+      "name": "seed",
+      "digest": "sha256:5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "value": "0"
+    }
+  ],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-6",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:28543d3572e2a008290cf278eeaf867152e2ea79315555fb194d6e7a2b58d725"
+}

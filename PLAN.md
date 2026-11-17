@@ -31,7 +31,7 @@ what each run opened on the reviewer's page, and spec 10 (17 November) added bel
 map with a second model as forecaster. Spec 11 reviewed that the same day: it corrected what the
 forecaster's scores showed, and ran three more agents, which settled no forecast. Spec 12 ran a
 second, synthetic project with a known truth, overseen by Kimi K3.1 Pro, in two rounds of three
-agents. Twenty-one live trails are committed. What remains is a person's: the video, the repository's visibility, and
+agents, and spec 13 a third round that gave its first refutations. Twenty-seven live trails are committed. What remains is a person's: the video, the repository's visibility, and
 submitting.
 
 ## Slices
@@ -256,3 +256,4 @@ the capture host, which stays an open question with the host named as the trust 
 | 17 Nov | Beliefs over the map ([spec 10](docs/specs/10-beliefs.md)) are advisory and computed by code: a declared standard error per measure, each milestone's Markov blanket as the scope of what bears on it, and a second model (Gemma 4 31B) that forecasts from text code checked blind to the outcome, scored against code-only forecasters. No mark, revision or trail changes |
 | 17 Nov | A result about a forecaster is held to the report's own standard ([spec 11](docs/specs/11-beliefs-review.md)): a question whose outcome was known is marked and scored apart, a coin flip is a forecaster, and each difference carries its error. A code forecaster's values are committed before the run that would settle them. A held-out score printed but not written as measures is not credited or refuted, and is not rerun |
 | 17 Nov | A second project tests the belief result ([spec 12](docs/specs/12-second-project.md)): synthetic data, so a replication sample gives each credit its true value. A second model (Kimi K3.1 Pro) forecasts and chooses the routes, and both are pushed before each round. A route's method is judged against its words: an agent that changed method is not credited on that route. Submission moves to before 18:00 |
+| 17 Nov | A third round of the second project ([spec 13](docs/specs/13-third-round.md)) adds routes whose method forbids what agents copied from each other, with truths measured before they are declared. A provider outage that stops every agent before its first turn is committed as it ran, and the same routes are launched again. A refutation takes no excuse for a read |

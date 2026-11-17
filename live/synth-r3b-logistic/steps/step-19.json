@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:23:36.813Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final run: uv run python analysis.py --final scores heldout once, writes flat cv_auc, holdout_auc, gap",
+  "reasoning": "The pilot-only estimate is in (cv_auc 0.8854, tuning agreement 0.8852, >= 0.80). The final run with --final reruns exactly the same nested CV (same seed, same code) so cv_auc should stay 0.8854, then selects one configuration among the same eight by 5-fold inner CV on the whole pilot, fits it on all 1000 pilot rows and scores data/heldout.csv (3000 samples) once via decision_function. Expect holdout_auc near the cv estimate: the same generator underlies both files, the configuration sits in a flat plateau (stable), and the final fit uses 25% more training data than the CV folds (training 1000 rows at once vs 800), so the gap should be near zero, within [-0.05, 0.05] on both sides; the other five sealed routes held their agreement, so structural risk is low. The gap is written as the difference of the rounded values so the file is internally exact.",
+  "expectations": [
+    {
+      "name": "final-run-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "logistic-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "logistic-holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "logistic-holdout-gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "logistic-holdout-gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d#step-19",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:4549ff669019dd304d00aca421f4f7aaa63c1090edfcf383c238e48fb9f3c669"
+}

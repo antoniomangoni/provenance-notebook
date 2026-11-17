@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:19:38.311Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "which uv && uv --version && OMP_NUM_THREADS=1 uv run python -c \"import sklearn, numpy, pandas; print('sklearn', sklearn.__version__, '| numpy', numpy.__version__, '| pandas', pandas.__version__)\"",
+  "command": {
+    "shown": "which uv && uv --version && OMP_NUM_THREADS=1 uv run python -c \"import sklearn, numpy, pandas; print('sklearn', sklearn.__version__, '| numpy', numpy.__version__, '| pandas', pandas.__version__)\"",
+    "digest": "sha256:674c1d97f751cd55b2abc8e0082526e52d9a5172d0eaaa9d318bca039157be71"
+  },
+  "code": {
+    "ref": "commit:365bbd145320823c25908de48fd388aca3790a75"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:013bee898fd8c59a7d5da4ac584545c2d2eb402c55581c77e39bc0a942774c50"
+}

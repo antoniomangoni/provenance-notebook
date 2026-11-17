@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "id": "step-16",
+  "seq": 16,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:20:45.775Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "OMP_NUM_THREADS=1 uv run python analysis.py --seed 0 --folds 5 && echo --- && cat out/metrics.json",
+  "command": {
+    "shown": "OMP_NUM_THREADS=1 uv run python analysis.py --seed 0 --folds 5 && echo --- && cat out/metrics.json",
+    "digest": "sha256:c31062f3d8b916e099903a8dc0833858a2fe65d52b3ba3f4d2b09df7ca0f7b93"
+  },
+  "code": {
+    "ref": "commit:ba150c5230127cbcd5d6cd5a543f7fa99be74b54"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [
+    {
+      "name": "seed",
+      "digest": "sha256:5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "value": "0"
+    },
+    {
+      "name": "folds",
+      "digest": "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+      "value": "5"
+    }
+  ],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-15",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:07905c47542284e3a44ee5442e4ab07cf931cac19fe5287268109425c4fbd927"
+}

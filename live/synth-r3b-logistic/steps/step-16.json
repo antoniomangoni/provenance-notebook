@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-16",
+  "seq": 16,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:23:27.208Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Milestone logistic-cv: run analysis.py pilot-only (nested CV, no --final), write cv_auc alone to out/metrics.json",
+  "reasoning": "The pilot-only tuning (steps 13-14) fixed the design: degree-2 polynomial kernel expansion of the standardised twelve given features plus L2 logistic, lying in a flat plateau (plain 5-fold 0.8845-0.8851, honest nested 5x3 estimate 0.8852, gamma=1.0 picked in all five outer folds). analysis.py now selects among the eight plateau configurations by nested CV (outer 5-fold, inner 3-fold, all pilot-only, single thread) and, without --final, writes only cv_auc to out/metrics.json - the held-out file is never opened. This is the logistic-cv milestone run; I expect cv_auc ~= 0.885 from the tuning, comfortably >= 0.80. I build on the route's provisional kernel-logistic precedent (0.8678) which my pilot grid now exceed with a pinned-degree, edge-free design.",
+  "expectations": [
+    {
+      "name": "pilot-run-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "logistic-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d#step-19",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:cfed8464d35fd87ed97a027ca2f1115ece1c200962bc4d910846bedaf6c31723"
+}

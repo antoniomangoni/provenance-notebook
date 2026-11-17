@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:20:47.243Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python -c \"import sklearn, numpy; print('sklearn', sklearn.__version__, 'numpy', numpy.__version__)\"",
+  "command": {
+    "shown": "uv run python -c \"import sklearn, numpy; print('sklearn', sklearn.__version__, 'numpy', numpy.__version__)\"",
+    "digest": "sha256:d44b456ea1e7ba99b5daf2ef22703148f0859f494f733ee04959b1c9cc7fefe4"
+  },
+  "code": {
+    "ref": "commit:8b11aa775b07e2214e5d56bc4eb0f890b70628ff"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d690e9e10009f01fc25f28d868adc6aa242e9472f816e8304553c6687c7e55d8"
+}

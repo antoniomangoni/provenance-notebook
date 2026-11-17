@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:19:38.290Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 2",
+  "exit_code": 2,
+  "duration_ms": 71,
+  "reads": [],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-4",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:61024efd1ef537a5231ad7f971494924db9ce7acfd78cec2611c4eb362f68066"
+}

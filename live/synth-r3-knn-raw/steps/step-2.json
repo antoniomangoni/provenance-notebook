@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-2",
+  "seq": 2,
+  "trail": "synth-r3-knn-raw",
+  "at": "2026-11-17T13:10:39.234Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:turn_end",
+  "summary": "The provider reported no token usage",
+  "text": "The provider reported no token usage for a turn, so the token ceiling cannot stop this session. The ceilings on runs and on the wall clock still apply.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:47d1707584cfad993b86033f97e592a0d5c1240df956ed5963a919bf5c9dcc47"
+}

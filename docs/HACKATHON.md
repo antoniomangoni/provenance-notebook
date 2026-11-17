@@ -88,10 +88,11 @@ The brief's criterion can be checked, so the entry checks it three ways.
   tenth of the transcript's.
 - A person who did not see the task answers the brief's question from the view, in the video.
 
-Every live attempt is committed: twenty-one trails. On Madelon, two were the task itself, three
+Every live attempt is committed: twenty-seven trails. On Madelon, two were the task itself, three
 were steered one at a time by a research map, six ran as two fleets of three agents sharing that
-map, one ran in a sandbox, and three ran in the sandbox to settle forecasts. Six more ran on a
-second, synthetic project, in two rounds of three chosen by a second model.
+map, one ran in a sandbox, and three ran in the sandbox to settle forecasts. Twelve more ran on a
+second, synthetic project, in three rounds of three chosen by a second model, one round launched
+twice because the provider's gateway refused the first launch.
 
 ## What was built
 
@@ -133,9 +134,10 @@ Built during the week, beyond the plan:
 9. **A second research project, overseen by a second model** ([spec 12](specs/12-second-project.md)).
    Synthetic data with a replication sample give each credited analysis its true value. Kimi K3.1
    Pro forecast every open milestone and chose the routes before each round, pushed before the
-   agents started. The agents read each other's results and every route cleared the floor. Kimi
-   was within noise of a coin flip; the blanket's code forecaster, given sibling scores far from
-   the floor, beat it.
+   agents started. In two rounds the agents read each other's results and every route cleared the
+   floor. A third round, on routes that forbade that ([spec 13](specs/13-third-round.md)), gave
+   the first refutations. Reading sibling scores won one round and reading the method another.
+   Over 18 settled forecasts, no forecaster beat a coin flip.
 
 One task type, one agent host, one model. Left out, and said so: redaction and keyed digests for
 hidden values in capture, signing by the capture host, resuming a trail in a second session,

@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "rev": 3,
+  "by": "agent:pi/moonshotai/Kimi-K3.1-Pro",
+  "at": "2026-11-17T13:00:09Z",
+  "saw": "sha256:02c1579564a1b19226b48b525fb338430e79785202d9fabf46d7b02e08ba7d4e",
+  "routes": [
+    "logistic",
+    "forest-raw",
+    "knn-raw"
+  ],
+  "why": "With the floor already secure, these ablations are most informative: logistic tests whether additive linear effects suffice, while forest-raw and knn-raw show whether strong performance survives without forest tuning or kNN feature screening.",
+  "next": [
+    {
+      "node": "forest-raw-cv",
+      "leads": [
+        "forest-raw"
+      ]
+    },
+    {
+      "node": "knn-raw-cv",
+      "leads": [
+        "knn-raw"
+      ]
+    },
+    {
+      "node": "logistic-cv",
+      "leads": [
+        "logistic"
+      ]
+    }
+  ],
+  "information": {
+    "forest-raw-cv": 0.0,
+    "knn-raw-cv": 0.0,
+    "logistic-cv": 0.0
+  }
+}
