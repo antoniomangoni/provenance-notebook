@@ -247,8 +247,10 @@ the details, and a scripted provider that replays tool calls with no model.
   with `live.sh` are not sandboxed unless asked.
 - **Privacy.** Commands are recorded as typed. The design's redactor and keyed digests are not
   built, so the committed trails hold absolute paths of the machine they ran on.
-- **A person's judgment.** Every revision of the research map was sealed by an AI agent, named in
-  its `by`, and no live trail holds a person's review. No person has yet confirmed or disputed one.
+- **A person's judgment.** Rev-0 to rev-12 of the Madelon map were sealed by AI agents, named in
+  their `by`. A person countersigned at rev-14 from the review page (`serve`, `/review`),
+  confirming the abandoned route, the withdrawals and every revision's reason, but not each credit
+  one by one. No live trail holds a person's review, and the second project's map has no person's seal.
 - **Cheap tracing.** The file trace slowed one multithreaded search from 52 to 701 seconds. No
   sandboxed agent, of four, recorded a held-out score before its wall clock.
 - **That a ✓ would hold again.** The belief report rests on a declared standard error and gives a

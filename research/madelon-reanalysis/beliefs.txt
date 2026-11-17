@@ -1,4 +1,4 @@
-Beliefs over madelon-reanalysis, revision 12 (2026-11-17T07:45:01Z, agent:claude-code/claude-fable-5-2).
+Beliefs over madelon-reanalysis, revision 14 (2026-11-17T15:33:17Z, human:Antonio).
 Advisory: nothing here changes a ✓ or ✗. P is a probability under the assumptions below.
 
 Assumptions:
