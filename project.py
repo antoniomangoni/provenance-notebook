@@ -538,6 +538,18 @@ def seal(revs: list[dict], draft: dict, by: str, at: str, trails: Trails) -> tup
     return revision, check([*revs, revision], trails)
 
 
+def write(directory: Path, revision: dict) -> Path | None:
+    """Writes a sealed revision once: None if a revision of that number exists already."""
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"rev-{revision['rev']}.json"
+    try:
+        with path.open("x") as file:
+            file.write(json.dumps(revision, indent=2, ensure_ascii=False) + "\n")
+    except FileExistsError:
+        return None
+    return path
+
+
 # ---------------------------------------------------------------------------------------------
 # brief
 
@@ -1272,14 +1284,11 @@ def main(argv: list[str]) -> int:
             if errors:
                 print("\n".join(errors))
                 return 1
-            directory.mkdir(parents=True, exist_ok=True)
-            try:
-                with (directory / f"rev-{revision['rev']}.json").open("x") as file:
-                    file.write(json.dumps(revision, indent=2, ensure_ascii=False) + "\n")
-            except FileExistsError:
+            written = write(directory, revision)
+            if written is None:
                 print(f"rev-{revision['rev']} was sealed meanwhile; propose again")
                 return 1
-            print(f"wrote {directory / f'rev-{revision["rev"]}.json'}")
+            print(f"wrote {written}")
             return 0
         errors = check(revs, trails)
         # The live views show what fails check rather than refusing: a map is watched while it is wrong too.

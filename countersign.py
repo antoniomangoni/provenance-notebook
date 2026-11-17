@@ -6,12 +6,16 @@ input, refutations, abandoned routes, withdrawals, and each revision's reason. E
 as a small graph of the steps it rests on, one row per trail, every box a link to that step on the
 trail's page.
 
-The page writes nothing. Its script builds the next revision's draft from the person's rulings (a
-disputed credit moves to `withdrawn`, with their note as why) and offers it as a file, with the
-`project.py seal` command to run. `seal` checks the draft as it would any other.
+The page's script builds the next revision's draft from the person's rulings (a disputed credit moves
+to `withdrawn`, with their note as why). Its Seal button posts that draft to the server that served
+it, which seals it with the same check as `project.py seal`, for a `human:` actor only, and only with
+the random token the review page carries, from this host and origin, as JSON: another site's page can
+neither read the token nor send that request. The draft can also be downloaded and sealed by hand.
 """
 
 import json
+from datetime import UTC, datetime
+from pathlib import Path
 
 import project
 from mapview import CSS, e
@@ -245,6 +249,34 @@ function download() {
   a.download = `rev-${rev}-draft.json`;
   a.click();
 }
+async function seal() {
+  const [out, problems] = build(), who = document.getElementById("who").value.trim(), say = document.getElementById("problem");
+  if (!/^[A-Za-z0-9._@-]{1,100}$/.test(who)) problems.push("give your name");
+  say.textContent = problems.length ? "Not yet: " + problems.join("; ") + "." : "";
+  if (problems.length) return;
+  if (!confirm(`Seal revision ${rev} as human:${who}? It is written to the map and cannot be unsealed, only followed by another revision.`)) return;
+  const button = document.getElementById("seal");
+  button.disabled = true;
+  say.textContent = "Sealing…";
+  try {
+    const reply = await fetch("/seal", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: document.body.dataset.token, rev, by: `human:${who}`, draft: out }),
+    });
+    const result = await reply.json();
+    if (result.ok) {
+      say.textContent = "";
+      document.getElementById("sealed").innerHTML = "";
+      const p = document.createElement("p");
+      p.className = "ok";
+      p.textContent = `Sealed: ${result.path}. ${result.check}`;
+      document.getElementById("sealed").append(p);
+    } else {
+      say.textContent = "Not sealed: " + (result.errors || ["unknown error"]).join("; ");
+      button.disabled = false;
+    }
+  } catch (err) { say.textContent = "Not sealed: " + err; button.disabled = false; }
+}
 function command() {
   const name = document.getElementById("who").value.trim() || "NAME";
   document.getElementById("cmd").textContent = document.getElementById("cmd").dataset.template.replace("NAME", name);
@@ -254,11 +286,12 @@ document.addEventListener("input", ev => { if (ev.target.closest(".rule")) compo
 document.getElementById("reason").addEventListener("input", count);
 document.getElementById("who").addEventListener("input", command);
 document.getElementById("download").addEventListener("click", download);
+if (document.getElementById("seal")) document.getElementById("seal").addEventListener("click", seal);
 compose(); command();
 </script>"""
 
 
-def page(live: dict, revs: list[dict], map_dir: str, live_dir: str | None) -> str:
+def page(live: dict, revs: list[dict], map_dir: str, live_dir: str | None, token: str | None = None) -> str:
     """The review page for the map's next revision: every judgment, with the steps under it, and a draft to download."""
     lanes = {lane["trail"]: lane for lane in live["trails"]}
     nxt = live["rev"] + 1
@@ -332,13 +365,44 @@ def page(live: dict, revs: list[dict], map_dir: str, live_dir: str | None) -> st
         "<p class='sub'>Composed from your rulings; edit it freely. A disputed credit is moved to withdrawn, with your note as why.</p>"
         "<textarea id='reason' aria-label='Reason'></textarea><p class='sub' id='count'></p>"
         "<p><label>Your name: human:<input id='who' value='' placeholder='name'></label> "
-        "<button id='download' type='button'>Download the draft</button> <span id='problem'></span></p>"
-        f"<p class='sub'>Then seal it. This page writes nothing; seal checks the draft.</p><code class='cmd' id='cmd' data-template='{e(template)}'></code>"
+        + ("<button id='seal' type='button'>Seal revision " + str(nxt) + "</button> " if token else "")
+        + "<button id='download' type='button'>Download the draft</button> <span id='problem'></span></p><div id='sealed'></div>"
+        + (
+            "<p class='sub'>Seal writes the revision to the map after the same check as <code>project.py seal</code>; "
+            "commit it afterwards. Or download the draft and seal it yourself:</p>"
+            if token
+            else "<p class='sub'>Then seal it. This page writes nothing; seal checks the draft.</p>"
+        )
+        + f"<code class='cmd' id='cmd' data-template='{e(template)}'></code>"
         "</section>"
     )
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         f"<title>Countersign {e(live['project'])}</title><style>{CSS}{REVIEW_CSS}</style></head>"
-        f'<body data-next="{nxt}"><main>{main}</main>'
+        f'<body data-next="{nxt}" data-token="{e(token or "")}"><main>{main}</main>'
         f'<script type="application/json" id="draft">{blob}</script>{SCRIPT}</body></html>\n'
     )
+
+
+def seal(directory: Path, revs: list[dict], trails: "project.Trails", payload: object) -> tuple[int, dict]:
+    """A seal asked for from the page: the same check as `project.py seal`, by a person only, at the revision they reviewed."""
+    if not isinstance(payload, dict) or not isinstance(payload.get("draft"), dict) or not isinstance(payload.get("by"), str):
+        return 400, {"ok": False, "errors": ["the request needs draft and by"]}
+    by = payload["by"]
+    if not by.startswith("human:") or not project.ACTOR.fullmatch(by):
+        return 400, {"ok": False, "errors": ["by must be human:NAME: the page seals for a person only"]}
+    if payload.get("rev") != len(revs):
+        return 409, {"ok": False, "errors": [f"the map is at rev-{len(revs) - 1} now; reload the page and review again"]}
+    at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    revision, errors = project.seal(revs, payload["draft"], by, at, trails)
+    if errors:
+        return 422, {"ok": False, "errors": errors}
+    path = project.write(directory, revision)
+    if path is None:
+        return 409, {"ok": False, "errors": [f"rev-{revision['rev']} was sealed meanwhile; reload the page"]}
+    return 200, {
+        "ok": True,
+        "rev": revision["rev"],
+        "path": str(path),
+        "check": f"check: ok, {len(revs) + 1} revisions, {len(revision['resolutions'])} resolutions, {len(trails.steps)} trails.",
+    }

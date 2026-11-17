@@ -3,7 +3,9 @@
 import copy
 import json
 import re
+import shutil
 import threading
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -83,6 +85,47 @@ def test_the_server_offers_review_only_for_the_newest_revision():
             assert "href=/review" in reply.read().decode()
         with urllib.request.urlopen(f"{base}/rev/3") as reply:
             assert "/review" not in reply.read().decode()
+    finally:
+        running.shutdown()
+        running.server_close()
+
+
+def post(base: str, payload: dict, headers: dict | None = None) -> tuple[int, dict]:
+    request = urllib.request.Request(
+        f"{base}/seal", data=json.dumps(payload).encode(), headers={"Content-Type": "application/json", **(headers or {})}, method="POST"
+    )
+    try:
+        with urllib.request.urlopen(request) as reply:
+            return reply.status, json.loads(reply.read())
+    except urllib.error.HTTPError as error:
+        return error.code, json.loads(error.read())
+
+
+def test_the_seal_button_writes_a_persons_revision_and_refuses_anything_else(tmp_path):
+    shutil.copytree(MAP.parent / "map", tmp_path / "madelon-reanalysis" / "map")
+    shutil.copytree(MAP.parent / "retrace", tmp_path / "madelon-reanalysis" / "retrace")
+    directory = tmp_path / "madelon-reanalysis" / "map"
+    revs = project.revisions(directory)
+    running = mapview.server(directory, str(LIVE), [], [], 0)
+    threading.Thread(target=running.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{running.server_address[1]}"
+    try:
+        with urllib.request.urlopen(f"{base}/review") as reply:
+            body = reply.read().decode()
+        token = re.search(r'data-token="([^"]+)"', body)[1]
+        good = {"token": token, "rev": len(revs), "by": "human:tester", "draft": countersign.draft(revs) | {"reason": "I confirm."}}
+        assert post(base, good | {"token": "guess"})[0] == 403
+        assert post(base, good, {"Origin": "https://example.com"})[0] == 403
+        assert post(base, good | {"by": "agent:someone"})[0] == 400
+        assert post(base, good | {"draft": countersign.draft(revs)})[0] == 422  # an empty reason fails check
+        assert not (directory / f"rev-{len(revs)}.json").exists()
+        code, result = post(base, good)
+        assert code == 200 and result["ok"] and result["rev"] == len(revs)
+        sealed = project.revisions(directory)
+        assert sealed[-1]["by"] == "human:tester" and sealed[-1]["reason"] == "I confirm."
+        trails = project.Trails(project.discover(LIVE, "madelon-reanalysis"), [], directory.parent)
+        assert project.check(sealed, trails) == []
+        assert post(base, good)[0] == 409  # reviewed at the old revision
     finally:
         running.shutdown()
         running.server_close()
