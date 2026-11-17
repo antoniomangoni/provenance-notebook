@@ -67,7 +67,8 @@ held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
   (`research/synthetic-interactions/README.md`).
 
 **What it does not prove.** Who wrote a step, what a read was used for, or that a run used the
-method it claims. Every revision of the map was sealed by an AI agent. The README lists each
+method it claims. The map's revisions were sealed by AI agents until a person countersigned it at rev-14, confirming
+the agents' judgments but not each credit one by one. The README lists each
 limit.
 
 **Disclosure.** The step schema, checker and three example trails predate 10 November. The code

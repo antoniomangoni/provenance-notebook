@@ -3,7 +3,8 @@
 This map covers the demo task (`demo/`). An inherited analysis reports a cross-validated AUC of
 0.76, and on 2200 held-out samples it scores 0.56.
 
-It has thirteen revisions over fifteen trails:
+It has fifteen revisions over fifteen trails. The last two are a person's countersign; the rest were
+sealed by AI agents. The trails are:
 - two from 15 November, written before the map existed;
 - three runs that the map steered one at a time on 16 November;
 - two fleets of three agents that ran at the same time and shared the map as they worked;
@@ -15,7 +16,7 @@ Rev-10 checked every credit again across agents ([below](#checked-across-agents)
 Every run used `zai-org/GLM-5.3-Flash` through Pi under capture.
 
 ```sh
-uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 13 revisions, 15 resolutions, 15 trails
+uv run python project.py check  research/madelon-reanalysis/map --live live   # ok: 15 revisions, 15 resolutions, 15 trails
 uv run python project.py view   research/madelon-reanalysis/map --live live   # view.txt
 uv run python project.py shared research/madelon-reanalysis/map --live live   # shared.txt
 uv run python project.py page   research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/map.html
@@ -53,6 +54,8 @@ page.
 | 10 | **Checked across agents.** The first version 2 revision ([spec 8](../../docs/specs/08-rests-on.md)). Every rev-9 credit rested, through `builds_on`, on sibling runs that had opened the held-out file. Each such read is excused, with why. Nothing is withdrawn. |
 | 11 | **The sandboxed run reached nothing.** One agent on `boost`, every command in the sandbox. The wall clock stopped it inside its first search, which the file trace had slowed about thirteen times. `boost` stays open. |
 | 12 | **Fleet 4 settled no forecast.** Three agents on `l1`, `forest` and `boost`, in the sandbox, each stopped by the wall clock inside a run. `forest` scored the held-out file once, at 0.694, but its metrics file held a nested object, so the trail has no measure and `floor-forest` is neither credited nor refuted. It was not rerun. |
+| 13 | **A person's seal, by mistake without rulings.** Sealed as `human:Antonio` from the review page (`serve`, `/review`) with its default reason, which rules on nothing. It changes nothing in the map. |
+| 14 | **The countersign.** `human:Antonio`, from the review page, followed each credit's steps to the trails and re-ran nothing. It confirms the abandonment of `svm`, the four withdrawals, and every revision's reason, which hold the excused reads (rev-9) and the forest's unrecorded held-out look (rev-12). It does not rule one by one on the fifteen credits and refutations. It changes nothing in the map. |
 
 ## What the shared milestones did
 
@@ -309,8 +312,10 @@ code forecasters. It is one score, and the map does not hold it.
   were wrong and passed.
 - **Who judged.** Not crediting the two second looks, and abandoning `svm`, were judgments,
   written in the revisions' reasons by the agent that sealed them
-  (`agent:claude-code/claude-opus-5-5`). A later revision can reverse either. Every revision so
-  far was sealed by an AI agent, named in its `by`. No person has yet confirmed or disputed one.
+  (`agent:claude-code/claude-opus-5-5`). A later revision can reverse either. Rev-0 to rev-12
+  were sealed by AI agents, named in their `by`. A person countersigned at rev-14, confirming
+  those judgments and every reason, but not each credit one by one (rev-13 was their first seal,
+  made with no rulings).
 - **Re-executed reads are leads, not proof.** They come from a replay, not the run itself. Only
   a read captured as the run happened fails `check`. For runs from before spec 6, the command
   line is the weakest lead, used only where there is no trace.

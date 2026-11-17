@@ -1,0 +1,652 @@
+{
+  "version": 2,
+  "project": "madelon-reanalysis",
+  "reason": "I reviewed the map at revision 12 on the review page, following each credit's steps to the trails. I re-ran nothing.\n\n33 item(s) I did not rule on.",
+  "triggered_by": [],
+  "goals": [
+    {
+      "id": "explain",
+      "statement": "The inherited result does not hold, and selecting features before cross-validation accounts for it"
+    },
+    {
+      "id": "floor",
+      "statement": "An analysis chosen on pilot data alone reaches a held-out AUC of 0.71, and its own estimate agrees"
+    },
+    {
+      "id": "compact",
+      "statement": "An analysis chosen on pilot data alone reaches a held-out AUC of 0.71 with at most 50 features, and its own estimate agrees"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "reproduce",
+      "statement": "The inherited cross-validated AUC is reproduced",
+      "criteria": [
+        {
+          "name": "inherited-cv",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.75
+        }
+      ]
+    },
+    {
+      "id": "miss",
+      "statement": "The inherited analysis misses the held-out floor",
+      "criteria": [
+        {
+          "name": "below-floor",
+          "measure": "holdout_auc",
+          "comparison": "lt",
+          "threshold": 0.71
+        }
+      ]
+    },
+    {
+      "id": "nested",
+      "statement": "With feature selection inside cross-validation, the estimate agrees with the held-out AUC, which stays below the floor",
+      "criteria": [
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "still-below-floor",
+          "measure": "holdout_auc",
+          "comparison": "lt",
+          "threshold": 0.71
+        }
+      ]
+    },
+    {
+      "id": "floor-l1",
+      "statement": "An L1-penalised model tuned inside cross-validation clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "floor-forest",
+      "statement": "A random forest on all features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "floor-search",
+      "statement": "A search over model families, with selection and tuning inside cross-validation, clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "floor-selected-forest",
+      "statement": "A random forest on 30 features selected inside cross-validation clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "screen",
+      "statement": "A screen fitted on pilot data alone keeps at most 50 features, and a model on them has a nested cross-validated AUC of at least 0.70",
+      "criteria": [
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        },
+        {
+          "name": "screen-cv",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.7
+        }
+      ]
+    },
+    {
+      "id": "compact-knn",
+      "statement": "k-nearest neighbours on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-forest",
+      "statement": "A random forest on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-svm",
+      "statement": "An RBF support vector machine on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-boost",
+      "statement": "Gradient boosting on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-stable-forest",
+      "statement": "A random forest on features that a pilot-only screen keeps in most bootstrap resamples clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    },
+    {
+      "id": "compact-vote",
+      "statement": "A soft vote of a random forest and k-nearest neighbours on the screened features clears the floor, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "holdout-floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.71
+        },
+        {
+          "name": "gap-small",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-not-negative",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        },
+        {
+          "name": "few-features",
+          "measure": "n_features",
+          "comparison": "le",
+          "threshold": 50
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "explain",
+      "goal": "explain",
+      "method": "move the feature selection inside cross-validation",
+      "path": [
+        "reproduce",
+        "miss",
+        "nested"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "l1",
+      "goal": "floor",
+      "method": "L1-penalised logistic regression, with selection and tuning inside cross-validation",
+      "path": [
+        "reproduce",
+        "miss",
+        "nested",
+        "floor-l1"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "forest",
+      "goal": "floor",
+      "method": "a random forest on all 500 features",
+      "path": [
+        "reproduce",
+        "miss",
+        "floor-forest"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "search",
+      "goal": "floor",
+      "method": "a search over six model families (logistic, L1 logistic, RBF SVM, k-nearest neighbours, random forest, gradient boosting) with SelectKBest inside cross-validation, tuned on pilot data alone",
+      "path": [
+        "reproduce",
+        "miss",
+        "nested",
+        "floor-search"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "selected-forest",
+      "goal": "floor",
+      "method": "SelectKBest of 30 features inside cross-validation, then a random forest of 100 trees",
+      "path": [
+        "reproduce",
+        "miss",
+        "nested",
+        "floor-selected-forest"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "knn",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then k-nearest neighbours",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-knn"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "screened-forest",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then a random forest",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-forest"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "svm",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then an RBF support vector machine",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-svm"
+      ],
+      "status": "abandoned",
+      "why": "Five pilot-only designs of a screen and an RBF SVM gave nested cross-validated AUCs of 0.66 to 0.68 (madelon-route-svm steps 19 to 33), under the forest's 0.7267 on the same screen, and the agent's last plan expected a held-out AUC under the floor. The run stopped at the token ceiling before scoring the held-out file, so compact-svm is neither reached nor refuted."
+    },
+    {
+      "id": "boost",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then gradient boosting (scikit-learn's HistGradientBoostingClassifier), tuned on pilot data alone",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-boost"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "stable-forest",
+      "goal": "compact",
+      "method": "a screen repeated on bootstrap resamples of the pilot data, keeping the features chosen in most of them, then a random forest",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-stable-forest"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "vote",
+      "goal": "compact",
+      "method": "a screen fitted on pilot data alone, then a soft vote of a random forest and k-nearest neighbours",
+      "path": [
+        "reproduce",
+        "miss",
+        "screen",
+        "compact-vote"
+      ],
+      "status": "open"
+    }
+  ],
+  "resolutions": [
+    {
+      "node": "reproduce",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-8",
+      "holds": true
+    },
+    {
+      "node": "miss",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-8",
+      "holds": true
+    },
+    {
+      "node": "nested",
+      "cites": "probe:madelon-2026-11-15-1@sha256:828598696a283a226b12de4af3abdee6e13a173a85093229061e1a51feee8933#step-13",
+      "holds": true
+    },
+    {
+      "node": "reproduce",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "holds": true
+    },
+    {
+      "node": "miss",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "holds": true
+    },
+    {
+      "node": "nested",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-11",
+      "holds": true
+    },
+    {
+      "node": "floor-selected-forest",
+      "cites": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-19",
+      "holds": true
+    },
+    {
+      "node": "compact-forest",
+      "cites": "probe:madelon-route-screened-forest@sha256:32571ab76f18cd0a57550b552dfdb2ae7311613553106dd9380edc4bb62b656f#step-15",
+      "holds": false
+    },
+    {
+      "node": "compact-forest",
+      "cites": "probe:madelon-route-screened-forest@sha256:32571ab76f18cd0a57550b552dfdb2ae7311613553106dd9380edc4bb62b656f#step-36",
+      "holds": false
+    },
+    {
+      "node": "compact-knn",
+      "cites": "probe:madelon-route-knn@sha256:b5c18bf71ba8e7d94f5ec93234a706394638301ac6d170e9f6c8be7df440e629#step-30",
+      "holds": false
+    },
+    {
+      "node": "screen",
+      "cites": "probe:madelon-fleet2-boost@sha256:346c8e5e3c95bf1b3288c4710b9fa25905b6107a50ab3fadcb76cc612d529340#step-25",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-3",
+          "why": "wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design."
+        },
+        {
+          "run": "madelon-fleet-stable-forest#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l) and printed the held-out file's last two column names (head -1 is the header: x500, label). No value of the file was printed."
+        },
+        {
+          "run": "madelon-fleet-vote#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed."
+        },
+        {
+          "run": "madelon-fleet2-stable-forest#step-3",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l data/*.csv). No value of the held-out file was printed; rev-9 excused the same read for this trail's own credits."
+        },
+        {
+          "run": "madelon-fleet2-vote#step-5",
+          "why": "While looking around, before any design, it printed the held-out file's column and row counts (head -1 | wc -l; wc -l). No value was printed; rev-9 excused the same read for this trail's own credits."
+        }
+      ]
+    },
+    {
+      "node": "screen",
+      "cites": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-56",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-3",
+          "why": "wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design."
+        },
+        {
+          "run": "madelon-fleet-stable-forest#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l) and printed the held-out file's last two column names (head -1 is the header: x500, label). No value of the file was printed."
+        }
+      ]
+    },
+    {
+      "node": "compact-stable-forest",
+      "cites": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-59",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-3",
+          "why": "wc -l data/*.csv counted the rows of both data files while looking around, before any design; no value of the file reached a design."
+        },
+        {
+          "run": "madelon-fleet-stable-forest#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l) and printed the held-out file's last two column names (head -1 is the header: x500, label). No value of the file was printed."
+        },
+        {
+          "run": "madelon-fleet-vote#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed."
+        },
+        {
+          "run": "madelon-fleet2-vote#step-5",
+          "why": "While looking around, before any design, it printed the held-out file's column and row counts (head -1 | wc -l; wc -l). No value was printed; rev-9 excused the same read for this trail's own credits."
+        }
+      ]
+    },
+    {
+      "node": "screen",
+      "cites": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-5",
+          "why": "It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design."
+        },
+        {
+          "run": "madelon-fleet-vote#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "compact-vote",
+      "cites": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-26",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-5",
+          "why": "It printed the held-out file's column count and row count (head -1 | wc -l; wc -l) while looking around, before any design; no value of the file reached a design."
+        },
+        {
+          "run": "madelon-fleet-vote#step-5",
+          "why": "While looking around, before any design, it counted both data files' rows (wc -l). No value of the held-out file was printed."
+        }
+      ]
+    }
+  ],
+  "sealed_inputs": [
+    "data/heldout.csv"
+  ],
+  "instructions": "Choose every part of the analysis, the screen, the model and its settings, on data/pilot.csv alone. data/heldout.csv is read only by the final analysis, which scores it once: do not use it to diagnose, compare or tune.",
+  "rev": 13,
+  "at": "2026-11-17T15:24:52Z",
+  "by": "human:Antonio",
+  "prev": "sha256:b8b8d6cc128a025a447ef54df270df7dd5b45da95ceb1162bb1c6d426bcdef4b"
+}

@@ -37,7 +37,8 @@ def test_every_excused_read_abandoned_route_and_reason_is_on_the_page():
         if route["status"] == "abandoned":
             assert f'id="route-{route["id"]}"' in body and mapview.e(route["why"]) in body
     assert body.count('<article class="card" id="rev-') == len(revs)
-    assert f"Countersign revision {len(revs)}" in body and "none by a person" in body
+    assert f"Countersign revision {len(revs)}" in body
+    assert ("none by a person" in body) == (not any(r["by"].startswith("human:") for r in revs))
 
 
 def test_every_step_box_links_to_a_step_on_its_trail():
