@@ -19,14 +19,19 @@ digest, and scores the forecast against what the trails show and against code-on
   show                       the belief report
   blanket NODE [--rev N]     the text a forecaster is shown for a milestone, from revision N alone
   before TRAIL STEP          the text a forecaster is shown for a plan: the trail up to and including it
-  questions --out DIR        one prompt file per question, and questions.json
+  questions --out DIR [--all-open]   one prompt file per question, and questions.json; with --all-open,
+                             only every unresolved milestone on an open route, at the last revision
+  nominate --out DIR         the text an overseer is shown to choose the routes the next agents run
+  choose DIR --by ACTOR --out FILE    the overseer's choice from DIR/answers, checked against the open routes
   collect DIR --by ACTOR --out FILE   a forecast file from DIR/answers; an answer with no probability is unanswered
-  score                      every forecast file in forecasts/ beside the map, scored
+  score [--truth FILE]       every forecast file in forecasts/ beside the map, scored; with --truth, also
+                             against what replicate.py measured on the replication sample
   se --auc A --pos N --neg M the Hanley-McNeil standard error of an AUC
 
 docs/specs/10-beliefs.md is the specification.
 """
 
+import copy
 import json
 import math
 import re
@@ -599,6 +604,103 @@ def milestone_questions(revs: list[dict], trails: project.Trails) -> tuple[list[
     return asked, excluded
 
 
+def open_questions(revision: dict, trails: project.Trails) -> list[dict]:
+    """Every milestone on an open route that is not yet resolved, asked at this revision. A forecast
+    of one is settled by its first resolution in a later revision (rebuild_open)."""
+    now = project.state(revision)
+    open_routes = [r for r in revision["routes"] if now["routes"][r["id"]]["status"] == "open"]
+    nodes = sorted({n for r in open_routes for n in r["path"] if project.node_state(n, now) == "open"})
+    asked = []
+    for node in nodes:
+        text, _ = milestone_prompt(revision, node, trails)
+        asked.append({"kind": "milestone", "node": node, "rev": revision["rev"], "saw": saw(text), "_text": text})
+    return asked
+
+
+CHOICE = re.compile(r"^\s*\**routes\**\s*[:=]\s*\**\s*(.+?)\s*\**\s*$", re.IGNORECASE | re.MULTILINE)
+CHOOSE = 3
+
+
+def as_of(trails: project.Trails, at: str) -> project.Trails:
+    """The trails as they stood at a moment: only the steps made by then, and only trails that had one.
+    A text built from them stays the same however the trails grow afterwards."""
+    moment = datetime.fromisoformat(at)
+    kept = copy.copy(trails)
+    kept.steps = {}
+    for probe, steps in trails.steps.items():
+        if early := [s for s in steps if datetime.fromisoformat(s["at"]) <= moment]:
+            kept.steps[probe] = early
+    kept.heads = {probe: trail.heads(steps) for probe, steps in kept.steps.items()}
+    return kept
+
+
+def nominate_prompt(revs: list[dict], trails: project.Trails, sizes: dict) -> str:
+    """The text an overseer is shown to choose the routes the next agents run: the map as
+    project.py view prints it, the belief report, and the open routes. Only steps made before the
+    revision count, so the text can be rebuilt later and checked against its digest."""
+    last = revs[-1]
+    trails = as_of(trails, last["at"])
+    now = project.state(last)
+    routes = [r for r in last["routes"] if now["routes"][r["id"]]["status"] == "open"]
+    lines = [
+        (
+            f"You oversee the beliefs of a research project. Up to {CHOOSE} AI agents will now run at once, one on each "
+            "route you choose, for about 40 minutes. Choose the routes whose results would most improve what the project "
+            "knows. Answer with exactly two lines and nothing else:"
+        ),
+        f"routes: <up to {CHOOSE} route ids from the list below, separated by commas>",
+        "why: <one or two sentences>",
+        "",
+        "The open routes:",
+        *(f"  {r['id']}: {r['method']}; next milestone {now['routes'][r['id']]['next']}" for r in routes),
+        "",
+        "The map, as the project's viewer prints it:",
+        *project.show(last, trails, revs),
+        "",
+        "What code computes from the map (advisory):",
+        *show(revs, trails, sizes),
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def parse_choice(text: str) -> tuple[list[str] | None, str]:
+    found = CHOICE.findall(text)
+    why = WHY.findall(text)
+    if not found:
+        return None, why[-1] if why else ""
+    return [r.strip().strip("`*") for r in found[-1].split(",") if r.strip()], (why[-1] if why else "")
+
+
+def choose(revs: list[dict], trails: project.Trails, sizes: dict, answer: str, by: str, at: str) -> dict:
+    """The overseer's choice, checked: one to CHOOSE distinct open routes, read from the asked form only.
+    Recorded beside the order project.py next gives and the information ranking, which it may differ from."""
+    last = revs[-1]
+    now = project.state(last)
+    open_routes = [r["id"] for r in last["routes"] if now["routes"][r["id"]]["status"] == "open"]
+    routes, why = parse_choice(answer)
+    if not routes:
+        raise Usage("the answer has no line of the form routes: a, b, c")
+    if len(set(routes)) != len(routes) or not 1 <= len(routes) <= CHOOSE:
+        raise Usage(f"the answer chooses {len(routes)} routes, or one twice; it may choose 1 to {CHOOSE}")
+    if unknown := [r for r in routes if r not in open_routes]:
+        raise Usage(f"the answer chooses {', '.join(unknown)}, which is not an open route of rev-{last['rev']}")
+    bits = {
+        row["node"]: round(sum(information(last, row["node"], trails, sizes).values()), 4) for row in project.ranked(last)
+    }
+    return {
+        "version": VERSION,
+        "project": last["project"],
+        "rev": last["rev"],
+        "by": by,
+        "at": at,
+        "saw": saw(nominate_prompt(revs, trails, sizes)),
+        "routes": routes,
+        "why": why,
+        "next": [{"node": row["node"], "leads": row["leads"]} for row in project.ranked(last)],
+        "information": bits,
+    }
+
+
 def plan_questions(trails: project.Trails, sealed: list[str] = ()) -> tuple[list[dict], list[str]]:
     """A plan with an expectation on a measure is asked about when its first observation settled it:
     as expected or contradicted. A plan never run, or whose first run failed or measured too little, is counted.
@@ -775,6 +877,100 @@ def score(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Pat
     return lines, errors
 
 
+def settled(revs: list[dict], trails: project.Trails, sizes: dict, path: Path) -> tuple[str, list[tuple[dict, float, dict]]]:
+    """A forecast file's settled milestone forecasts that score() accepts: each question, the
+    forecast and the code forecasters' values on it."""
+    milestones, _ = milestone_questions(revs, trails)
+    known = {key(q): q for q in milestones}
+    kept, rows = json.loads(path.read_text()), []
+    for forecast in kept["forecasts"]:
+        if forecast["kind"] != "milestone" or forecast["p"] is None:
+            continue
+        question = known.get(key(forecast)) or rebuild_open(forecast, revs, trails)
+        if question is None or question["saw"] != forecast["saw"] or "holds" not in question:
+            continue
+        rows.append((question, forecast["p"], baselines(question, revs, trails, [], sizes)))
+    return kept["by"], rows
+
+
+def true_margins(revision: dict, truth: dict, sizes: dict) -> dict[str, float]:
+    """Each milestone's true margin in standard errors, from the replicated value of its route's
+    held-out criterion: a -holdout milestone's own, and the -cv milestone before it on its route."""
+    margins = {}
+    for row in truth["rows"]:
+        for criterion in row.get("criteria", []):
+            if criterion["measure"] in sizes:
+                at = margin(criterion, criterion["value"], sizes[criterion["measure"]]["se"])
+                margins[row["node"]] = at
+                for route in revision["routes"]:
+                    if row["node"] in route["path"] and route["path"].index(row["node"]):
+                        margins.setdefault(route["path"][route["path"].index(row["node"]) - 1], at)
+    return margins
+
+
+def truth_lines(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Path], truth: dict) -> list[str]:
+    """The three predictions of spec 12, scored against the replication sample."""
+    last = revs[-1]
+    margins = true_margins(last, truth, sizes)
+    lines = [
+        "",
+        f"Against the replication sample ({truth['data']['rows']:,} rows, {truth['data']['digest'][:19]}…), each cited run re-run on it:",
+    ]
+    for row in truth["rows"]:
+        if "criteria" not in row:
+            lines.append(f"  {row['node']} ({row['run']}): not replicated: {row.get('problem', 'no measure')}")
+            continue
+        said = ", ".join(f"{c['measure']} {view.number(c['value'])} {'meets' if c['holds'] else 'misses'} {view.number(c['threshold'])}" for c in row["criteria"])
+        lines.append(f"  {MARKS['reached' if row['holds'] else 'refuted']} {row['node']} ({row['run']}): recorded "
+                     + ", ".join(f"{c['measure']} {view.number(row['recorded'][c['measure']])}" for c in row["criteria"])
+                     + f"; replicated {said}; true margin {margins.get(row['node'], math.nan):+.2f} SE")
+    # P2: the calibration of p_true against the replicated outcomes.
+    nodes = {n["id"]: n for n in last["nodes"]}
+    pairs = []
+    for row in truth["rows"]:
+        if row.get("criteria"):
+            _, step = trails.cite(row["cites"], last["project"])
+            pairs.append((p_true(nodes[row["node"]], step, sizes), all(c["holds"] for c in row["criteria"])))
+    lines.append("")
+    if pairs:
+        ours = [brier(p, hit) for p, hit in pairs]
+        lines.append(
+            f"P2, calibration: P(true value meets it) from each held-out score, against the replicated outcome: "
+            f"Brier {mean(ours):.3f} against the coin flip's 0.250, n {len(pairs)}"
+            + against(ours, [0.25] * len(ours)).replace("the forecaster is", "it is")
+        )
+    else:
+        lines.append("P2, calibration: no replicated resolution")
+    for path in files:
+        by, rows = settled(revs, trails, sizes, path)
+        if not rows:
+            continue
+        lines += ["", f"{path.name}: by {by}"]
+        whos = [by, *rows[0][2]]
+
+        def scores(who: str, chosen: list, by: str = by) -> list[float]:
+            return [brier(row[1] if who == by else row[2][who], row[0]["holds"]) for row in chosen]
+
+        for name, chosen in (
+            ("P1, true margin at least 1.645 SE", [r for r in rows if abs(margins.get(r[0]["node"], 0)) >= Z95]),
+            ("P1, true margin under 1.645 SE", [r for r in rows if r[0]["node"] in margins and abs(margins[r[0]["node"]]) < Z95]),
+        ):
+            lines.append(f"  {name}: n {len(chosen)}")
+            for who in whos:
+                if chosen:
+                    lines.append(f"    {who}: Brier {mean(scores(who, chosen)):.3f}" + ("" if who == "code:even" else against(scores(who, chosen), [0.25] * len(chosen)).replace("the forecaster is", "it is").replace(" from it", " from the coin flip")))
+        after = [
+            r for r in rows
+            if r[0]["node"].endswith("-holdout")
+            and any(x["node"] == r[0]["node"].removesuffix("-holdout") + "-cv" for x in revs[r[0]["rev"]]["resolutions"])
+        ]
+        lines.append(f"  P3, -holdout milestones asked after their -cv milestone was resolved: n {len(after)}")
+        if after:
+            lines.append(f"    {by}: Brier {mean(scores(by, after)):.3f}; code:blanket Brier {mean(scores('code:blanket', after)):.3f}"
+                         + against(scores(by, after), scores("code:blanket", after)).replace(" from it", " from code:blanket"))
+    return lines
+
+
 def rebuild_open(forecast: dict, revs: list[dict], trails: project.Trails) -> dict | None:
     """A milestone question asked at a revision that has since been followed by others: valid while the
     milestone stood unresolved at that revision; settled by its first resolution after it."""
@@ -811,14 +1007,17 @@ def parse_answer(text: str) -> tuple[float | None, str]:
 # Command line
 
 
-OPTIONS = ("--live", "--rev", "--out", "--by", "--at", "--auc", "--pos", "--neg")
+OPTIONS = ("--live", "--rev", "--out", "--by", "--at", "--auc", "--pos", "--neg", "--truth")
+FLAGS = ("--all-open",)
 
 
 def parse(argv: list[str]) -> tuple[list[str], dict[str, str]]:
     args, named, rest = [], {}, list(argv)
     while rest:
         word = rest.pop(0)
-        if word in OPTIONS:
+        if word in FLAGS:
+            named[word[2:]] = "yes"
+        elif word in OPTIONS:
             if not rest:
                 raise Usage(f"beliefs.py: {word} needs a value")
             named[word[2:]] = rest.pop(0)
@@ -895,8 +1094,11 @@ def main(argv: list[str]) -> int:
                 raise Usage("usage: beliefs.py questions MAP --live DIR --out DIR")
             out = Path(named["out"])
             out.mkdir(parents=True, exist_ok=True)
-            milestones, _ = milestone_questions(revs, trails)
-            plans, _ = plan_questions(trails)
+            if "all-open" in named:
+                milestones, plans = open_questions(revs[-1], trails), []
+            else:
+                milestones, _ = milestone_questions(revs, trails)
+                plans, _ = plan_questions(trails)
             listed = []
             for n, question in enumerate(milestones + plans, 1):
                 name = f"q{n:02d}"
@@ -907,12 +1109,37 @@ def main(argv: list[str]) -> int:
                 )
             (out / "questions.json").write_text(json.dumps({"project": revs[-1]["project"], "questions": listed}, indent=2) + "\n")
             print(f"wrote {len(listed)} questions to {out}: {len(milestones)} milestones, {len(plans)} plans")
+        elif command == "nominate":
+            if "out" not in named:
+                raise Usage("usage: beliefs.py nominate MAP --live DIR --out DIR")
+            out = Path(named["out"])
+            out.mkdir(parents=True, exist_ok=True)
+            text = nominate_prompt(revs, trails, sizes)
+            (out / "q01.md").write_text(text)
+            asked = {"project": revs[-1]["project"], "questions": [{"id": "q01", "file": "q01.md", "kind": "nominate", "rev": revs[-1]["rev"], "saw": saw(text)}]}
+            (out / "questions.json").write_text(json.dumps(asked, indent=2) + "\n")
+            print(f"wrote the nomination to {out}: {len(text.splitlines())} lines")
+        elif command == "choose":
+            if len(args) != 3 or "by" not in named or "out" not in named:
+                raise Usage("usage: beliefs.py choose MAP DIR --live DIR --by ACTOR --out FILE")
+            if not project.ACTOR.fullmatch(named["by"]):
+                raise Usage(f"{named['by']} is not an actor: human:NAME or agent:NAME")
+            asked = json.loads((Path(args[2]) / "questions.json").read_text())["questions"][0]
+            if asked["saw"] != saw(nominate_prompt(revs, trails, sizes)):
+                raise Usage("the nomination was asked of text the map and trails do not give now")
+            answer = (Path(args[2]) / "answers" / "q01.txt").read_text()
+            at = named.get("at") or datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+            chosen = choose(revs, trails, sizes, answer, named["by"], at)
+            Path(named["out"]).write_text(json.dumps(chosen, indent=2, ensure_ascii=False) + "\n")
+            print(f"wrote {named['out']}: {', '.join(chosen['routes'])}")
         elif command == "score":
             files = sorted((directory.parent / "forecasts").glob("*.json"))
             lines, errors = score(revs, trails, sizes, files)
             if errors:
                 print("\n".join(errors))
                 return 1
+            if "truth" in named:
+                lines += truth_lines(revs, trails, sizes, files, json.loads(Path(named["truth"]).read_text()))
             print("\n".join(lines))
         else:
             raise Usage(f"beliefs.py: unknown command {command}")

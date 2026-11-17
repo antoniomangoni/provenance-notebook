@@ -88,9 +88,10 @@ The brief's criterion can be checked, so the entry checks it three ways.
   tenth of the transcript's.
 - A person who did not see the task answers the brief's question from the view, in the video.
 
-Every live attempt is committed: fifteen trails. Two were the task itself, three were steered one
-at a time by a research map, six ran as two fleets of three agents sharing that map, one ran in a
-sandbox, and three ran in the sandbox to settle forecasts.
+Every live attempt is committed: twenty-one trails. On Madelon, two were the task itself, three
+were steered one at a time by a research map, six ran as two fleets of three agents sharing that
+map, one ran in a sandbox, and three ran in the sandbox to settle forecasts. Six more ran on a
+second, synthetic project, in two rounds of three chosen by a second model.
 
 ## What was built
 
@@ -129,6 +130,12 @@ Built during the week, beyond the plan:
    code-only forecasters, each difference with its error. On the real forecasts the model did
    worse than a coin flip, and the run made to settle its open forecasts settled none. The marks
    never change.
+9. **A second research project, overseen by a second model** ([spec 12](specs/12-second-project.md)).
+   Synthetic data with a replication sample give each credited analysis its true value. Kimi K3.1
+   Pro forecast every open milestone and chose the routes before each round, pushed before the
+   agents started. The agents read each other's results and every route cleared the floor. Kimi
+   was within noise of a coin flip; the blanket's code forecaster, given sibling scores far from
+   the floor, beat it.
 
 One task type, one agent host, one model. Left out, and said so: redaction and keyed digests for
 hidden values in capture, signing by the capture host, resuming a trail in a second session,

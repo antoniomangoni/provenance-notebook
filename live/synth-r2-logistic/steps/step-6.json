@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:17:10.733Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat pyproject.toml && uv run python - <<'PY' import os os.environ[\"OMP_NUM_THREADS\"] = \"1\" import numpy as np from sklearn.linear_model import LogisticRegression from sklearn.model_selection import St",
+  "command": {
+    "shown": "cat pyproject.toml && uv run python - <<'PY'\nimport os\nos.environ[\"OMP_NUM_THREADS\"] = \"1\"\nimport numpy as np\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler, SplineTransformer\n\ntable = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = table[:, :-1], table[:, -1]\nprint(\"shape\", X.shape, \"pos rate\", round(y.mean(), 4), \"nan\", int(np.isnan(table).sum()))\n\ndef cv_auc(model, tag):\n    f = StratifiedKFold(5, shuffle=True, random_state=0)\n    s = cross_val_score(model, X, y, cv=f, scoring=\"roc_auc\", n_jobs=1)\n    print(f\"{tag:38s} {s.mean():.4f} (+{s.std():.4f})\")\n\n# reference: raw features (baseline established at 0.6313 by the pairs trail)\ncv_auc(make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)), \"raw linear C=1\")\n\n# per-feature marginal AUCs (rank auc of each single feature)\nfrom sklearn.metrics import roc_auc_score\nfor j in range(X.shape[1]):\n    a = roc_auc_score(y, X[:, j])\n    if abs(a - 0.5) > 0.04:\n        print(f\"  marginal x{j+1}: {a:.3f}\")\n\n# additive nonlinear: cubic B-splines per given feature, quantile knots\nfor nk in (4, 6, 8):\n    for C in (0.03, 0.3, 3.0):\n        m = make_pipeline(SplineTransformer(n_knots=nk, degree=3, knots=\"quantile\"),\n                          LogisticRegression(max_iter=3000, C=C))\n        cv_auc(m, f\"spline nk={nk} C={C}\")\nPY",
+    "digest": "sha256:a8f982983e19e405efdab431003ba1673511658196f23183a176fa150599867e"
+  },
+  "code": {
+    "ref": "commit:24e88d6f32c4e554468ae9730237afad9c879e0d"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:9a5adb3a3376e2fe81b706844290d488069c194a6ae46dcb2876a704248fa556"
+}

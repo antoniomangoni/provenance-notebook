@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "id": "step-18",
+  "seq": 18,
+  "trail": "synth-r1-pairs",
+  "at": "2026-11-17T09:01:37.204Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:project_map",
+  "summary": "Read the project map at revision 0, with 2 other trail heads",
+  "text": "project_map showed map revision 0 (sha256:ab4cc8fcc86c70ccbf33a813459543bb3ac604c101c702cda9665e1dc93b40e1) and these trails at these heads, as project.py status --for synth-r1-pairs prints them:\nprobe:synth-r1-boost@sha256:bb0267eabcb58d200448508e87451835f9faf70f53ad2c364db65aff14f75ae5\nprobe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-boost@sha256:bb0267eabcb58d200448508e87451835f9faf70f53ad2c364db65aff14f75ae5",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:d1b4c663a6e6debc2cfcbe827cf8a3b1b6a34e17bf302f99f0a70be6e75211ac"
+}

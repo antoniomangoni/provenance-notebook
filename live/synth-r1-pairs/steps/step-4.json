@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-4",
+  "seq": 4,
+  "trail": "synth-r1-pairs",
+  "at": "2026-11-17T08:59:59.968Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "ls -la && ls -la data/ && head -3 data/pilot.csv | cut -c1-300 && wc -l data/pilot.csv data/heldout.csv",
+  "command": {
+    "shown": "ls -la && ls -la data/ && head -3 data/pilot.csv | cut -c1-300 && wc -l data/pilot.csv data/heldout.csv",
+    "digest": "sha256:68f50daadfca561437a18bba6b01d93958fac96910c790bb2d075605b9c77296"
+  },
+  "code": {
+    "ref": "commit:af026e1da73fb0831ea5a6d5bedf61f96cecda42"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:269d291b9bd5d5242916f1599b71a16d47e443e396c24691ca8dbd4650c7fb1a"
+}

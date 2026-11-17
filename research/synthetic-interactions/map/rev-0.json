@@ -1,0 +1,318 @@
+{
+  "version": 2,
+  "project": "synthetic-interactions",
+  "reason": "The declared map of the second project (spec 12), written before any run toward it. The data are synthetic (demo2/make_data.py), so a replication sample of 50,000 rows, which no agent or forecaster reads, measures how each analysis truly does. Six routes to one goal, one per model family, each through a pilot-only estimate before one held-out score. The families were chosen to differ: before declaring the map, I fitted each at default settings on pilot-sized samples and scored it on 200,000 rows (spec 12 gives the values), and ran the inherited analysis once. The floor of 0.80 sits below some families and above others on purpose: the project tests whether forecasts beat a coin flip where outcomes are far from the threshold, and not where they are near it.",
+  "triggered_by": [],
+  "goals": [
+    {
+      "id": "floor",
+      "statement": "An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "baseline",
+      "statement": "The inherited analysis runs, and its cross-validated AUC is above chance",
+      "criteria": [
+        {
+          "name": "above-chance",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.6
+        }
+      ]
+    },
+    {
+      "id": "logistic-cv",
+      "statement": "A logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "logistic-holdout",
+      "statement": "A logistic regression clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "l1-cv",
+      "statement": "An L1-penalised logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "l1-holdout",
+      "statement": "An L1-penalised logistic regression clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "knn-cv",
+      "statement": "k-nearest neighbours, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "knn-holdout",
+      "statement": "k-nearest neighbours clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "forest-cv",
+      "statement": "A random forest, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "forest-holdout",
+      "statement": "A random forest clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "boost-cv",
+      "statement": "Gradient boosting, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "boost-holdout",
+      "statement": "Gradient boosting clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "pairs-cv",
+      "statement": "A logistic regression on the pairwise products, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "pairs-holdout",
+      "statement": "A logistic regression on the pairwise products clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "logistic",
+      "goal": "floor",
+      "method": "a logistic regression on the features as given, tuned on pilot data alone",
+      "path": [
+        "baseline",
+        "logistic-cv",
+        "logistic-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "l1",
+      "goal": "floor",
+      "method": "an L1-penalised logistic regression, with its penalty tuned inside cross-validation",
+      "path": [
+        "baseline",
+        "l1-cv",
+        "l1-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "knn",
+      "goal": "floor",
+      "method": "k-nearest neighbours, with k and any feature screen chosen inside cross-validation",
+      "path": [
+        "baseline",
+        "knn-cv",
+        "knn-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "forest",
+      "goal": "floor",
+      "method": "a random forest, tuned on pilot data alone",
+      "path": [
+        "baseline",
+        "forest-cv",
+        "forest-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "boost",
+      "goal": "floor",
+      "method": "gradient boosting (scikit-learn's HistGradientBoostingClassifier), tuned on pilot data alone",
+      "path": [
+        "baseline",
+        "boost-cv",
+        "boost-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "pairs",
+      "goal": "floor",
+      "method": "a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation",
+      "path": [
+        "baseline",
+        "pairs-cv",
+        "pairs-holdout"
+      ],
+      "status": "open"
+    }
+  ],
+  "resolutions": [],
+  "sealed_inputs": [
+    "data/heldout.csv"
+  ],
+  "instructions": "Choose every part of the analysis, the features, the model and its settings, on data/pilot.csv alone. data/heldout.csv is read only by the final analysis, which scores it once: do not use it to diagnose, compare or tune.",
+  "rev": 0,
+  "at": "2026-11-17T08:34:17Z",
+  "by": "agent:claude-code/claude-opus-5-5"
+}

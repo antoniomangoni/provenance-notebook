@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:00:07.403Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat README.md pyproject.toml && echo '--- pilot head ---' && head -3 data/pilot.csv && echo '--- pilot stats ---' && wc -l data/pilot.csv && uv run python -c \" import numpy as np t = np.loadtxt('data/",
+  "command": {
+    "shown": "cat README.md pyproject.toml && echo '--- pilot head ---' && head -3 data/pilot.csv && echo '--- pilot stats ---' && wc -l data/pilot.csv && uv run python -c \"\nimport numpy as np\nt = np.loadtxt('data/pilot.csv', delimiter=',', skiprows=1)\nX, y = t[:, :-1], t[:, -1]\nprint('shape', X.shape, 'pos rate', y.mean().round(4))\nprint('feature means', X.mean(axis=0).round(2))\nprint('feature stds ', X.std(axis=0).round(2))\n\"",
+    "digest": "sha256:082c9b55cd3276c2d428615d8ad382a73bdd6dafb186921d9f616f33d6552973"
+  },
+  "code": {
+    "ref": "commit:09ef6f44b2c23a8bb85d4d10492347664b2759bc"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:4fee24cc95c33e8950b5dc48375d72274d2ddd40c285f1e076dc8aa8342beaf2"
+}

@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "rev": 2,
+  "at": "2026-11-17T09:27:56Z",
+  "data": {
+    "file": "replication.csv",
+    "digest": "sha256:5ebf670308e524a0597a8b592a67763201ff95ef9a50e6f6d16d08fdb13d646e",
+    "rows": 50000
+  },
+  "note": "Re-executions of the cited runs with the sealed input replaced by the replication sample, not the runs themselves.",
+  "rows": [
+    {
+      "node": "boost-holdout",
+      "cites": "probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785#step-22",
+      "holds": true,
+      "run": "step-21",
+      "commit": "commit:51646b771db0d13e4d8eb2a29cc5228eb674a8ef",
+      "recorded": {
+        "cv_auc": 0.8343,
+        "holdout_auc": 0.8538,
+        "gap": -0.0195
+      },
+      "exit": 0,
+      "seconds": 3.9,
+      "measures": {
+        "cv_auc": 0.8343,
+        "holdout_auc": 0.8627,
+        "gap": -0.0284
+      },
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8,
+          "value": 0.8627,
+          "holds": true
+        }
+      ]
+    },
+    {
+      "node": "forest-holdout",
+      "cites": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466#step-22",
+      "holds": true,
+      "run": "step-21",
+      "commit": "commit:bddc666a8058433fc9c1fb1254cced4e503d5038",
+      "recorded": {
+        "cv_auc": 0.8931,
+        "holdout_auc": 0.8983,
+        "gap": -0.0051
+      },
+      "exit": 0,
+      "seconds": 19.8,
+      "measures": {
+        "cv_auc": 0.8931,
+        "holdout_auc": 0.9003,
+        "gap": -0.0072
+      },
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8,
+          "value": 0.9003,
+          "holds": true
+        }
+      ]
+    },
+    {
+      "node": "pairs-holdout",
+      "cites": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-17",
+      "holds": true,
+      "run": "step-16",
+      "commit": "commit:0752ca236796a4bdedfac8be6139931ec5e80fc7",
+      "recorded": {
+        "cv_auc": 0.8923,
+        "holdout_auc": 0.8923,
+        "gap": 0
+      },
+      "exit": 0,
+      "seconds": 4.3,
+      "measures": {
+        "cv_auc": 0.8923,
+        "holdout_auc": 0.8969,
+        "gap": -0.0046
+      },
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8,
+          "value": 0.8969,
+          "holds": true
+        }
+      ]
+    },
+    {
+      "node": "knn-holdout",
+      "cites": "probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953#step-13",
+      "holds": true,
+      "run": "step-12",
+      "commit": "commit:2bf13fb9fadeab58b17a404cb4f2ea7bfcfc2871",
+      "recorded": {
+        "cv_auc": 0.8568,
+        "holdout_auc": 0.8405,
+        "gap": 0.0163
+      },
+      "exit": 0,
+      "seconds": 17.1,
+      "measures": {
+        "cv_auc": 0.8568,
+        "holdout_auc": 0.8507,
+        "gap": 0.0061
+      },
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8,
+          "value": 0.8507,
+          "holds": true
+        }
+      ]
+    },
+    {
+      "node": "l1-holdout",
+      "cites": "probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424#step-22",
+      "holds": true,
+      "run": "step-21",
+      "commit": "commit:8aa10f1e0f8dd8cf5eedcf1305a9cb3fb936391b",
+      "recorded": {
+        "cv_auc": 0.9134,
+        "holdout_auc": 0.9079,
+        "gap": 0.0056
+      },
+      "exit": 0,
+      "seconds": 5.1,
+      "measures": {
+        "cv_auc": 0.9134,
+        "holdout_auc": 0.9115,
+        "gap": 0.002
+      },
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8,
+          "value": 0.9115,
+          "holds": true
+        }
+      ]
+    }
+  ]
+}

@@ -62,7 +62,7 @@ plan's reasoning quotes one. The page reports the reads and leaves the judgment 
 
 ## What was run, and what it showed
 
-Every live attempt is committed under `live/`: fifteen trails, all by the same model.
+Every live attempt is committed under `live/`: twenty-one trails over two research projects, all by the same model.
 
 | What | Result | Where |
 | --- | --- | --- |
@@ -73,6 +73,7 @@ Every live attempt is committed under `live/`: fifteen trails, all by the same m
 | Two fleets of three agents sharing one map | The first reached nothing. In the second, agents built on each other's steps and two routes reached the goal; one held-out result leaked between agents, and the leak is disclosed and closed | [the map](research/madelon-reanalysis/README.md#agents-sharing-the-map) |
 | One agent in a sandbox | The sandbox held: no command reached outside its workspace, and the held-out file was never opened. The run reached nothing. The file trace slowed its first search thirteen times, and the wall clock ended it there | [the map](research/madelon-reanalysis/README.md#the-sandboxed-run) |
 | Three agents in the sandbox, run to settle forecasts of three open milestones | It settled none. The wall clock stopped each agent inside a run. One scored the held-out file once, at 0.694, but wrote a metrics file capture could not read, so the map holds no measure and refutes nothing | [the map](research/madelon-reanalysis/README.md#fleet-4) |
+| A second research project, with Kimi K3.1 Pro overseeing the beliefs | Synthetic data with a known truth. Kimi forecast every open milestone and chose the routes, before each of two rounds of three agents. Every route was meant to sit far from the floor, and agents that read each other's results put all of them above it. Kimi did no better than a coin flip; the blanket's code forecaster, given sibling scores far from the floor, did | [the project](research/synthetic-interactions/README.md) |
 | How sure the map's marks are, and a second model as forecaster | Every ✓ and ✗ at the floor is within noise of it (below). A second model forecast 22 settled questions from text that code built and scored. On the six that were real forecasts it did worse than a coin flip: four of the 8 milestone outcomes were known when the question's revision was written, and 12 of the 14 plans came after their trail had opened the held-out file | [the map](research/madelon-reanalysis/README.md#how-sure-the-marks-are) |
 
 ### How sure the marks are
@@ -118,6 +119,36 @@ The model had given that milestone 0.10 and the blanket 0.75. But the agent's me
 nested object, so capture read no measures, and the map refutes nothing. The forecasts stay open
 ([scores](research/madelon-reanalysis/forecasts/scores.txt),
 [report](research/madelon-reanalysis/beliefs.txt), [spec 10](docs/specs/10-beliefs.md)).
+
+### A second project, to test that
+
+If outcomes at the threshold are coin flips, forecasts should beat a coin flip away from it. A
+second project tests that ([spec 12](docs/specs/12-second-project.md),
+[the project](research/synthetic-interactions/README.md)):
+- **Synthetic data.** A 50,000-row replication sample, which no agent or forecaster reads, gives
+  each credited analysis its true AUC.
+- **Six routes.** One per model family, chosen so that at default settings some sit far below a
+  floor of 0.80 and some far above.
+- **Kimi K3.1 Pro oversees the beliefs.** Before each of two rounds of three agents it forecast
+  every open milestone and chose the routes. Both were pushed before the agents started.
+
+**It did not go to plan.** In round 2 every agent read the first round's results and built on
+the interaction they had found, so the linear and kNN routes cleared the floor too. Replicated,
+the five credited analyses stand 6 to 14 standard errors above 0.80, and all 15 settled forecasts
+held.
+
+| Forecaster | Round 1 (n 11) | Round 2 (n 4) |
+| --- | --- | --- |
+| Kimi K3.1 Pro | 0.261 | 0.387 |
+| coin flip | 0.250 | 0.250 |
+| blanket (code) | 0.250, nothing resolved yet | **0.056** |
+
+- **Where the blanket's sibling scores sat far from the floor, they carried the information.**
+  The blanket forecaster beat the coin flip by 0.194 ± 0.032.
+- **Kimi forecast from method names and did not foresee the agents adapting.** It was within
+  noise of the coin flip both times.
+- **The project could not test that nothing beats a coin flip near the threshold.** No outcome
+  was near it, and with every outcome held, always saying yes would have scored best.
 
 The demo task is constructed: the inherited script was written for this repository to show a
 known pitfall (feature selection outside cross-validation) on public data. No published analysis
@@ -172,6 +203,7 @@ the details, and a scripted provider that replays tool calls with no model.
 | `project.py page`, `serve` | The map as one static page, or live on 127.0.0.1 |
 | `beliefs.py show MAP --live DIR` | How sure each mark is, each open milestone's Markov blanket, and which to run next |
 | `beliefs.py questions`, `collect`, `score`; `scripts/forecast.sh` | Asks a model to forecast from text checked blind to the outcome, and scores it against code-only forecasters |
+| `beliefs.py nominate`, `choose`; `replicate.py` | Asks a model to choose the routes the next agents run, checked against the open routes; re-runs each credited analysis on a replication sample |
 | `retrace.py DIR` | Re-executes a trail's runs from their code snapshots under a file trace |
 | `tamper.py DIR …` | Runs the forgery sequence on a copy of a trail |
 | `readers.py texts`, `ask`, `grade` | The reader check |
@@ -198,7 +230,8 @@ the details, and a scripted provider that replays tool calls with no model.
   sandboxed agent, of four, recorded a held-out score before its wall clock.
 - **That a ✓ would hold again.** The belief report rests on a declared standard error and gives a
   range, because the data cannot say how related the routes are. Of the 22 settled forecasts, 6
-  were real forecasts, all backtests. No forecast made before its outcome has been settled.
+  were real forecasts, all backtests. The second project settled 15 forecasts made before their
+  outcomes, but every outcome held, so they show which forecaster read the map, not skill.
 - **Generality.** One task, one model, one agent host. The reader check used models as readers.
 
 ## Layout
@@ -208,10 +241,10 @@ the details, and a scripted provider that replays tool calls with no model.
 | `trail.py`, `step.schema.json`, `view.py` | The checker, the schema of one step, and the reviewer's page |
 | `capture/` | The Pi extension that writes steps as the agent works, and its scripted provider |
 | `project.py`, `mapview.py`, `beliefs.py` | Research maps: the checker, the page that draws them, and beliefs and forecasts over them |
-| `retrace.py`, `tamper.py`, `readers.py` | Re-execution under a trace, the forgery sequence, the reader check |
-| `demo/` | The task: an inherited analysis with a known pitfall |
+| `retrace.py`, `replicate.py`, `tamper.py`, `readers.py` | Re-execution under a trace, re-running a credited analysis on a replication sample, the forgery sequence, the reader check |
+| `demo/`, `demo2/` | The tasks: an inherited analysis with a known pitfall; synthetic data with a replication sample |
 | `live/` | Every trail an agent wrote, with its transcript and code snapshots |
-| `evidence/`, `research/` | What was measured on the live trail; the research map over all trails |
+| `evidence/`, `research/` | What was measured on the live trail; the two research projects and their maps |
 | `examples/` | Three constructed trails, used as test fixtures |
 | `docs/` | [The pitch](docs/HACKATHON.md), [the step format](docs/DESIGN.md), [the graph export](docs/GRAPH.md), and one [spec](docs/specs/) per piece of work |
 

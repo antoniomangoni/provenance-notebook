@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "by": "agent:pi/moonshotai/Kimi-K3.1-Pro",
+  "at": "2026-11-17T09:15:11Z",
+  "forecasts": [
+    {
+      "kind": "milestone",
+      "node": "knn-cv",
+      "rev": 1,
+      "saw": "sha256:560da91d5dd71f7701750cf6ea2a582317030f3db095777f5c463a4076e3eda1",
+      "p": 0.35,
+      "why": "The baseline is only modestly above chance, so KNN must deliver a substantial cross-validated gain, though its suitability for nonlinear interactions and inner-CV tuning make success plausible."
+    },
+    {
+      "kind": "milestone",
+      "node": "knn-holdout",
+      "rev": 1,
+      "saw": "sha256:15a590f506e79d41d50d25837f0073f7f04c185bdd8f55e164e662e463c0b63d",
+      "p": 0.55,
+      "why": "Three sibling models passed their holdout milestones with small estimation gaps, but kNN has not yet cleared its pilot CV threshold and may perform worse on interaction-heavy data."
+    },
+    {
+      "kind": "milestone",
+      "node": "l1-cv",
+      "rev": 1,
+      "saw": "sha256:df1ff08af1d18e3977f56afc3cec65cd2896b66e9b260b79719b4b2b105a4483",
+      "p": 0.15,
+      "why": "The baseline CV AUC is only 0.6313, so a first-run jump to at least 0.80 using an L1-penalised logistic regression is possible but unlikely."
+    },
+    {
+      "kind": "milestone",
+      "node": "l1-holdout",
+      "rev": 1,
+      "saw": "sha256:49caa4dcc04c4e8e359f1d4ea2ba8ac417385ee7f5b5c6e0edc8a2c6d292d156",
+      "p": 0.55,
+      "why": "Three sibling analyses clear the same held-out floor with small generalisation gaps, but L1 logistic regression has no pilot CV result yet and may underfit the interaction-driven signal."
+    },
+    {
+      "kind": "milestone",
+      "node": "logistic-cv",
+      "rev": 1,
+      "saw": "sha256:2e164fb1e03245b9fa24f8ce38f3de10f1e3ab91f359df81b059a4739c84f7a8",
+      "p": 0.1,
+      "why": "The baseline CV AUC is only 0.6313, and logistic regression on the features as given is unlikely to capture synthetic interactions well enough to reach 0.80 on its first credited run."
+    },
+    {
+      "kind": "milestone",
+      "node": "logistic-holdout",
+      "rev": 1,
+      "saw": "sha256:3889480a3a1b324a92a01e5c9c18763764e59b3fc694f8952cdb9d6a5a286dc0",
+      "p": 0.2,
+      "why": "The reached siblings show strong held-out generalization, but they use nonlinear models or explicit interactions, whereas plain logistic has no passing pilot-CV result yet and may miss the interaction structure needed to clear 0.80."
+    }
+  ]
+}

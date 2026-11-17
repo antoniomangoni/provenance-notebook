@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-14",
+  "seq": 14,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:17:35.321Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "echo \"== out/metrics.json ==\" && cat out/metrics.json && echo \"== L1 semantics probe (stdout only) ==\" && OMP_NUM_THREADS=1 uv run python - <<'EOF' import warnings import numpy as np from sklearn.line",
+  "command": {
+    "shown": "echo \"== out/metrics.json ==\" && cat out/metrics.json && echo \"== L1 semantics probe (stdout only) ==\" && OMP_NUM_THREADS=1 uv run python - <<'EOF'\nimport warnings\nimport numpy as np\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\ntable = np.loadtxt(\"data/pilot.csv\", delimiter=\",\", skiprows=1)\nX, y = table[:, :-1], table[:, -1]\nn = X.shape[1]\nprods = [X[:, i] * X[:, j] for i in range(n) for j in range(i + 1, n)]\nXa = np.column_stack([X] + prods)\n\nvariants = {\n    \"penalty='l1' (step-11 code)\": dict(penalty=\"l1\", solver=\"liblinear\", random_state=0, max_iter=5000),\n    \"l1_ratio=1 (API-correct)\":    dict(l1_ratio=1, solver=\"liblinear\", random_state=0, max_iter=5000),\n}\nfor name, kwargs in variants.items():\n    with warnings.catch_warnings(record=True) as caught:\n        warnings.simplefilter(\"always\")\n        pipe = make_pipeline(StandardScaler(), LogisticRegression(**kwargs))\n        auc = cross_val_score(pipe, Xa, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),\n                              scoring=\"roc_auc\", n_jobs=1).mean()\n        pipe.fit(Xa, y)\n        coefs = pipe[-1].coef_[0]\n    print(f\"{name}: cv AUC {auc:.4f}, zero coefs {int((coefs == 0).sum())}/78, \"\n          f\"warnings {len(caught)}\")\nEOF",
+    "digest": "sha256:eb9311dcd57b5df79475dcab75de4480a195d2997889aa67397202b2a0ef251b"
+  },
+  "code": {
+    "ref": "commit:9b3963835b79b0701074873d5f33f5801d01652c"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-13",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:188d8a1073d5ccade5e9025d02c7563283c432dc0861f779aa226c39146d29cd"
+}

@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-1",
+  "seq": 1,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:15:59.557Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:session_start",
+  "summary": "Commands run in a sandbox that hides the map and the other trails",
+  "text": "Every command runs in bwrap: the filesystem is read-only except the workspace and uv's cache, and these are hidden under empty tmpfs: /home/antoniomangoni/.pi, /home/antoniomangoni/code/provenance-notebook, /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/pi-live, /tmp/claude-1000/-home-antoniomangoni-code-almanaque/24318484-cc7b-48ac-876d-75cb3034c05e/scratchpad/synth-r2. The project_map tool runs outside the sandbox.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:3e6788a38124b1a1876fec0de41f5f62c3a5a76d1e79f4b19801380780b29edd"
+}

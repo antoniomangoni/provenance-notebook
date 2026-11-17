@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:00:27.735Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Grid-search HistGradientBoosting on pilot only (3 lr x 3 tree sizes, early stopping, 5-fold CV)",
+  "reasoning": "Boost-cv milestone. The label is not linearly separable enough for logistic (0.63), which hints at interactions/nonlinearity thatHistGradientBoostingClassifier should capture. I grid-search on pilot.csv only: learning_rate {0.03, 0.06, 0.1} x max_leaf_nodes {3, 7, 15} with early stopping (validation_fraction 0.25, max_iter 500), 5-fold stratified CV (seed 0, matching the baseline's folds), n_jobs/OMP_NUM_THREADS=1 as required. The chosen config is recorded in out/boost_tune.json (not out/metrics.json) so the shared metrics file keeps only milestone numbers until the cv milestone is confirmed. I expect the best config to reach cv_auc >= 0.80; if nothing clears 0.8 I will widen the grid (max_depth, l2_regularization, min_samples_leaf) rather than touch heldout.csv.",
+  "expectations": [
+    {
+      "name": "tune-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "best-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "prev": "sha256:078b5263a6536e25b35974a0fa8471411ffbef992588dfef1e714057a981c01b"
+}

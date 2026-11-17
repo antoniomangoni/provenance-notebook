@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:00:13.615Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run inherited logistic pipeline's 5-fold CV on pilot only, write cv_auc alone to out/metrics.json",
+  "reasoning": "Baseline milestone: run the inherited logistic pipeline (StandardScaler + LogisticRegression, 5-fold stratified CV, seed 0) on pilot.csv only — the two other trails' latest steps were sealed-input scores with withheld numbers, so there is nothing to reuse. I keep analysis.py untouched and write a pilot-only script that writes exactly {cv_auc} to out/metrics.json, per the instruction to report only cv_auc at this stage. Expect cv_auc >= 0.6 (above chance); I predict roughly 0.65-0.75 for logistic on this data.",
+  "expectations": [
+    {
+      "name": "baseline-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "baseline-above-chance",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.6
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-forest@sha256:b2f77451194503549e0af5ca307007511f842dca8d3414ea06f6aec061a0a54f#step-5",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8#step-5",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:9d2a72242ecce18b869cddbed7485441ef32aeedfab6567bee04063ba1bb5616"
+}

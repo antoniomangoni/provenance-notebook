@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "synth-r2-knn",
+  "at": "2026-11-17T09:17:15.554Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "OMP_NUM_THREADS=1 uv run python analysis.py",
+  "command": {
+    "shown": "OMP_NUM_THREADS=1 uv run python analysis.py",
+    "digest": "sha256:7ec3f33ba3f6054bd328c56e296ec16b934ead1bed444d82b8ea693b2e2086e1"
+  },
+  "code": {
+    "ref": "commit:2bf13fb9fadeab58b17a404cb4f2ea7bfcfc2871"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-6",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:12ac3482887c53b978348443ac3a924735c70b5eec4df7bbafab585cd1c78c26"
+}

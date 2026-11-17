@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:08:35.679Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 251213,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:1bc2a672f841d211fab06bd489027447718761b3613607cc5c2c910952980562"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:1bc2a672f841d211fab06bd489027447718761b3613607cc5c2c910952980562"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.8931
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:tune_forest2.py",
+      "digest": "sha256:0e56e5b934f608e0f25f3056d84c628b4684a38659ccb2283534bc6c1c4f5cfd"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "cv-floor-guard",
+      "measured": 0.8931,
+      "held": true
+    },
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-18",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-16",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:9e761e6072019e51a660a6ea22bc786065b167ddfa755e977a5f7fdfa9358c7f"
+}

@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:16:24.653Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Look around: read analysis.py, inspect pilot.csv only, check uv/sklearn",
+  "reasoning": "Before designing the L1 analysis I need the inherited code, the pilot sample size and feature layout, and the installed toolchain. I will only touch data/pilot.csv; data/heldout.csv stays sealed until the final scoring run, per the map rules (earlier trails were excused precisely for wc -l on it).",
+  "expectations": [
+    {
+      "name": "look-around",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:5f844b035c5c288f152f4be9c6df54d8a65d0edf12e27fe4e498b72e63c5cb26"
+}

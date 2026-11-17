@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-23",
+  "seq": 23,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:09:09.163Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Verify final flat metrics file on disk",
+  "reasoning": "Confirm out/metrics.json holds exactly the three flat measures from the final run and nothing nested.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:2cf6f4817386ea4a4118986354ce7cdeb076da29f82332d17e79a8d3df14f256"
+}

@@ -15,3 +15,6 @@ view.html
 research/*/briefs/*/workspace/data/
 # Built by scripts/site.sh.
 site/
+
+# The second project's replication sample, rebuilt by demo2/make_data.py; no agent may read it.
+research/*/replication/

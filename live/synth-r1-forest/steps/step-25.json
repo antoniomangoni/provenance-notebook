@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:09:11.020Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 91,
+  "reads": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:b6ffa75f691a92cb6bf9d9153136e726ed5e591eb7cb6a2aa49fc394c02a350c"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-24",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:7c36b6f7b64576d609fb7d535dda24bc2bda42e29827ca7740da49fc565672d1"
+}

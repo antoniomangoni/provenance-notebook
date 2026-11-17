@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "synth-r2-knn",
+  "at": "2026-11-17T09:17:56.307Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final: score heldout once with the chosen KNN; write cv_auc, holdout_auc, gap flat",
+  "reasoning": "Final run of the same, unchanged analysis with --final. It re-runs the identical nested CV on pilot (expected to reproduce cv_auc 0.8568 from my pilot-only run, well above the 0.80 floor), then — and only then — fits the inner-CV-chosen configuration (raw + pairwise products, F-screen top 10, k=81, distance weighting) on all 1000 pilot rows and opens data/heldout.csv exactly once to score the 3000 unseen samples. Evidence the transfer should hold: the completed r1 trails each cleared holdout 0.80 with agreement (pairs-holdout and forest-holdout milestones are sealed; the map records boost cv 0.8343 transferring too). I expect holdout_auc >= 0.80 and gap within ±0.05; the run writes the flat metrics {cv_auc, holdout_auc, gap} to out/metrics.json.",
+  "expectations": [
+    {
+      "name": "knn-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "knn-holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    },
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "prev": "sha256:fc4bd7f8c33b6bc6a0ecddb3fb4b9fe4f22eb12493a863b08dd95b3c72714b63"
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-24",
+  "seq": 24,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:18:05.740Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat out/metrics.json",
+  "command": {
+    "shown": "cat out/metrics.json",
+    "digest": "sha256:9519d49cc87833f812659517d66989f48b001578ad91f7b326312cb35d317f8d"
+  },
+  "code": {
+    "ref": "commit:8aa10f1e0f8dd8cf5eedcf1305a9cb3fb936391b"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:0616eaf24536c193b91da86b5c5963877089e9628c6850d39cb3f3ba70064f30"
+}

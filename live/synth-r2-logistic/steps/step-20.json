@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:22:55.446Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final run: score data/heldout.csv once with the tuned kernel logistic, write cv_auc, holdout_auc, gap",
+  "reasoning": "The tuned kernel logistic procedure reaches nested cv_auc 0.8678 on pilot (my step-18 run against plan step-17), built on the 0.6313 additive baseline of the pairs trail. Nothing in the design has changed since the pilot-only estimate, and the plateau was seed-stable, so the held-out AUC should land near 0.86-0.87: I expect holdout_auc >= 0.80 with |gap| = |cv - holdout| well inside 0.05. This run reads data/heldout.csv once and only this run; it writes all three measures — cv_auc, holdout_auc, gap — as one flat object to out/metrics.json.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "logistic-holdout-floor",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:4d9461630637d7dc30a5c41c0b440b4766b3b59e773b98404769ef6e50b59fbe"
+}

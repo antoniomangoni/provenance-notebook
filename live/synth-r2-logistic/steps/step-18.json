@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-18",
+  "seq": 18,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:20:23.227Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "uv run python analysis.py && cat out/metrics.json",
+  "command": {
+    "shown": "uv run python analysis.py && cat out/metrics.json",
+    "digest": "sha256:b1bf278239f20c8fb86f50c651426cc0a732cd49d5f704d4b86c04cfe3986d3d"
+  },
+  "code": {
+    "ref": "commit:3667b12b6663b3ca12f1273acdd8efc93180b343"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-17",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a2e5156d8d2d64206b7f75032a8db3b19968a0e6e9e92bc090359eabe57e17d4"
+}

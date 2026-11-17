@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:17:50.566Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 1",
+  "exit_code": 1,
+  "duration_ms": 1435,
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-8",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:31538446db24ea95a646e5edfe8be5e634785a5fb0d904bce2f6629e021ef80a"
+}

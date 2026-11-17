@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-16",
+  "seq": 16,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:17:41.364Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Switch analysis.py to l1_ratio=1 (no penalty= arg), rerun pilot-only nested CV",
+  "reasoning": "The probe (step-15) showed penalty='l1' and l1_ratio=1 give identical AUC and sparsity, so step-11's 0.9134 was a genuine L1 fit; l1_ratio=1 is the sklearn-1.9-native spelling and emits no warnings. I switch make_model to l1_ratio=1 and re-run pilot-only. The nested-CV result should reproduce ≈0.9134 (identical estimator semantics, same seeds); the binding expectation stays cv_auc >= 0.8. Heldout remains sealed; this rerun refreshes the l1-cv milestone from the cleaned code.",
+  "expectations": [
+    {
+      "name": "rerun-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "pilot-auc-clean",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "prev": "sha256:4191d1472a86582f485b383b10b05eb064cc8cff85f84cf95307e3380983d28e"
+}

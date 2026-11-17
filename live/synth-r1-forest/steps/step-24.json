@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-24",
+  "seq": 24,
+  "trail": "synth-r1-forest",
+  "at": "2026-11-17T09:09:10.927Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cat out/metrics.json && python3 -c \"import json; m=json.load(open('out/metrics.json')); assert set(m)=={'cv_auc','holdout_auc','gap'} and all(isinstance(v,(int,float)) for v in m.values()); print('fla",
+  "command": {
+    "shown": "cat out/metrics.json && python3 -c \"import json; m=json.load(open('out/metrics.json')); assert set(m)=={'cv_auc','holdout_auc','gap'} and all(isinstance(v,(int,float)) for v in m.values()); print('flat json ok:', m)\"",
+    "digest": "sha256:54d93268e106104697475be137cc824c4313f1113e685ab6924d33f58266ae03"
+  },
+  "code": {
+    "ref": "commit:bddc666a8058433fc9c1fb1254cced4e503d5038"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-23",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:e55156f471c5228c7364a9b8a7e206fe24effed13fc68058e648bbb4c12088c7"
+}

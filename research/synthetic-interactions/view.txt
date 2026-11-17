@@ -1,0 +1,74 @@
+Research map of synthetic-interactions, revision 2 (2026-11-17T09:27:04Z, agent:claude-code/claude-opus-5-5).
+6 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
+
+Goals:
+  ✓ floor: An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05
+
+Routes:
+  logistic (open, for floor): baseline* ✓ → logistic-cv ○ → logistic-holdout ○
+      a logistic regression on the features as given, tuned on pilot data alone
+  l1 (done, for floor): baseline* ✓ → l1-cv ✓ → l1-holdout ✓
+      an L1-penalised logistic regression, with its penalty tuned inside cross-validation
+  knn (done, for floor): baseline* ✓ → knn-cv ✓ → knn-holdout ✓
+      k-nearest neighbours, with k and any feature screen chosen inside cross-validation
+  forest (done, for floor): baseline* ✓ → forest-cv ✓ → forest-holdout ✓
+      a random forest, tuned on pilot data alone
+  boost (done, for floor): baseline* ✓ → boost-cv ✓ → boost-holdout ✓
+      gradient boosting (scikit-learn's HistGradientBoostingClassifier), tuned on pilot data alone
+  pairs (done, for floor): baseline* ✓ → pairs-cv ✓ → pairs-holdout ✓
+      a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation
+
+Milestones and what reached them:
+  ✓ baseline: The inherited analysis runs, and its cross-validated AUC is above chance (cv_auc >= 0.6)
+      reached by probe:synth-r1-boost step-11: as expected
+        rests on synth-r1-forest to step-5, synth-r1-pairs to step-5
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+      reached by probe:synth-r1-forest step-9: as expected
+        before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+      reached by probe:synth-r1-pairs step-9: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9
+        before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ○ logistic-cv: A logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+  ○ logistic-holdout: A logistic regression clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+  ✓ l1-cv: An L1-penalised logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      reached by probe:synth-r2-l1 step-11: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9, synth-r1-pairs to step-14
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ l1-holdout: An L1-penalised logistic regression clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+      reached by probe:synth-r2-l1 step-22: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9, synth-r1-pairs to step-14
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ knn-cv: k-nearest neighbours, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      reached by probe:synth-r2-knn step-9: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9, synth-r1-pairs to step-14
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ knn-holdout: k-nearest neighbours clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+      reached by probe:synth-r2-knn step-13: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9, synth-r1-pairs to step-14
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ forest-cv: A random forest, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      reached by probe:synth-r1-forest step-13: as expected
+        before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ forest-holdout: A random forest clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+      reached by probe:synth-r1-forest step-22: as expected
+        rests on synth-r1-boost to step-19, synth-r1-pairs to step-14
+        before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ boost-cv: Gradient boosting, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      reached by probe:synth-r1-boost step-19: as expected
+        rests on synth-r1-forest to step-9, synth-r1-pairs to step-14
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ boost-holdout: Gradient boosting clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+      reached by probe:synth-r1-boost step-22: as expected
+        rests on synth-r1-forest to step-9, synth-r1-pairs to step-14
+        before it, a sealed input: synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-pairs#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ pairs-cv: A logistic regression on the pairwise products, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample (cv_auc >= 0.8)
+      reached by probe:synth-r1-pairs step-14: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9
+        before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+  ✓ pairs-holdout: A logistic regression on the pairwise products clears the held-out floor of 0.80, and its estimate agrees (holdout_auc >= 0.8, gap <= 0.05, gap >= -0.05)
+      reached by probe:synth-r1-pairs step-17: as expected
+        rests on synth-r1-boost to step-11, synth-r1-forest to step-9
+        before it, a sealed input: step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.), synth-r1-forest#step-4 read (excused: wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed.)
+
+Next, the most shared first:
+  logistic-cv: next on logistic; on 1 route

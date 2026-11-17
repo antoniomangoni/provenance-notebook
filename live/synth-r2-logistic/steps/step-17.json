@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:20:20.709Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only nested-CV run of kernel logistic regression, writing cv_auc alone (logistic-cv milestone)",
+  "reasoning": "Design frozen on pilot diagnostics alone: plain and spline-additive logistics cap at 0.63 (steps 6-7), while RBF-kernel logistic regression on the given features shows a broad, seed-stable plateau at 0.86-0.87 (steps 12-15). The analysis.py now implements L2-regularised kernel logistic regression (logistic loss/link, no engineered columns), inner 5-fold CV choosing (gamma, lam) in a 20-cell grid from pilot training data only, estimated by outer 5-fold nested CV (seed 0). Expect nested cv_auc ~0.86, safely over the 0.80 threshold; the plateau makes a drop below 0.80 unlikely. The run opens only data/pilot.csv and writes nothing but cv_auc to out/metrics.json — the same convention as the pairs trail's baseline step-9, whose 0.6313 remains my reference point.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "logistic-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:492667eaf6d89478335e26d5ecbcef6230c32ce0a74f6c8a99cb22ec4572bd0a"
+}

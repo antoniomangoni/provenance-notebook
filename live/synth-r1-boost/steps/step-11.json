@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:00:18.934Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 3411,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:df5693aa84ee2984974ef57ced86e4f08a4bb20e45a9c263fd8705691fffc4f9"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:df5693aa84ee2984974ef57ced86e4f08a4bb20e45a9c263fd8705691fffc4f9"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.6313
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:baseline.py",
+      "digest": "sha256:13d84b45467bef3c61898b3bbb5359abda0a5ae470320ce0c570d5ff928f8f44"
+    },
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "baseline-exit",
+      "held": true
+    },
+    {
+      "expectation": "baseline-above-chance",
+      "measured": 0.6313,
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-10",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-9",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:e4d00eedc1174a78c5a73e2f83509823560b73bfb20717ebfee848459f216702"
+}

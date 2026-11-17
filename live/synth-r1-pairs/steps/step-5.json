@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "synth-r1-pairs",
+  "at": "2026-11-17T09:00:00.045Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 73,
+  "reads": [
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    },
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "recon-ok",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-4",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:4052264d42cc47ee99eff843ec8966443a83915e12cc5fd22713039a0ebedcf0"
+}

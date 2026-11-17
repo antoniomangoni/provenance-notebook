@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:00:02.209Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 65,
+  "reads": [
+    {
+      "ref": "file:analysis.py",
+      "digest": "sha256:f2bd3a32958c24374b574a80b5cd27ef4e3fbd7d1fa5d5ca429f06b289a49e0b"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "recon-ok",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-4",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:bd31b01f5e79870e1349a3bfcd7cf47b2287e55a2ebbeca5e4e46843392a94ce"
+}

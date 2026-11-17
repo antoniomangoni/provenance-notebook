@@ -1,0 +1,19 @@
+{
+  "summary": "Route boost: Find an analysis of the synthetic data that holds on samples it never saw",
+  "question": "The inherited analysis, a logistic regression on all twelve features, reports a cross-validated AUC on the 1000 pilot samples. Which analysis, chosen on pilot data alone, reaches a held-out AUC of at least 0.80 on the 3000 held-out samples, with its own cross-validated estimate within 0.05 of it?",
+  "project": "synthetic-interactions",
+  "declared_measures": [
+    "cv_auc",
+    "holdout_auc",
+    "gap"
+  ],
+  "public_parameters": [
+    "seed",
+    "folds"
+  ],
+  "inputs": [
+    "data/pilot.csv",
+    "data/heldout.csv"
+  ],
+  "by": "human:antonio"
+}

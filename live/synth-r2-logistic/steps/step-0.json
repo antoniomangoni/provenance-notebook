@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "id": "step-0",
+  "seq": 0,
+  "trail": "synth-r2-logistic",
+  "at": "2026-11-17T09:15:59.557Z",
+  "kind": "task",
+  "by": "human:antonio",
+  "hook": "pi:session_start",
+  "summary": "Route logistic: Find an analysis of the synthetic data that holds on samples it never saw",
+  "question": "The inherited analysis, a logistic regression on all twelve features, reports a cross-validated AUC on the 1000 pilot samples. Which analysis, chosen on pilot data alone, reaches a held-out AUC of at least 0.80 on the 3000 held-out samples, with its own cross-validated estimate within 0.05 of it?",
+  "project": "synthetic-interactions",
+  "agent": {
+    "name": "pi",
+    "version": "0.84.1",
+    "model": "berget/zai-org/GLM-5.3-Flash"
+  },
+  "declared_measures": [
+    "cv_auc",
+    "holdout_auc",
+    "gap"
+  ],
+  "public_parameters": [
+    "seed",
+    "folds"
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "confirmed"
+    }
+  ]
+}

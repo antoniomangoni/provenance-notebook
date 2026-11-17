@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "synth-r1-boost",
+  "at": "2026-11-17T09:02:03.342Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Refine HistGB grid (leaves/lr/l2), confirm best on pilot CV, write cv_auc alone to out/metrics.json",
+  "reasoning": "Refining round 1 (best lr=0.06, leaves=15, cv 0.8343). I build on pairs trail step-14 (logistic on pairwise products, cv_auc 0.8923, pilot-only), which shows pairwise interactions carry the signal, so larger boosted trees and mild L2 should help my raw-feature booster approximate them. I test leaves {15,31} x lr {0.04,0.06} x l2 {0,1} with the same seed-0 5-fold CV, merge with round-1 results, pick the best on pilot only, recompute its CV inside the same run, and write {cv_auc} alone to out/metrics.json so the boost-cv milestone registers. Expect the best config at cv_auc >= 0.83; the milestone gate is 0.80.",
+  "expectations": [
+    {
+      "name": "tune2-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "boost-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:49e5c7db58f8bc9e09137a65d66631e9bafd87032603101d838b4bf7e78a712f"
+}

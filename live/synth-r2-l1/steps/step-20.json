@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "synth-r2-l1",
+  "at": "2026-11-17T09:17:55.425Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Final: analysis.py --final scores heldout once; write cv_auc, holdout_auc, gap",
+  "reasoning": "The design is frozen on pilot alone (steps 10-18 of my trail): 78 features (12 raw + 66 pairwise products), L1 logistic via l1_ratio=1/liblinear, C tuned by inner 5-fold GridSearchCV inside each outer 5-fold; nested-CV cv_auc 0.9134, reproducible and warning-free. This run alone opens data/heldout.csv (3000 rows) once: C is re-tuned on the full pilot, the model refits on all 1000 pilot rows, and the new samples are scored a single time. Given the pilot fold AUCs (0.88-0.95) and that sibling routes with similar capacity saw estimates transfer within ~0.01, I expect holdout_auc near 0.90-0.92 — above 0.80 with a gap well inside ±0.05.",
+  "expectations": [
+    {
+      "name": "final-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "final-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "final-holdout",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    },
+    {
+      "name": "final-gap-high",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "final-gap-low",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "prev": "sha256:3b28f863476af057cfc21ba2122403e2902a6845dddbd715e491d614ea331690"
+}
