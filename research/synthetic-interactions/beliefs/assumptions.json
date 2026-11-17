@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "noise": [
+    {
+      "measure": "holdout_auc",
+      "se": 0.0081,
+      "why": "data/heldout.csv holds 1,498 samples labelled 1 and 1,502 labelled 0; the Hanley-McNeil standard error of an AUC of 0.80 on them is 0.0081 (beliefs.py se --auc 0.8 --pos 1498 --neg 1502). It is the error of scoring one fixed model once, not of refitting it.",
+      "by": "agent:claude-code/claude-opus-5-5"
+    }
+  ]
+}

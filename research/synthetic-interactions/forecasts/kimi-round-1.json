@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "by": "agent:pi/moonshotai/Kimi-K3.1-Pro",
+  "at": "2026-11-17T08:39:53Z",
+  "forecasts": [
+    {
+      "kind": "milestone",
+      "node": "baseline",
+      "rev": 0,
+      "saw": "sha256:878b87bc032abb6a07921fb0e0f11d51ecd865af50ce4e4f018151a7967a5b29",
+      "p": 0.9,
+      "why": "The baseline has a modest pilot-only CV threshold and no heldout requirement, though inherited-code failures and unknown signal strength leave some risk."
+    },
+    {
+      "kind": "milestone",
+      "node": "boost-cv",
+      "rev": 0,
+      "saw": "sha256:5bca5bf29fd4531edc0b315434c87a41425ef37c0056fc7208b6611021e5efb5",
+      "p": 0.68,
+      "why": "Gradient boosting is well suited to synthetic interaction effects and pilot-only tuning, but the 0.80 CV threshold and first-run variability leave substantial failure risk."
+    },
+    {
+      "kind": "milestone",
+      "node": "boost-holdout",
+      "rev": 0,
+      "saw": "sha256:7d7692093c88c983b7a6af869abd6fda0dcd90440ee3f6ef7b6a74b324d42927",
+      "p": 0.62,
+      "why": "Gradient boosting is well suited to interaction-heavy synthetic data and the CV gate favours promising settings, but the first held-out run could still miss 0.80 or breach the ±0.05 agreement bound through tuning optimism or sampling variation."
+    },
+    {
+      "kind": "milestone",
+      "node": "forest-cv",
+      "rev": 0,
+      "saw": "sha256:cc120a089fad7660eed370365d8fb6d803f3b02afffe0c2a451ef3efea60f950",
+      "p": 0.78,
+      "why": "A random forest should exploit the synthetic interaction structure well enough to exceed 0.80 in pilot cross-validation, but tuning choices and sampling variation leave a meaningful chance that the first credited run falls short."
+    },
+    {
+      "kind": "milestone",
+      "node": "forest-holdout",
+      "rev": 0,
+      "saw": "sha256:5b05084b5aeee92965b3766ce2ed9f8b352a032585b6c2bb7f330c2e9f6c8caa",
+      "p": 0.55,
+      "why": "Random forests are well suited to interaction effects, but with no measured results yet, the first run must still clear both the untouched held-out AUC floor and the tight ±0.05 agreement band."
+    },
+    {
+      "kind": "milestone",
+      "node": "knn-cv",
+      "rev": 0,
+      "saw": "sha256:a8920c9eee41c4422c072e901c2b21449892d1b5515421cdad6f4c9af5a8e60b",
+      "p": 0.4,
+      "why": "A cross-validated AUC of 0.80 is demanding for a first properly validated KNN run, and the interaction-friendly data and feature screening offer only uncertain support without any observed pilot or baseline performance."
+    },
+    {
+      "kind": "milestone",
+      "node": "knn-holdout",
+      "rev": 0,
+      "saw": "sha256:9493079190611171a73bedc7a6a4bee13e8bf47bca7bfa0fbfbc3c668c4ca043",
+      "p": 0.12,
+      "why": "With no performance results shown, k-nearest neighbours seems unlikely to both reach AUC 0.80 on interaction-driven data and match its cross-validated estimate within 0.05 on a single held-out run."
+    },
+    {
+      "kind": "milestone",
+      "node": "l1-cv",
+      "rev": 0,
+      "saw": "sha256:63b2758bea0c3b5cd708788a37c83eded4377424e031de9cd1273c541de80eef",
+      "p": 0.35,
+      "why": "A first pilot-only L1 logistic fit may not capture the interaction structure well enough to reach cross-validated AUC 0.80, though tuning and feature selection leave a reasonable chance of success."
+    },
+    {
+      "kind": "milestone",
+      "node": "l1-holdout",
+      "rev": 0,
+      "saw": "sha256:cec4ba168264113870ae5ebcd07a269ec081ee59e5c65cfd4e4d3add9c199f7e",
+      "p": 0.2,
+      "why": "The interaction-focused setting and separate pairwise-products route suggest that plain L1 logistic regression may miss the held-out AUC floor, while the tight agreement requirement adds another way for its first run to fail."
+    },
+    {
+      "kind": "milestone",
+      "node": "logistic-cv",
+      "rev": 0,
+      "saw": "sha256:5de1d01365faaeb89123f03b94504ec65d2c19bed6399e8c3b70fa91e45962ad",
+      "p": 0.25,
+      "why": "The 0.80 CV threshold is demanding, and a logistic model on the given features may underfit interaction-driven signal despite pilot-only tuning."
+    },
+    {
+      "kind": "milestone",
+      "node": "logistic-holdout",
+      "rev": 0,
+      "saw": "sha256:002a5a11885e97daa4ffcf8871b034df6428a3e2d81c56703c6e4484baef7b23",
+      "p": 0.08,
+      "why": "The interaction-focused project and dedicated pairwise-products route suggest additive logistic regression will underfit, while the tight agreement criteria add another way for its single held-out run to fail."
+    },
+    {
+      "kind": "milestone",
+      "node": "pairs-cv",
+      "rev": 0,
+      "saw": "sha256:df27fc293986de18c3cc4a38d268e112c817a3c61581c2187b974289117ffbad",
+      "p": 0.8,
+      "why": "The synthetic-interactions setup and interaction-specific model make the 0.80 pilot CV threshold plausible, but the absence of observed results and potential sampling or tuning variability leave meaningful uncertainty."
+    },
+    {
+      "kind": "milestone",
+      "node": "pairs-holdout",
+      "rev": 0,
+      "saw": "sha256:508f1c36865583c62bc56b132876d0a4754b53120461decf11b51db900086aa3",
+      "p": 0.65,
+      "why": "The pairwise-product logistic model is well matched to a synthetic interaction problem, but pairs-cv is still unreached and the first held-out run must satisfy both the AUC floor and the tight two-sided generalization-gap bound."
+    }
+  ]
+}

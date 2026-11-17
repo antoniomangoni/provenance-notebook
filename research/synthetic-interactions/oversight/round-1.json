@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "rev": 0,
+  "by": "agent:pi/moonshotai/Kimi-K3.1-Pro",
+  "at": "2026-11-17T08:40:21Z",
+  "saw": "sha256:93603fc0432056d2ef3dc15012bdf0245dcb447be0eda3c11157a2e4828cd35d",
+  "routes": [
+    "pairs",
+    "boost",
+    "forest"
+  ],
+  "why": "Interactions are the leading hypothesis, so pairs directly tests explicit pairwise structure while boosting and forests provide complementary nonlinear fallbacks. Their comparison maximizes the chance of clearing the floor and shows whether pairwise terms suffice or broader nonlinear modelling is needed.",
+  "next": [
+    {
+      "node": "baseline",
+      "leads": [
+        "logistic",
+        "l1",
+        "knn",
+        "forest",
+        "boost",
+        "pairs"
+      ]
+    }
+  ],
+  "information": {
+    "baseline": 0.6546
+  }
+}
