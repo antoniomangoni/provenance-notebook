@@ -223,7 +223,7 @@ the details, and a scripted provider that replays tool calls with no model.
 | `project.py check MAP --live DIR` | Recomputes every credit of a research map from the trails |
 | `project.py view`, `shared`, `next`, `status` | The map as text, what routes share, what to run next, and the live state |
 | `project.py propose`, `seal` | Drafts the next revision from the trails; seals it |
-| `project.py page`, `serve` | The map as one static page, or live on 127.0.0.1 |
+| `project.py page`, `serve` | The map as one static page, or live on 127.0.0.1; `/review` there sets out every judgment for a person to countersign |
 | `beliefs.py show MAP --live DIR` | How sure each mark is, each open milestone's Markov blanket, and which to run next |
 | `beliefs.py questions`, `collect`, `score`; `scripts/forecast.sh` | Asks a model to forecast from text checked blind to the outcome, and scores it against code-only forecasters |
 | `beliefs.py nominate`, `choose`; `replicate.py` | Asks a model to choose the routes the next agents run, checked against the open routes; re-runs each credited analysis on a replication sample |

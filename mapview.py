@@ -423,7 +423,8 @@ def content(live: dict, clock: datetime, links: bool = False) -> str:
         + (nav(live) if links else "")
         + f"<p class='sub'>Revision {live['rev']}, sealed {e(live['at'])} by {e(live['by'])}. "
         f"{len(live['trails'])} trails, drawn {clock.strftime('%Y-%m-%d %H:%M:%S')} UTC.{e(then)}"
-        f"{'<span class=live>live</span>' if links and live['latest'] else ''}</p>"
+        f"{'<span class=live>live</span>' if links and live['latest'] else ''}"
+        f"{' <a href=/review>Review and countersign →</a>' if links and live['latest'] else ''}</p>"
         + (
             f"<p class='sub'>⚠ project.py check finds {len(live['problems'])} problems. The first: {e(live['problems'][0])}</p>"
             if live["problems"]
@@ -546,6 +547,11 @@ def handler(state: State):
                     self.end_headers()
                 else:
                     self.send(200, content(live, clock, links=True), headers={"ETag": tag})
+            elif path == "/review" and live["latest"]:
+                import countersign
+
+                revs, _ = state.inputs
+                self.send(200, countersign.page(live, revs, str(state.directory), state.live_dir))
             elif path == "/state.json":
                 self.send(200, json.dumps(live, ensure_ascii=False), "application/json")
             elif path.startswith("/trail/") and (found := state.trail_page(path.removeprefix("/trail/"))):

@@ -20,6 +20,7 @@ uv run python project.py view   research/madelon-reanalysis/map --live live   # 
 uv run python project.py shared research/madelon-reanalysis/map --live live   # shared.txt
 uv run python project.py page   research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/map.html
 uv run python project.py serve  research/madelon-reanalysis/map --live live   # the same page, live, on 127.0.0.1:8077
+#   and http://127.0.0.1:8077/review: each judgment, the steps under it, and a draft for a person to seal
 uv run python project.py graph  research/madelon-reanalysis/map --live live --out research/madelon-reanalysis/graph --csv
 ```
 
