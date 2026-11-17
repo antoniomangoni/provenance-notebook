@@ -86,7 +86,8 @@ The brief's criterion can be checked, so the entry checks it three ways.
   answers were graded against a key taken from the step files. **The view was not needed:** a
   model answers as well from the transcript. The view's measured advantage is its length, a
   tenth of the transcript's.
-- A person who did not see the task answers the brief's question from the view, in the video.
+- The video asks the brief's question and answers it from the view, as a subtitled dialogue. No
+  cold reader was recorded.
 
 Every live attempt is committed: twenty-seven trails. On Madelon, two were the task itself, three
 were steered one at a time by a research map, six ran as two fleets of three agents sharing that
