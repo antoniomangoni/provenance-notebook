@@ -32,6 +32,7 @@ uv run python replicate.py research/synthetic-interactions/map --live live \
 | 2 | **Round 2: logistic, l1, knn, the routes left.** Every agent built on the pairs result. `knn` (0.8405) and `l1` (0.9079) are credited. `logistic` reached 0.8667 with an RBF-kernel logistic regression, which is not "a logistic regression on the features as given"; the two credits are declined by judgment. |
 | 3 | **Two routes on the raw features** ([spec 13](../../docs/specs/13-third-round.md)): `forest-raw` (a random forest at default settings) and `knn-raw` (k-nearest neighbours, only k tuned). Both forbid products, kernels and feature selection, so their outcomes land near the floor: measured beforehand at 0.812 and 0.791. |
 | 4 | **Round 3: logistic, forest-raw, knn-raw, chosen by Kimi.** The first launch ran nothing: Berget's gateway refused every request (`live/synth-r3-*`). The relaunch (`live/synth-r3b-*`) gives the map's first refutations. `forest-raw` misses at both milestones (cv 0.7878, held-out 0.788). `knn-raw-cv` misses (0.7919), and the agent did not score the held-out file. `logistic` again left its method, for a polynomial kernel, and is declined again. |
+| 5 | **A person's seal.** `human:Antonio`, from the review page (`project.py serve`, `/review`), re-running nothing. Its reason rules on no credit, excuse or revision one by one. It changes nothing in the map. |
 
 ## Against the truth
 
@@ -81,5 +82,5 @@ rate. [Spec 13](../../docs/specs/13-third-round.md) gives each prediction's verd
 - **Few forecasts.** 18 settled and 3 refuted; the 2 near the threshold come from one analysis.
 - **The logistic route never ran as declared.** Its agent left the method in both rounds.
 - **A hint in the name.** Kimi read "interactions" in the project's name.
-- **Judgments.** The map's author knew the measured truths, sealed every revision, and judged
+- **Judgments.** The map's author knew the measured truths, sealed rev-0 to rev-4, and judged
   the method claims in rev-1, rev-2 and rev-4.

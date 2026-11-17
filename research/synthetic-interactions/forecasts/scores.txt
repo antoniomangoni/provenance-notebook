@@ -1,4 +1,4 @@
-Forecasts over synthetic-interactions, scored against revision 4 and the trails.
+Forecasts over synthetic-interactions, scored against revision 5 and the trails.
 Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.
 Each forecaster is compared with code-only forecasters on the same questions: code:even, 0.5 every time;
 code:base-rate, the Laplace rate of what was settled before the question was asked; code:blanket, the
