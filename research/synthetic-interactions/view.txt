@@ -1,4 +1,4 @@
-Research map of synthetic-interactions, revision 4 (2026-11-17T13:33:08Z, agent:claude-code/claude-opus-5-5).
+Research map of synthetic-interactions, revision 5 (2026-11-17T15:42:34Z, human:Antonio).
 12 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
 
 Goals:

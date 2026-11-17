@@ -1,4 +1,4 @@
-Beliefs over synthetic-interactions, revision 4 (2026-11-17T13:33:08Z, agent:claude-code/claude-opus-5-5).
+Beliefs over synthetic-interactions, revision 5 (2026-11-17T15:42:34Z, human:Antonio).
 Advisory: nothing here changes a ✓ or ✗. P is a probability under the assumptions below.
 
 Assumptions:
