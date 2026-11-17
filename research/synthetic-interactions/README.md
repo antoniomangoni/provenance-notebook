@@ -30,6 +30,7 @@ uv run python replicate.py research/synthetic-interactions/map --live live \
 | 0 | **The declared map.** One goal and six routes, one per model family, each through a pilot-only estimate before one held-out score. Written before any run. |
 | 1 | **Round 1: pairs, boost, forest, chosen by Kimi.** All three reached the floor in 25 minutes (held-out 0.8923, 0.8538, 0.8983). `forest` reached it with a forest on the features and their pairwise products, built after reading the pairs result. Two row counts are excused. |
 | 2 | **Round 2: logistic, l1, knn, the routes left.** Every agent built on the pairs result. `knn` (0.8405) and `l1` (0.9079) are credited. `logistic` reached 0.8667 with an RBF-kernel logistic regression, which is not "a logistic regression on the features as given"; the two credits are declined by judgment. |
+| 3 | **Two routes on the raw features** ([spec 13](../../docs/specs/13-third-round.md)): `forest-raw` (a random forest at default settings) and `knn-raw` (k-nearest neighbours, only k tuned). Both forbid products, kernels and feature selection, so their outcomes land near the floor: measured beforehand at 0.812 and 0.791. |
 
 ## Against the truth
 

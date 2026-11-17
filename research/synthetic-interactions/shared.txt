@@ -1,5 +1,5 @@
 Milestones on more than one route, and the trails that reached them:
-  baseline: on logistic, l1, knn, forest, boost, pairs; reached by probe:synth-r1-boost#step-11, probe:synth-r1-forest#step-9, probe:synth-r1-pairs#step-9
+  baseline: on logistic, l1, knn, forest, boost, pairs, forest-raw, knn-raw; reached by probe:synth-r1-boost#step-11, probe:synth-r1-forest#step-9, probe:synth-r1-pairs#step-9
 
 Files more than one trail used at the same digest:
   file:data/heldout.csv sha256:494d9fb0256b…: synth-r1-boost, synth-r1-forest, synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic

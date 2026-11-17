@@ -49,31 +49,33 @@ th{color:var(--ink2);font-weight:600}td.num{font-variant-numeric:tabular-nums}
 .wrap{overflow-x:auto}
 a{color:inherit}
 .live{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:10px;border:1px solid var(--ring);color:var(--ink2);font-size:12px}
-</style></head><body data-etag=""><main><h1>Research map: synthetic-interactions</h1><p class='sub'>Revision 2, sealed 2026-11-17T09:27:04Z by agent:claude-code/claude-opus-5-5. 6 trails, drawn 2026-11-17 09:27:57 UTC.</p><div class='frame'><svg xmlns="http://www.w3.org/2000/svg" width="694" height="610" viewBox="0 0 694 610" role="img" aria-label="Research map of synthetic-interactions, revision 2, and its 6 trails">
+</style></head><body data-etag=""><main><h1>Research map: synthetic-interactions</h1><p class='sub'>Revision 3, sealed 2026-11-17T12:51:53Z by agent:claude-code/claude-opus-5-5. 6 trails, drawn 2026-11-17 13:00:10 UTC.</p><div class='frame'><svg xmlns="http://www.w3.org/2000/svg" width="694" height="702" viewBox="0 0 694 702" role="img" aria-label="Research map of synthetic-interactions, revision 3, and its 6 trails">
 <defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8z" fill="var(--ink2)"/></marker></defs>
-<text x="24" y="26" class="head">Map, revision 2</text>
-<text x="24" y="372" class="head">Trails, step by step</text>
-<path class="cx holds cx-baseline" d="M84.0,198.0 C84.0,300.5 379.5,300.5 379.5,397.0"/>
-<path class="cx holds cx-baseline" d="M84.0,198.0 C84.0,317.5 353.5,317.5 353.5,431.0"/>
-<path class="cx holds cx-baseline" d="M84.0,198.0 C84.0,334.5 353.5,334.5 353.5,465.0"/>
-<path class="cx holds prov cx-logistic-cv" d="M234.0,83.0 C234.0,328.0 483.5,328.0 483.5,567.0"/>
-<path class="cx holds prov cx-logistic-holdout" d="M384.0,83.0 C384.0,328.0 522.5,328.0 522.5,567.0"/>
-<path class="cx holds cx-l1-cv" d="M234.0,129.0 C234.0,334.0 379.5,334.0 379.5,533.0"/>
-<path class="cx holds cx-l1-holdout" d="M384.0,129.0 C384.0,334.0 522.5,334.0 522.5,533.0"/>
-<path class="cx holds cx-knn-cv" d="M234.0,175.0 C234.0,340.0 353.5,340.0 353.5,499.0"/>
-<path class="cx holds cx-knn-holdout" d="M384.0,175.0 C384.0,340.0 405.5,340.0 405.5,499.0"/>
-<path class="cx holds cx-forest-cv" d="M234.0,221.0 C234.0,329.0 405.5,329.0 405.5,431.0"/>
-<path class="cx holds cx-forest-holdout" d="M384.0,221.0 C384.0,329.0 522.5,329.0 522.5,431.0"/>
-<path class="cx holds cx-boost-cv" d="M234.0,267.0 C234.0,335.0 483.5,335.0 483.5,397.0"/>
-<path class="cx holds cx-boost-holdout" d="M384.0,267.0 C384.0,335.0 522.5,335.0 522.5,397.0"/>
-<path class="cx holds cx-pairs-cv" d="M234.0,313.0 C234.0,392.0 418.5,392.0 418.5,465.0"/>
-<path class="cx holds cx-pairs-holdout" d="M384.0,313.0 C384.0,392.0 457.5,392.0 457.5,465.0"/>
-<path class="line open" stroke="var(--g0)" d="M84.0,190.5 L234.0,75.5 L384.0,75.5 L534.0,190.5"><title>Route logistic (open, for floor): a logistic regression on the features as given, tuned on pilot data alone.</title></path>
-<path class="line done" stroke="var(--g0)" d="M84.0,193.5 L234.0,124.5 L384.0,124.5 L534.0,193.5"><title>Route l1 (done, for floor): an L1-penalised logistic regression, with its penalty tuned inside cross-validation.</title></path>
-<path class="line done" stroke="var(--g0)" d="M84.0,196.5 L234.0,173.5 L384.0,173.5 L534.0,196.5"><title>Route knn (done, for floor): k-nearest neighbours, with k and any feature screen chosen inside cross-validation.</title></path>
-<path class="line done" stroke="var(--g0)" d="M84.0,199.5 L234.0,222.5 L384.0,222.5 L534.0,199.5"><title>Route forest (done, for floor): a random forest, tuned on pilot data alone.</title></path>
-<path class="line done" stroke="var(--g0)" d="M84.0,202.5 L234.0,271.5 L384.0,271.5 L534.0,202.5"><title>Route boost (done, for floor): gradient boosting (scikit-learn&#x27;s HistGradientBoostingClassifier), tuned on pilot data alone.</title></path>
-<path class="line done" stroke="var(--g0)" d="M84.0,205.5 L234.0,320.5 L384.0,320.5 L534.0,205.5"><title>Route pairs (done, for floor): a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation.</title></path>
+<text x="24" y="26" class="head">Map, revision 3</text>
+<text x="24" y="464" class="head">Trails, step by step</text>
+<path class="cx holds cx-baseline" d="M84.0,244.0 C84.0,369.5 379.5,369.5 379.5,489.0"/>
+<path class="cx holds cx-baseline" d="M84.0,244.0 C84.0,386.5 353.5,386.5 353.5,523.0"/>
+<path class="cx holds cx-baseline" d="M84.0,244.0 C84.0,403.5 353.5,403.5 353.5,557.0"/>
+<path class="cx holds prov cx-logistic-cv" d="M234.0,83.0 C234.0,374.0 483.5,374.0 483.5,659.0"/>
+<path class="cx holds prov cx-logistic-holdout" d="M384.0,83.0 C384.0,374.0 522.5,374.0 522.5,659.0"/>
+<path class="cx holds cx-l1-cv" d="M234.0,129.0 C234.0,380.0 379.5,380.0 379.5,625.0"/>
+<path class="cx holds cx-l1-holdout" d="M384.0,129.0 C384.0,380.0 522.5,380.0 522.5,625.0"/>
+<path class="cx holds cx-knn-cv" d="M234.0,175.0 C234.0,386.0 353.5,386.0 353.5,591.0"/>
+<path class="cx holds cx-knn-holdout" d="M384.0,175.0 C384.0,386.0 405.5,386.0 405.5,591.0"/>
+<path class="cx holds cx-forest-cv" d="M234.0,221.0 C234.0,375.0 405.5,375.0 405.5,523.0"/>
+<path class="cx holds cx-forest-holdout" d="M384.0,221.0 C384.0,375.0 522.5,375.0 522.5,523.0"/>
+<path class="cx holds cx-boost-cv" d="M234.0,267.0 C234.0,381.0 483.5,381.0 483.5,489.0"/>
+<path class="cx holds cx-boost-holdout" d="M384.0,267.0 C384.0,381.0 522.5,381.0 522.5,489.0"/>
+<path class="cx holds cx-pairs-cv" d="M234.0,313.0 C234.0,438.0 418.5,438.0 418.5,557.0"/>
+<path class="cx holds cx-pairs-holdout" d="M384.0,313.0 C384.0,438.0 457.5,438.0 457.5,557.0"/>
+<path class="line open" stroke="var(--g0)" d="M84.0,233.5 L234.0,72.5 L384.0,72.5 L534.0,233.5"><title>Route logistic (open, for floor): a logistic regression on the features as given, tuned on pilot data alone.</title></path>
+<path class="line done" stroke="var(--g0)" d="M84.0,236.5 L234.0,121.5 L384.0,121.5 L534.0,236.5"><title>Route l1 (done, for floor): an L1-penalised logistic regression, with its penalty tuned inside cross-validation.</title></path>
+<path class="line done" stroke="var(--g0)" d="M84.0,239.5 L234.0,170.5 L384.0,170.5 L534.0,239.5"><title>Route knn (done, for floor): k-nearest neighbours, with k and any feature screen chosen inside cross-validation.</title></path>
+<path class="line done" stroke="var(--g0)" d="M84.0,242.5 L234.0,219.5 L384.0,219.5 L534.0,242.5"><title>Route forest (done, for floor): a random forest, tuned on pilot data alone.</title></path>
+<path class="line done" stroke="var(--g0)" d="M84.0,245.5 L234.0,268.5 L384.0,268.5 L534.0,245.5"><title>Route boost (done, for floor): gradient boosting (scikit-learn&#x27;s HistGradientBoostingClassifier), tuned on pilot data alone.</title></path>
+<path class="line done" stroke="var(--g0)" d="M84.0,248.5 L234.0,317.5 L384.0,317.5 L534.0,248.5"><title>Route pairs (done, for floor): a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation.</title></path>
+<path class="line open" stroke="var(--g0)" d="M84.0,251.5 L234.0,366.5 L384.0,366.5 L534.0,251.5"><title>Route forest-raw (open, for floor): a random forest on the twelve features as given, at scikit-learn&#x27;s default settings (only the number of trees and the seed may change); no products, kernels, feature selection or other constructed features.</title></path>
+<path class="line open" stroke="var(--g0)" d="M84.0,254.5 L234.0,415.5 L384.0,415.5 L534.0,254.5"><title>Route knn-raw (open, for floor): k-nearest neighbours on the twelve standardised features as given, with only k (and its weighting) tuned inside cross-validation; no products, kernels, feature selection or other constructed features.</title></path>
 <g class="node" id="st-baseline"><title>baseline: The inherited analysis runs, and its cross-validated AUC is above chance
 Criteria: cv_auc &gt;= 0.6
 sealed, reached by probe:synth-r1-boost step-11: as expected
@@ -85,7 +87,7 @@ sealed, reached by probe:synth-r1-pairs step-9: as expected
   step-4 opened a sealed input (read); excused by the revision: wc -l data/pilot.csv data/heldout.csv counted both files&#x27; rows while looking around, before any design; no value of the held-out file was printed.
   step-9 rests on synth-r1-boost to step-11, synth-r1-forest to step-9
   step-4 opened a sealed input (read); excused by the revision: wc -l data/pilot.csv data/heldout.csv counted both files&#x27; rows while looking around, before any design; no value of the held-out file was printed.
-  synth-r1-forest#step-4 opened a sealed input (read); excused by the revision: wc -l data/pilot.csv data/heldout.csv counted both files&#x27; rows while looking around, before any design; no value of the held-out file was printed.</title><rect class="station reached" x="73.0" y="179.0" width="22" height="38" rx="11"/><circle class="judged" cx="92.2" cy="181.8" r="4"/><text class="glyph" x="84.0" y="202.0" text-anchor="middle">✓</text><text class="small" x="84.0" y="231.0" text-anchor="middle">baseline</text></g>
+  synth-r1-forest#step-4 opened a sealed input (read); excused by the revision: wc -l data/pilot.csv data/heldout.csv counted both files&#x27; rows while looking around, before any design; no value of the held-out file was printed.</title><rect class="station reached" x="73.0" y="225.0" width="22" height="38" rx="11"/><circle class="judged" cx="92.2" cy="227.8" r="4"/><text class="glyph" x="84.0" y="248.0" text-anchor="middle">✓</text><text class="small" x="84.0" y="277.0" text-anchor="middle">baseline</text></g>
 <g class="node" id="st-logistic-cv"><title>logistic-cv: A logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample
 Criteria: cv_auc &gt;= 0.8
 provisional, reached by probe:synth-r2-logistic step-19: as expected</title><circle class="station open" cx="234.0" cy="83.0" r="8"/><circle class="provisional" cx="234.0" cy="83.0" r="14"/><text class="small" x="234.0" y="105.0" text-anchor="middle">logistic-cv</text></g>
@@ -150,405 +152,412 @@ sealed, reached by probe:synth-r1-pairs step-17: as expected
   step-17 rests on synth-r1-boost to step-11, synth-r1-forest to step-9
   step-4 opened a sealed input (read); excused by the revision: wc -l data/pilot.csv data/heldout.csv counted both files&#x27; rows while looking around, before any design; no value of the held-out file was printed.
   synth-r1-forest#step-4 opened a sealed input (read); excused by the revision: wc -l data/pilot.csv data/heldout.csv counted both files&#x27; rows while looking around, before any design; no value of the held-out file was printed.</title><circle class="station reached" cx="384.0" cy="313.0" r="8"/><circle class="judged" cx="390.0" cy="307.0" r="4"/><text class="glyph" x="384.0" y="317.0" text-anchor="middle">✓</text><text class="small" x="384.0" y="335.0" text-anchor="middle">pairs-holdout</text></g>
-<g><title>Goal floor: An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05</title><rect x="528.0" y="185.0" width="12" height="26" rx="3" fill="var(--g0)"/><text class="head" x="548.0" y="197.0">floor</text><text class="small muted" x="548.0" y="211.0">✓ reached</text></g>
-<text x="24" y="401.0" class="head small">synth-r1-boost</text><text x="24" y="414.0" class="small muted">boost · 23 steps · finished</text><line class="lane" x1="230" x2="529" y1="403.0" y2="403.0"/>
-<rect class="step k-task" x="231.5" y="398.0" width="10" height="10"><title>synth-r1-boost step-0 (task): Route boost: Find an analysis of the synthetic data that holds on samples it never saw
+<g class="node" id="st-forest-raw-cv"><title>forest-raw-cv: A random forest at default settings on the twelve features as given, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample
+Criteria: cv_auc &gt;= 0.8</title><circle class="station open" cx="234.0" cy="359.0" r="8"/><text class="small" x="234.0" y="381.0" text-anchor="middle">forest-raw-cv</text></g>
+<g class="node" id="st-forest-raw-holdout"><title>forest-raw-holdout: A default random forest on the twelve features as given clears the held-out floor of 0.80, and its estimate agrees
+Criteria: holdout_auc &gt;= 0.8, gap &lt;= 0.05, gap &gt;= -0.05</title><circle class="station open" cx="384.0" cy="359.0" r="8"/><text class="small" x="384.0" y="381.0" text-anchor="middle">forest-raw-holdout</text></g>
+<g class="node" id="st-knn-raw-cv"><title>knn-raw-cv: k-nearest neighbours on the twelve standardised features as given, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample
+Criteria: cv_auc &gt;= 0.8</title><circle class="station open" cx="234.0" cy="405.0" r="8"/><text class="small" x="234.0" y="427.0" text-anchor="middle">knn-raw-cv</text></g>
+<g class="node" id="st-knn-raw-holdout"><title>knn-raw-holdout: k-nearest neighbours on the twelve features as given clears the held-out floor of 0.80, and its estimate agrees
+Criteria: holdout_auc &gt;= 0.8, gap &lt;= 0.05, gap &gt;= -0.05</title><circle class="station open" cx="384.0" cy="405.0" r="8"/><text class="small" x="384.0" y="427.0" text-anchor="middle">knn-raw-holdout</text></g>
+<g><title>Goal floor: An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05</title><rect x="528.0" y="231.0" width="12" height="26" rx="3" fill="var(--g0)"/><text class="head" x="548.0" y="243.0">floor</text><text class="small muted" x="548.0" y="257.0">✓ reached</text></g>
+<text x="24" y="493.0" class="head small">synth-r1-boost</text><text x="24" y="506.0" class="small muted">boost · 23 steps · finished</text><line class="lane" x1="230" x2="529" y1="495.0" y2="495.0"/>
+<rect class="step k-task" x="231.5" y="490.0" width="10" height="10"><title>synth-r1-boost step-0 (task): Route boost: Find an analysis of the synthetic data that holds on samples it never saw
 written by human:antonio</title></rect>
-<path class="step k-note" d="M249.5,398.0 L254.5,407.0 L244.5,407.0Z"><title>synth-r1-boost step-1 (note): Commands run in a sandbox that hides the map and the other trails
+<path class="step k-note" d="M249.5,490.0 L254.5,499.0 L244.5,499.0Z"><title>synth-r1-boost step-1 (note): Commands run in a sandbox that hides the map and the other trails
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M262.5,398.0 L267.5,407.0 L257.5,407.0Z"><title>synth-r1-boost step-2 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M262.5,490.0 L267.5,499.0 L257.5,499.0Z"><title>synth-r1-boost step-2 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M275.5,397.0 L280.5,403.0 L275.5,409.0 L270.5,403.0Z"><title>synth-r1-boost step-3 (plan): Inspect the inherited analysis, data files and environment before running anything
+<path class="step k-plan" d="M275.5,489.0 L280.5,495.0 L275.5,501.0 L270.5,495.0Z"><title>synth-r1-boost step-3 (plan): Inspect the inherited analysis, data files and environment before running anything
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="284.5" y="399.0" width="8" height="8" rx="1"><title>synth-r1-boost step-4 (run): pwd &amp;&amp; ls -la &amp;&amp; echo &#x27;--- analysis.py ---&#x27; &amp;&amp; cat analysis.py &amp;&amp; echo &#x27;--- data dir ---&#x27; &amp;&amp; ls -la data/
+<rect class="step k-run" x="284.5" y="491.0" width="8" height="8" rx="1"><title>synth-r1-boost step-4 (run): pwd &amp;&amp; ls -la &amp;&amp; echo &#x27;--- analysis.py ---&#x27; &amp;&amp; cat analysis.py &amp;&amp; echo &#x27;--- data dir ---&#x27; &amp;&amp; ls -la data/
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="301.5" cy="403.0" r="5"><title>synth-r1-boost step-5 (observation): as expected
+<circle class="step o-as_expected" cx="301.5" cy="495.0" r="5"><title>synth-r1-boost step-5 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="310.5" y="399.0" width="8" height="8" rx="1"><title>synth-r1-boost step-6 (run): cat README.md pyproject.toml &amp;&amp; echo &#x27;--- pilot head ---&#x27; &amp;&amp; head -3 data/pilot.csv &amp;&amp; echo &#x27;--- pilot stats ---&#x27; &amp;&amp; wc -l data/pilot.csv &amp;&amp; uv run python -c &quot; import numpy as np t = np.loadtxt(&#x27;data/
+<rect class="step k-run" x="310.5" y="491.0" width="8" height="8" rx="1"><title>synth-r1-boost step-6 (run): cat README.md pyproject.toml &amp;&amp; echo &#x27;--- pilot head ---&#x27; &amp;&amp; head -3 data/pilot.csv &amp;&amp; echo &#x27;--- pilot stats ---&#x27; &amp;&amp; wc -l data/pilot.csv &amp;&amp; uv run python -c &quot; import numpy as np t = np.loadtxt(&#x27;data/
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="327.5" cy="403.0" r="5"><title>synth-r1-boost step-7 (observation): as expected
+<circle class="step o-as_expected" cx="327.5" cy="495.0" r="5"><title>synth-r1-boost step-7 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M340.5,398.0 L345.5,407.0 L335.5,407.0Z"><title>synth-r1-boost step-8 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M340.5,490.0 L345.5,499.0 L335.5,499.0Z"><title>synth-r1-boost step-8 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M353.5,397.0 L358.5,403.0 L353.5,409.0 L348.5,403.0Z"><title>synth-r1-boost step-9 (plan): Run inherited logistic pipeline&#x27;s 5-fold CV on pilot only, write cv_auc alone to out/metrics.json
+<path class="step k-plan" d="M353.5,489.0 L358.5,495.0 L353.5,501.0 L348.5,495.0Z"><title>synth-r1-boost step-9 (plan): Run inherited logistic pipeline&#x27;s 5-fold CV on pilot only, write cv_auc alone to out/metrics.json
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="362.5" y="399.0" width="8" height="8" rx="1"><title>synth-r1-boost step-10 (run): OMP_NUM_THREADS=1 uv run python baseline.py
+<rect class="step k-run" x="362.5" y="491.0" width="8" height="8" rx="1"><title>synth-r1-boost step-10 (run): OMP_NUM_THREADS=1 uv run python baseline.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="379.5" cy="403.0" r="5"><title>synth-r1-boost step-11 (observation): as expected
+<circle class="step o-as_expected" cx="379.5" cy="495.0" r="5"><title>synth-r1-boost step-11 (observation): as expected
 cv_auc 0.6313
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M392.5,397.0 L397.5,403.0 L392.5,409.0 L387.5,403.0Z"><title>synth-r1-boost step-12 (plan): Grid-search HistGradientBoosting on pilot only (3 lr x 3 tree sizes, early stopping, 5-fold CV)
+<path class="step k-plan" d="M392.5,489.0 L397.5,495.0 L392.5,501.0 L387.5,495.0Z"><title>synth-r1-boost step-12 (plan): Grid-search HistGradientBoosting on pilot only (3 lr x 3 tree sizes, early stopping, 5-fold CV)
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="401.5" y="399.0" width="8" height="8" rx="1"><title>synth-r1-boost step-13 (run): OMP_NUM_THREADS=1 uv run python boost_tune.py
+<rect class="step k-run" x="401.5" y="491.0" width="8" height="8" rx="1"><title>synth-r1-boost step-13 (run): OMP_NUM_THREADS=1 uv run python boost_tune.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-inconclusive" cx="418.5" cy="403.0" r="5"><title>synth-r1-boost step-14 (observation): inconclusive: no fresh out/metrics.json with cv_auc
+<circle class="step o-inconclusive" cx="418.5" cy="495.0" r="5"><title>synth-r1-boost step-14 (observation): inconclusive: no fresh out/metrics.json with cv_auc
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M431.5,398.0 L436.5,407.0 L426.5,407.0Z"><title>synth-r1-boost step-15 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M431.5,490.0 L436.5,499.0 L426.5,499.0Z"><title>synth-r1-boost step-15 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M444.5,398.0 L449.5,407.0 L439.5,407.0Z"><title>synth-r1-boost step-16 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M444.5,490.0 L449.5,499.0 L439.5,499.0Z"><title>synth-r1-boost step-16 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M457.5,397.0 L462.5,403.0 L457.5,409.0 L452.5,403.0Z"><title>synth-r1-boost step-17 (plan): Refine HistGB grid (leaves/lr/l2), confirm best on pilot CV, write cv_auc alone to out/metrics.json
+<path class="step k-plan" d="M457.5,489.0 L462.5,495.0 L457.5,501.0 L452.5,495.0Z"><title>synth-r1-boost step-17 (plan): Refine HistGB grid (leaves/lr/l2), confirm best on pilot CV, write cv_auc alone to out/metrics.json
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="466.5" y="399.0" width="8" height="8" rx="1"><title>synth-r1-boost step-18 (run): OMP_NUM_THREADS=1 uv run python boost_tune2.py
+<rect class="step k-run" x="466.5" y="491.0" width="8" height="8" rx="1"><title>synth-r1-boost step-18 (run): OMP_NUM_THREADS=1 uv run python boost_tune2.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="483.5" cy="403.0" r="5"><title>synth-r1-boost step-19 (observation): as expected
+<circle class="step o-as_expected" cx="483.5" cy="495.0" r="5"><title>synth-r1-boost step-19 (observation): as expected
 cv_auc 0.8343
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M496.5,397.0 L501.5,403.0 L496.5,409.0 L491.5,403.0Z"><title>synth-r1-boost step-20 (plan): Rewrite analysis.py as the chosen HistGB, run once to score heldout, write cv/holdout/gap
+<path class="step k-plan" d="M496.5,489.0 L501.5,495.0 L496.5,501.0 L491.5,495.0Z"><title>synth-r1-boost step-20 (plan): Rewrite analysis.py as the chosen HistGB, run once to score heldout, write cv/holdout/gap
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="505.5" y="399.0" width="8" height="8" rx="1"><title>synth-r1-boost step-21 (run): OMP_NUM_THREADS=1 uv run python analysis.py
+<rect class="step k-run" x="505.5" y="491.0" width="8" height="8" rx="1"><title>synth-r1-boost step-21 (run): OMP_NUM_THREADS=1 uv run python analysis.py
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="509.5" cy="403.0" r="7.5"/>
-<circle class="step o-as_expected" cx="522.5" cy="403.0" r="5"><title>synth-r1-boost step-22 (observation): as expected
+<circle class="sealed-read" cx="509.5" cy="495.0" r="7.5"/>
+<circle class="step o-as_expected" cx="522.5" cy="495.0" r="5"><title>synth-r1-boost step-22 (observation): as expected
 cv_auc 0.8343, holdout_auc 0.8538, gap -0.0195
 written by runner:notebook/0.1</title></circle>
-<text x="24" y="435.0" class="head small">synth-r1-forest</text><text x="24" y="448.0" class="small muted">forest · 26 steps · finished</text><line class="lane" x1="230" x2="568" y1="437.0" y2="437.0"/>
-<rect class="step k-task" x="231.5" y="432.0" width="10" height="10"><title>synth-r1-forest step-0 (task): Route forest: Find an analysis of the synthetic data that holds on samples it never saw
+<text x="24" y="527.0" class="head small">synth-r1-forest</text><text x="24" y="540.0" class="small muted">forest · 26 steps · finished</text><line class="lane" x1="230" x2="568" y1="529.0" y2="529.0"/>
+<rect class="step k-task" x="231.5" y="524.0" width="10" height="10"><title>synth-r1-forest step-0 (task): Route forest: Find an analysis of the synthetic data that holds on samples it never saw
 written by human:antonio</title></rect>
-<path class="step k-note" d="M249.5,432.0 L254.5,441.0 L244.5,441.0Z"><title>synth-r1-forest step-1 (note): Commands run in a sandbox that hides the map and the other trails
+<path class="step k-note" d="M249.5,524.0 L254.5,533.0 L244.5,533.0Z"><title>synth-r1-forest step-1 (note): Commands run in a sandbox that hides the map and the other trails
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M262.5,432.0 L267.5,441.0 L257.5,441.0Z"><title>synth-r1-forest step-2 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M262.5,524.0 L267.5,533.0 L257.5,533.0Z"><title>synth-r1-forest step-2 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M275.5,431.0 L280.5,437.0 L275.5,443.0 L270.5,437.0Z"><title>synth-r1-forest step-3 (plan): Inspect the inherited analysis, data files, and environment
+<path class="step k-plan" d="M275.5,523.0 L280.5,529.0 L275.5,535.0 L270.5,529.0Z"><title>synth-r1-forest step-3 (plan): Inspect the inherited analysis, data files, and environment
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="284.5" y="433.0" width="8" height="8" rx="1"><title>synth-r1-forest step-4 (run): ls -la &amp;&amp; echo &quot;---&quot; &amp;&amp; cat analysis.py &amp;&amp; echo &quot;---&quot; &amp;&amp; head -5 data/pilot.csv &amp;&amp; echo &quot;---&quot; &amp;&amp; wc -l data/pilot.csv data/heldout.csv &amp;&amp; echo &quot;---&quot; &amp;&amp; ls data/ out/ 2&gt;/dev/null; cat pyproject.toml 2&gt;
+<rect class="step k-run" x="284.5" y="525.0" width="8" height="8" rx="1"><title>synth-r1-forest step-4 (run): ls -la &amp;&amp; echo &quot;---&quot; &amp;&amp; cat analysis.py &amp;&amp; echo &quot;---&quot; &amp;&amp; head -5 data/pilot.csv &amp;&amp; echo &quot;---&quot; &amp;&amp; wc -l data/pilot.csv data/heldout.csv &amp;&amp; echo &quot;---&quot; &amp;&amp; ls data/ out/ 2&gt;/dev/null; cat pyproject.toml 2&gt;
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="288.5" cy="437.0" r="7.5"/>
-<circle class="step o-as_expected" cx="301.5" cy="437.0" r="5"><title>synth-r1-forest step-5 (observation): as expected
+<circle class="sealed-read" cx="288.5" cy="529.0" r="7.5"/>
+<circle class="step o-as_expected" cx="301.5" cy="529.0" r="5"><title>synth-r1-forest step-5 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M314.5,431.0 L319.5,437.0 L314.5,443.0 L309.5,437.0Z"><title>synth-r1-forest step-6 (plan): Run inherited logistic-regression CV on pilot only, write cv_auc alone
+<path class="step k-plan" d="M314.5,523.0 L319.5,529.0 L314.5,535.0 L309.5,529.0Z"><title>synth-r1-forest step-6 (plan): Run inherited logistic-regression CV on pilot only, write cv_auc alone
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<path class="step k-note" d="M327.5,432.0 L332.5,441.0 L322.5,441.0Z"><title>synth-r1-forest step-7 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M327.5,524.0 L332.5,533.0 L322.5,533.0Z"><title>synth-r1-forest step-7 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<rect class="step k-run" x="336.5" y="433.0" width="8" height="8" rx="1"><title>synth-r1-forest step-8 (run): OMP_NUM_THREADS=1 uv run python analysis.py
+<rect class="step k-run" x="336.5" y="525.0" width="8" height="8" rx="1"><title>synth-r1-forest step-8 (run): OMP_NUM_THREADS=1 uv run python analysis.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="353.5" cy="437.0" r="5"><title>synth-r1-forest step-9 (observation): as expected
+<circle class="step o-as_expected" cx="353.5" cy="529.0" r="5"><title>synth-r1-forest step-9 (observation): as expected
 cv_auc 0.6313
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M366.5,431.0 L371.5,437.0 L366.5,443.0 L361.5,437.0Z"><title>synth-r1-forest step-10 (plan): Tune a random forest on pilot data only; reach cv_auc &gt;= 0.80
+<path class="step k-plan" d="M366.5,523.0 L371.5,529.0 L366.5,535.0 L361.5,529.0Z"><title>synth-r1-forest step-10 (plan): Tune a random forest on pilot data only; reach cv_auc &gt;= 0.80
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<path class="step k-note" d="M379.5,432.0 L384.5,441.0 L374.5,441.0Z"><title>synth-r1-forest step-11 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M379.5,524.0 L384.5,533.0 L374.5,533.0Z"><title>synth-r1-forest step-11 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<rect class="step k-run" x="388.5" y="433.0" width="8" height="8" rx="1"><title>synth-r1-forest step-12 (run): n_jobs=1 uv run python tune_forest.py
+<rect class="step k-run" x="388.5" y="525.0" width="8" height="8" rx="1"><title>synth-r1-forest step-12 (run): n_jobs=1 uv run python tune_forest.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="405.5" cy="437.0" r="5"><title>synth-r1-forest step-13 (observation): as expected
+<circle class="step o-as_expected" cx="405.5" cy="529.0" r="5"><title>synth-r1-forest step-13 (observation): as expected
 cv_auc 0.8152
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M418.5,431.0 L423.5,437.0 L418.5,443.0 L413.5,437.0Z"><title>synth-r1-forest step-14 (plan): Refine RF config near the winner; keep if repeated CV improves
+<path class="step k-plan" d="M418.5,523.0 L423.5,529.0 L418.5,535.0 L413.5,529.0Z"><title>synth-r1-forest step-14 (plan): Refine RF config near the winner; keep if repeated CV improves
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<path class="step k-note" d="M431.5,432.0 L436.5,441.0 L426.5,441.0Z"><title>synth-r1-forest step-15 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M431.5,524.0 L436.5,533.0 L426.5,533.0Z"><title>synth-r1-forest step-15 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M444.5,431.0 L449.5,437.0 L444.5,443.0 L439.5,437.0Z"><title>synth-r1-forest step-16 (plan): RF on raw + pairwise-product features, tuned pilot-only
+<path class="step k-plan" d="M444.5,523.0 L449.5,529.0 L444.5,535.0 L439.5,529.0Z"><title>synth-r1-forest step-16 (plan): RF on raw + pairwise-product features, tuned pilot-only
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<path class="step k-note" d="M457.5,432.0 L462.5,441.0 L452.5,441.0Z"><title>synth-r1-forest step-17 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M457.5,524.0 L462.5,533.0 L452.5,533.0Z"><title>synth-r1-forest step-17 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<rect class="step k-run" x="466.5" y="433.0" width="8" height="8" rx="1"><title>synth-r1-forest step-18 (run): n_jobs=1 uv run python tune_forest2.py
+<rect class="step k-run" x="466.5" y="525.0" width="8" height="8" rx="1"><title>synth-r1-forest step-18 (run): n_jobs=1 uv run python tune_forest2.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="483.5" cy="437.0" r="5"><title>synth-r1-forest step-19 (observation): as expected
+<circle class="step o-as_expected" cx="483.5" cy="529.0" r="5"><title>synth-r1-forest step-19 (observation): as expected
 cv_auc 0.8931
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M496.5,431.0 L501.5,437.0 L496.5,443.0 L491.5,437.0Z"><title>synth-r1-forest step-20 (plan): Final: augmented RF scores heldout once; holdout &gt;= 0.8, |gap| &lt;= 0.05
+<path class="step k-plan" d="M496.5,523.0 L501.5,529.0 L496.5,535.0 L491.5,529.0Z"><title>synth-r1-forest step-20 (plan): Final: augmented RF scores heldout once; holdout &gt;= 0.8, |gap| &lt;= 0.05
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="505.5" y="433.0" width="8" height="8" rx="1"><title>synth-r1-forest step-21 (run): OMP_NUM_THREADS=1 uv run python analysis.py --final
+<rect class="step k-run" x="505.5" y="525.0" width="8" height="8" rx="1"><title>synth-r1-forest step-21 (run): OMP_NUM_THREADS=1 uv run python analysis.py --final
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="509.5" cy="437.0" r="7.5"/>
-<circle class="step o-as_expected" cx="522.5" cy="437.0" r="5"><title>synth-r1-forest step-22 (observation): as expected
+<circle class="sealed-read" cx="509.5" cy="529.0" r="7.5"/>
+<circle class="step o-as_expected" cx="522.5" cy="529.0" r="5"><title>synth-r1-forest step-22 (observation): as expected
 cv_auc 0.8931, holdout_auc 0.8983, gap -0.0051
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M535.5,431.0 L540.5,437.0 L535.5,443.0 L530.5,437.0Z"><title>synth-r1-forest step-23 (plan): Verify final flat metrics file on disk
+<path class="step k-plan" d="M535.5,523.0 L540.5,529.0 L535.5,535.0 L530.5,529.0Z"><title>synth-r1-forest step-23 (plan): Verify final flat metrics file on disk
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="544.5" y="433.0" width="8" height="8" rx="1"><title>synth-r1-forest step-24 (run): cat out/metrics.json &amp;&amp; python3 -c &quot;import json; m=json.load(open(&#x27;out/metrics.json&#x27;)); assert set(m)=={&#x27;cv_auc&#x27;,&#x27;holdout_auc&#x27;,&#x27;gap&#x27;} and all(isinstance(v,(int,float)) for v in m.values()); print(&#x27;fla
+<rect class="step k-run" x="544.5" y="525.0" width="8" height="8" rx="1"><title>synth-r1-forest step-24 (run): cat out/metrics.json &amp;&amp; python3 -c &quot;import json; m=json.load(open(&#x27;out/metrics.json&#x27;)); assert set(m)=={&#x27;cv_auc&#x27;,&#x27;holdout_auc&#x27;,&#x27;gap&#x27;} and all(isinstance(v,(int,float)) for v in m.values()); print(&#x27;fla
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="561.5" cy="437.0" r="5"><title>synth-r1-forest step-25 (observation): as expected
+<circle class="step o-as_expected" cx="561.5" cy="529.0" r="5"><title>synth-r1-forest step-25 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<text x="24" y="469.0" class="head small">synth-r1-pairs</text><text x="24" y="482.0" class="small muted">pairs · 19 steps · finished</text><line class="lane" x1="230" x2="477" y1="471.0" y2="471.0"/>
-<rect class="step k-task" x="231.5" y="466.0" width="10" height="10"><title>synth-r1-pairs step-0 (task): Route pairs: Find an analysis of the synthetic data that holds on samples it never saw
+<text x="24" y="561.0" class="head small">synth-r1-pairs</text><text x="24" y="574.0" class="small muted">pairs · 19 steps · finished</text><line class="lane" x1="230" x2="477" y1="563.0" y2="563.0"/>
+<rect class="step k-task" x="231.5" y="558.0" width="10" height="10"><title>synth-r1-pairs step-0 (task): Route pairs: Find an analysis of the synthetic data that holds on samples it never saw
 written by human:antonio</title></rect>
-<path class="step k-note" d="M249.5,466.0 L254.5,475.0 L244.5,475.0Z"><title>synth-r1-pairs step-1 (note): Commands run in a sandbox that hides the map and the other trails
+<path class="step k-note" d="M249.5,558.0 L254.5,567.0 L244.5,567.0Z"><title>synth-r1-pairs step-1 (note): Commands run in a sandbox that hides the map and the other trails
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M262.5,466.0 L267.5,475.0 L257.5,475.0Z"><title>synth-r1-pairs step-2 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M262.5,558.0 L267.5,567.0 L257.5,567.0Z"><title>synth-r1-pairs step-2 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M275.5,465.0 L280.5,471.0 L275.5,477.0 L270.5,471.0Z"><title>synth-r1-pairs step-3 (plan): Reconnaissance: read analysis.py, inspect data/pilot.csv and data/heldout.csv shapes
+<path class="step k-plan" d="M275.5,557.0 L280.5,563.0 L275.5,569.0 L270.5,563.0Z"><title>synth-r1-pairs step-3 (plan): Reconnaissance: read analysis.py, inspect data/pilot.csv and data/heldout.csv shapes
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="284.5" y="467.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-4 (run): ls -la &amp;&amp; ls -la data/ &amp;&amp; head -3 data/pilot.csv | cut -c1-300 &amp;&amp; wc -l data/pilot.csv data/heldout.csv
+<rect class="step k-run" x="284.5" y="559.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-4 (run): ls -la &amp;&amp; ls -la data/ &amp;&amp; head -3 data/pilot.csv | cut -c1-300 &amp;&amp; wc -l data/pilot.csv data/heldout.csv
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="288.5" cy="471.0" r="7.5"/>
-<circle class="step o-as_expected" cx="301.5" cy="471.0" r="5"><title>synth-r1-pairs step-5 (observation): as expected
+<circle class="sealed-read" cx="288.5" cy="563.0" r="7.5"/>
+<circle class="step o-as_expected" cx="301.5" cy="563.0" r="5"><title>synth-r1-pairs step-5 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M314.5,466.0 L319.5,475.0 L309.5,475.0Z"><title>synth-r1-pairs step-6 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M314.5,558.0 L319.5,567.0 L309.5,567.0Z"><title>synth-r1-pairs step-6 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M327.5,465.0 L332.5,471.0 L327.5,477.0 L322.5,471.0Z"><title>synth-r1-pairs step-7 (plan): Baseline: gate heldout behind --final in analysis.py, run pilot-only, write cv_auc alone
+<path class="step k-plan" d="M327.5,557.0 L332.5,563.0 L327.5,569.0 L322.5,563.0Z"><title>synth-r1-pairs step-7 (plan): Baseline: gate heldout behind --final in analysis.py, run pilot-only, write cv_auc alone
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="336.5" y="467.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-8 (run): OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run python analysis.py
+<rect class="step k-run" x="336.5" y="559.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-8 (run): OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run python analysis.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="353.5" cy="471.0" r="5"><title>synth-r1-pairs step-9 (observation): as expected
+<circle class="step o-as_expected" cx="353.5" cy="563.0" r="5"><title>synth-r1-pairs step-9 (observation): as expected
 cv_auc 0.6313
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="362.5" y="467.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-10 (run): uv run python -c &quot;import sklearn; print(sklearn.__version__)&quot; &amp;&amp; grep -A5 dependencies pyproject.toml &amp;&amp; OMP_NUM_THREADS=1 uv run python -c &quot; import numpy as np, pandas as pd t = np.loadtxt(&#x27;data/pilo
+<rect class="step k-run" x="362.5" y="559.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-10 (run): uv run python -c &quot;import sklearn; print(sklearn.__version__)&quot; &amp;&amp; grep -A5 dependencies pyproject.toml &amp;&amp; OMP_NUM_THREADS=1 uv run python -c &quot; import numpy as np, pandas as pd t = np.loadtxt(&#x27;data/pilo
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-failed" cx="379.5" cy="471.0" r="5"><title>synth-r1-pairs step-11 (observation): failed: exit code 1; no fresh out/metrics.json with cv_auc
+<circle class="step o-failed" cx="379.5" cy="563.0" r="5"><title>synth-r1-pairs step-11 (observation): failed: exit code 1; no fresh out/metrics.json with cv_auc
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M392.5,465.0 L397.5,471.0 L392.5,477.0 L387.5,471.0Z"><title>synth-r1-pairs step-12 (plan): Pairs-cv: nested-CV logistic on pairwise products, pilot-only, write cv_auc alone
+<path class="step k-plan" d="M392.5,557.0 L397.5,563.0 L392.5,569.0 L387.5,563.0Z"><title>synth-r1-pairs step-12 (plan): Pairs-cv: nested-CV logistic on pairwise products, pilot-only, write cv_auc alone
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="401.5" y="467.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-13 (run): OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run python analysis.py
+<rect class="step k-run" x="401.5" y="559.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-13 (run): OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run python analysis.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="418.5" cy="471.0" r="5"><title>synth-r1-pairs step-14 (observation): as expected
+<circle class="step o-as_expected" cx="418.5" cy="563.0" r="5"><title>synth-r1-pairs step-14 (observation): as expected
 cv_auc 0.8923
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M431.5,465.0 L436.5,471.0 L431.5,477.0 L426.5,471.0Z"><title>synth-r1-pairs step-15 (plan): Final: run analysis.py --final once, score heldout, write cv_auc, holdout_auc, gap
+<path class="step k-plan" d="M431.5,557.0 L436.5,563.0 L431.5,569.0 L426.5,563.0Z"><title>synth-r1-pairs step-15 (plan): Final: run analysis.py --final once, score heldout, write cv_auc, holdout_auc, gap
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="440.5" y="467.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-16 (run): OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run python analysis.py --final
+<rect class="step k-run" x="440.5" y="559.0" width="8" height="8" rx="1"><title>synth-r1-pairs step-16 (run): OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run python analysis.py --final
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="444.5" cy="471.0" r="7.5"/>
-<circle class="step o-as_expected" cx="457.5" cy="471.0" r="5"><title>synth-r1-pairs step-17 (observation): as expected
+<circle class="sealed-read" cx="444.5" cy="563.0" r="7.5"/>
+<circle class="step o-as_expected" cx="457.5" cy="563.0" r="5"><title>synth-r1-pairs step-17 (observation): as expected
 cv_auc 0.8923, holdout_auc 0.8923, gap 0
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M470.5,466.0 L475.5,475.0 L465.5,475.0Z"><title>synth-r1-pairs step-18 (note): Read the project map at revision 0, with 2 other trail heads
+<path class="step k-note" d="M470.5,558.0 L475.5,567.0 L465.5,567.0Z"><title>synth-r1-pairs step-18 (note): Read the project map at revision 0, with 2 other trail heads
 written by runner:notebook/0.1</title></path>
-<text x="24" y="503.0" class="head small">synth-r2-knn</text><text x="24" y="516.0" class="small muted">knn · 17 steps · finished</text><line class="lane" x1="230" x2="451" y1="505.0" y2="505.0"/>
-<rect class="step k-task" x="231.5" y="500.0" width="10" height="10"><title>synth-r2-knn step-0 (task): Route knn: Find an analysis of the synthetic data that holds on samples it never saw
+<text x="24" y="595.0" class="head small">synth-r2-knn</text><text x="24" y="608.0" class="small muted">knn · 17 steps · finished</text><line class="lane" x1="230" x2="451" y1="597.0" y2="597.0"/>
+<rect class="step k-task" x="231.5" y="592.0" width="10" height="10"><title>synth-r2-knn step-0 (task): Route knn: Find an analysis of the synthetic data that holds on samples it never saw
 written by human:antonio</title></rect>
-<path class="step k-note" d="M249.5,500.0 L254.5,509.0 L244.5,509.0Z"><title>synth-r2-knn step-1 (note): Commands run in a sandbox that hides the map and the other trails
+<path class="step k-note" d="M249.5,592.0 L254.5,601.0 L244.5,601.0Z"><title>synth-r2-knn step-1 (note): Commands run in a sandbox that hides the map and the other trails
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M262.5,500.0 L267.5,509.0 L257.5,509.0Z"><title>synth-r2-knn step-2 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M262.5,592.0 L267.5,601.0 L257.5,601.0Z"><title>synth-r2-knn step-2 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M275.5,499.0 L280.5,505.0 L275.5,511.0 L270.5,505.0Z"><title>synth-r2-knn step-3 (plan): Look around workspace: read analysis.py, list data/, inspect pilot.csv columns/size (pilot only)
+<path class="step k-plan" d="M275.5,591.0 L280.5,597.0 L275.5,603.0 L270.5,597.0Z"><title>synth-r2-knn step-3 (plan): Look around workspace: read analysis.py, list data/, inspect pilot.csv columns/size (pilot only)
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="284.5" y="501.0" width="8" height="8" rx="1"><title>synth-r2-knn step-4 (run): ls -la &amp;&amp; echo &#x27;---&#x27; &amp;&amp; ls -la data/ &amp;&amp; echo &#x27;---&#x27; &amp;&amp; wc -l data/pilot.csv &amp;&amp; echo &#x27;---&#x27; &amp;&amp; head -3 data/pilot.csv
+<rect class="step k-run" x="284.5" y="593.0" width="8" height="8" rx="1"><title>synth-r2-knn step-4 (run): ls -la &amp;&amp; echo &#x27;---&#x27; &amp;&amp; ls -la data/ &amp;&amp; echo &#x27;---&#x27; &amp;&amp; wc -l data/pilot.csv &amp;&amp; echo &#x27;---&#x27; &amp;&amp; head -3 data/pilot.csv
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="301.5" cy="505.0" r="5"><title>synth-r2-knn step-5 (observation): as expected
+<circle class="step o-as_expected" cx="301.5" cy="597.0" r="5"><title>synth-r2-knn step-5 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M314.5,499.0 L319.5,505.0 L314.5,511.0 L309.5,505.0Z"><title>synth-r2-knn step-6 (plan): Pilot-only nested-CV KNN (k, weights, feature screen chosen in inner folds); write cv_auc alone
+<path class="step k-plan" d="M314.5,591.0 L319.5,597.0 L314.5,603.0 L309.5,597.0Z"><title>synth-r2-knn step-6 (plan): Pilot-only nested-CV KNN (k, weights, feature screen chosen in inner folds); write cv_auc alone
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<path class="step k-note" d="M327.5,500.0 L332.5,509.0 L322.5,509.0Z"><title>synth-r2-knn step-7 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M327.5,592.0 L332.5,601.0 L322.5,601.0Z"><title>synth-r2-knn step-7 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<rect class="step k-run" x="336.5" y="501.0" width="8" height="8" rx="1"><title>synth-r2-knn step-8 (run): OMP_NUM_THREADS=1 uv run python analysis.py
+<rect class="step k-run" x="336.5" y="593.0" width="8" height="8" rx="1"><title>synth-r2-knn step-8 (run): OMP_NUM_THREADS=1 uv run python analysis.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="353.5" cy="505.0" r="5"><title>synth-r2-knn step-9 (observation): as expected
+<circle class="step o-as_expected" cx="353.5" cy="597.0" r="5"><title>synth-r2-knn step-9 (observation): as expected
 cv_auc 0.8568
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M366.5,500.0 L371.5,509.0 L361.5,509.0Z"><title>synth-r2-knn step-10 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M366.5,592.0 L371.5,601.0 L361.5,601.0Z"><title>synth-r2-knn step-10 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M379.5,499.0 L384.5,505.0 L379.5,511.0 L374.5,505.0Z"><title>synth-r2-knn step-11 (plan): Final: score heldout once with the chosen KNN; write cv_auc, holdout_auc, gap flat
+<path class="step k-plan" d="M379.5,591.0 L384.5,597.0 L379.5,603.0 L374.5,597.0Z"><title>synth-r2-knn step-11 (plan): Final: score heldout once with the chosen KNN; write cv_auc, holdout_auc, gap flat
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="388.5" y="501.0" width="8" height="8" rx="1"><title>synth-r2-knn step-12 (run): OMP_NUM_THREADS=1 uv run python analysis.py --final
+<rect class="step k-run" x="388.5" y="593.0" width="8" height="8" rx="1"><title>synth-r2-knn step-12 (run): OMP_NUM_THREADS=1 uv run python analysis.py --final
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="392.5" cy="505.0" r="7.5"/>
-<circle class="step o-as_expected" cx="405.5" cy="505.0" r="5"><title>synth-r2-knn step-13 (observation): as expected
+<circle class="sealed-read" cx="392.5" cy="597.0" r="7.5"/>
+<circle class="step o-as_expected" cx="405.5" cy="597.0" r="5"><title>synth-r2-knn step-13 (observation): as expected
 cv_auc 0.8568, holdout_auc 0.8405, gap 0.0163
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M418.5,499.0 L423.5,505.0 L418.5,511.0 L413.5,505.0Z"><title>synth-r2-knn step-14 (plan): Verify out/metrics.json is flat and holds the three reported measures
+<path class="step k-plan" d="M418.5,591.0 L423.5,597.0 L418.5,603.0 L413.5,597.0Z"><title>synth-r2-knn step-14 (plan): Verify out/metrics.json is flat and holds the three reported measures
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="427.5" y="501.0" width="8" height="8" rx="1"><title>synth-r2-knn step-15 (run): cat out/metrics.json
+<rect class="step k-run" x="427.5" y="593.0" width="8" height="8" rx="1"><title>synth-r2-knn step-15 (run): cat out/metrics.json
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="444.5" cy="505.0" r="5"><title>synth-r2-knn step-16 (observation): as expected
+<circle class="step o-as_expected" cx="444.5" cy="597.0" r="5"><title>synth-r2-knn step-16 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<text x="24" y="537.0" class="head small">synth-r2-l1</text><text x="24" y="550.0" class="small muted">l1 · 27 steps · finished</text><line class="lane" x1="230" x2="581" y1="539.0" y2="539.0"/>
-<rect class="step k-task" x="231.5" y="534.0" width="10" height="10"><title>synth-r2-l1 step-0 (task): Route l1: Find an analysis of the synthetic data that holds on samples it never saw
+<text x="24" y="629.0" class="head small">synth-r2-l1</text><text x="24" y="642.0" class="small muted">l1 · 27 steps · finished</text><line class="lane" x1="230" x2="581" y1="631.0" y2="631.0"/>
+<rect class="step k-task" x="231.5" y="626.0" width="10" height="10"><title>synth-r2-l1 step-0 (task): Route l1: Find an analysis of the synthetic data that holds on samples it never saw
 written by human:antonio</title></rect>
-<path class="step k-note" d="M249.5,534.0 L254.5,543.0 L244.5,543.0Z"><title>synth-r2-l1 step-1 (note): Commands run in a sandbox that hides the map and the other trails
+<path class="step k-note" d="M249.5,626.0 L254.5,635.0 L244.5,635.0Z"><title>synth-r2-l1 step-1 (note): Commands run in a sandbox that hides the map and the other trails
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M262.5,534.0 L267.5,543.0 L257.5,543.0Z"><title>synth-r2-l1 step-2 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M262.5,626.0 L267.5,635.0 L257.5,635.0Z"><title>synth-r2-l1 step-2 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M275.5,533.0 L280.5,539.0 L275.5,545.0 L270.5,539.0Z"><title>synth-r2-l1 step-3 (plan): Look around: read analysis.py, inspect pilot.csv only, check uv/sklearn
+<path class="step k-plan" d="M275.5,625.0 L280.5,631.0 L275.5,637.0 L270.5,631.0Z"><title>synth-r2-l1 step-3 (plan): Look around: read analysis.py, inspect pilot.csv only, check uv/sklearn
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="284.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-4 (run): ls -la &amp;&amp; echo ---- &amp;&amp; cat analysis.py &amp;&amp; echo ---- &amp;&amp; wc -l data/pilot.csv &amp;&amp; head -3 data/pilot.csv &amp;&amp; echo ---- &amp;&amp; uv run python -c &quot;import sklearn, numpy, pandas; print(sklearn.__version__, numpy.
+<rect class="step k-run" x="284.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-4 (run): ls -la &amp;&amp; echo ---- &amp;&amp; cat analysis.py &amp;&amp; echo ---- &amp;&amp; wc -l data/pilot.csv &amp;&amp; head -3 data/pilot.csv &amp;&amp; echo ---- &amp;&amp; uv run python -c &quot;import sklearn, numpy, pandas; print(sklearn.__version__, numpy.
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-failed" cx="301.5" cy="539.0" r="5"><title>synth-r2-l1 step-5 (observation): failed: exit code 1
+<circle class="step o-failed" cx="301.5" cy="631.0" r="5"><title>synth-r2-l1 step-5 (observation): failed: exit code 1
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="310.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-6 (run): uv run python -c &quot;import sklearn, numpy; print(&#x27;sklearn&#x27;, sklearn.__version__, &#x27;numpy&#x27;, numpy.__version__)&quot; &amp;&amp; cat pyproject.toml README.md
+<rect class="step k-run" x="310.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-6 (run): uv run python -c &quot;import sklearn, numpy; print(&#x27;sklearn&#x27;, sklearn.__version__, &#x27;numpy&#x27;, numpy.__version__)&quot; &amp;&amp; cat pyproject.toml README.md
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="327.5" cy="539.0" r="5"><title>synth-r2-l1 step-7 (observation): as expected
+<circle class="step o-as_expected" cx="327.5" cy="631.0" r="5"><title>synth-r2-l1 step-7 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M340.5,534.0 L345.5,543.0 L335.5,543.0Z"><title>synth-r2-l1 step-8 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M340.5,626.0 L345.5,635.0 L335.5,635.0Z"><title>synth-r2-l1 step-8 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M353.5,533.0 L358.5,539.0 L353.5,545.0 L348.5,539.0Z"><title>synth-r2-l1 step-9 (plan): Rewrite analysis.py as L1 logistic on raw+pairwise products, nested-CV pilot-only, write cv_auc alone
+<path class="step k-plan" d="M353.5,625.0 L358.5,631.0 L353.5,637.0 L348.5,631.0Z"><title>synth-r2-l1 step-9 (plan): Rewrite analysis.py as L1 logistic on raw+pairwise products, nested-CV pilot-only, write cv_auc alone
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="362.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-10 (run): OMP_NUM_THREADS=1 uv run python analysis.py
+<rect class="step k-run" x="362.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-10 (run): OMP_NUM_THREADS=1 uv run python analysis.py
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="379.5" cy="539.0" r="5"><title>synth-r2-l1 step-11 (observation): as expected
+<circle class="step o-as_expected" cx="379.5" cy="631.0" r="5"><title>synth-r2-l1 step-11 (observation): as expected
 cv_auc 0.9134
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M392.5,534.0 L397.5,543.0 L387.5,543.0Z"><title>synth-r2-l1 step-12 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M392.5,626.0 L397.5,635.0 L387.5,635.0Z"><title>synth-r2-l1 step-12 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M405.5,533.0 L410.5,539.0 L405.5,545.0 L400.5,539.0Z"><title>synth-r2-l1 step-13 (plan): Verify metrics.json holds only cv_auc; probe L1 semantics (sparsity, l1_ratio equivalence) on pilot
+<path class="step k-plan" d="M405.5,625.0 L410.5,631.0 L405.5,637.0 L400.5,631.0Z"><title>synth-r2-l1 step-13 (plan): Verify metrics.json holds only cv_auc; probe L1 semantics (sparsity, l1_ratio equivalence) on pilot
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="414.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-14 (run): echo &quot;== out/metrics.json ==&quot; &amp;&amp; cat out/metrics.json &amp;&amp; echo &quot;== L1 semantics probe (stdout only) ==&quot; &amp;&amp; OMP_NUM_THREADS=1 uv run python - &lt;&lt;&#x27;EOF&#x27; import warnings import numpy as np from sklearn.line
+<rect class="step k-run" x="414.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-14 (run): echo &quot;== out/metrics.json ==&quot; &amp;&amp; cat out/metrics.json &amp;&amp; echo &quot;== L1 semantics probe (stdout only) ==&quot; &amp;&amp; OMP_NUM_THREADS=1 uv run python - &lt;&lt;&#x27;EOF&#x27; import warnings import numpy as np from sklearn.line
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="431.5" cy="539.0" r="5"><title>synth-r2-l1 step-15 (observation): as expected
+<circle class="step o-as_expected" cx="431.5" cy="631.0" r="5"><title>synth-r2-l1 step-15 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M444.5,533.0 L449.5,539.0 L444.5,545.0 L439.5,539.0Z"><title>synth-r2-l1 step-16 (plan): Switch analysis.py to l1_ratio=1 (no penalty= arg), rerun pilot-only nested CV
+<path class="step k-plan" d="M444.5,625.0 L449.5,631.0 L444.5,637.0 L439.5,631.0Z"><title>synth-r2-l1 step-16 (plan): Switch analysis.py to l1_ratio=1 (no penalty= arg), rerun pilot-only nested CV
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="453.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-17 (run): OMP_NUM_THREADS=1 uv run python analysis.py 2&gt;&amp;1 | tail -15
+<rect class="step k-run" x="453.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-17 (run): OMP_NUM_THREADS=1 uv run python analysis.py 2&gt;&amp;1 | tail -15
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="470.5" cy="539.0" r="5"><title>synth-r2-l1 step-18 (observation): as expected
+<circle class="step o-as_expected" cx="470.5" cy="631.0" r="5"><title>synth-r2-l1 step-18 (observation): as expected
 cv_auc 0.9134
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M483.5,534.0 L488.5,543.0 L478.5,543.0Z"><title>synth-r2-l1 step-19 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M483.5,626.0 L488.5,635.0 L478.5,635.0Z"><title>synth-r2-l1 step-19 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M496.5,533.0 L501.5,539.0 L496.5,545.0 L491.5,539.0Z"><title>synth-r2-l1 step-20 (plan): Final: analysis.py --final scores heldout once; write cv_auc, holdout_auc, gap
+<path class="step k-plan" d="M496.5,625.0 L501.5,631.0 L496.5,637.0 L491.5,631.0Z"><title>synth-r2-l1 step-20 (plan): Final: analysis.py --final scores heldout once; write cv_auc, holdout_auc, gap
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="505.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-21 (run): OMP_NUM_THREADS=1 uv run python analysis.py --final 2&gt;&amp;1 | tail -12
+<rect class="step k-run" x="505.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-21 (run): OMP_NUM_THREADS=1 uv run python analysis.py --final 2&gt;&amp;1 | tail -12
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="509.5" cy="539.0" r="7.5"/>
-<circle class="step o-as_expected" cx="522.5" cy="539.0" r="5"><title>synth-r2-l1 step-22 (observation): as expected
+<circle class="sealed-read" cx="509.5" cy="631.0" r="7.5"/>
+<circle class="step o-as_expected" cx="522.5" cy="631.0" r="5"><title>synth-r2-l1 step-22 (observation): as expected
 cv_auc 0.9134, holdout_auc 0.9079, gap 0.0056
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M535.5,533.0 L540.5,539.0 L535.5,545.0 L530.5,539.0Z"><title>synth-r2-l1 step-23 (plan): Verify final flat metrics.json contains exactly cv_auc, holdout_auc, gap
+<path class="step k-plan" d="M535.5,625.0 L540.5,631.0 L535.5,637.0 L530.5,631.0Z"><title>synth-r2-l1 step-23 (plan): Verify final flat metrics.json contains exactly cv_auc, holdout_auc, gap
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="544.5" y="535.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-24 (run): cat out/metrics.json
+<rect class="step k-run" x="544.5" y="627.0" width="8" height="8" rx="1"><title>synth-r2-l1 step-24 (run): cat out/metrics.json
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="561.5" cy="539.0" r="5"><title>synth-r2-l1 step-25 (observation): as expected
+<circle class="step o-as_expected" cx="561.5" cy="631.0" r="5"><title>synth-r2-l1 step-25 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M574.5,534.0 L579.5,543.0 L569.5,543.0Z"><title>synth-r2-l1 step-26 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M574.5,626.0 L579.5,635.0 L569.5,635.0Z"><title>synth-r2-l1 step-26 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<text x="24" y="571.0" class="head small">synth-r2-logistic</text><text x="24" y="584.0" class="small muted">logistic · 23 steps · running, last step 115 s ago</text><line class="lane" x1="230" x2="529" y1="573.0" y2="573.0"/>
-<rect class="step k-task" x="231.5" y="568.0" width="10" height="10"><title>synth-r2-logistic step-0 (task): Route logistic: Find an analysis of the synthetic data that holds on samples it never saw
+<text x="24" y="663.0" class="head small">synth-r2-logistic</text><text x="24" y="676.0" class="small muted">logistic · 23 steps · finished</text><line class="lane" x1="230" x2="529" y1="665.0" y2="665.0"/>
+<rect class="step k-task" x="231.5" y="660.0" width="10" height="10"><title>synth-r2-logistic step-0 (task): Route logistic: Find an analysis of the synthetic data that holds on samples it never saw
 written by human:antonio</title></rect>
-<path class="step k-note" d="M249.5,568.0 L254.5,577.0 L244.5,577.0Z"><title>synth-r2-logistic step-1 (note): Commands run in a sandbox that hides the map and the other trails
+<path class="step k-note" d="M249.5,660.0 L254.5,669.0 L244.5,669.0Z"><title>synth-r2-logistic step-1 (note): Commands run in a sandbox that hides the map and the other trails
 written by runner:notebook/0.1</title></path>
-<path class="step k-note" d="M262.5,568.0 L267.5,577.0 L257.5,577.0Z"><title>synth-r2-logistic step-2 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M262.5,660.0 L267.5,669.0 L257.5,669.0Z"><title>synth-r2-logistic step-2 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M275.5,567.0 L280.5,573.0 L275.5,579.0 L270.5,573.0Z"><title>synth-r2-logistic step-3 (plan): Inspect inherited analysis.py and pilot.csv structure before designing the logistic route
+<path class="step k-plan" d="M275.5,659.0 L280.5,665.0 L275.5,671.0 L270.5,665.0Z"><title>synth-r2-logistic step-3 (plan): Inspect inherited analysis.py and pilot.csv structure before designing the logistic route
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="284.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-4 (run): head -3 data/pilot.csv; echo ---; wc -l data/pilot.csv; echo ---; ls -la; echo ---; ls data
+<rect class="step k-run" x="284.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-4 (run): head -3 data/pilot.csv; echo ---; wc -l data/pilot.csv; echo ---; ls -la; echo ---; ls data
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="301.5" cy="573.0" r="5"><title>synth-r2-logistic step-5 (observation): as expected
+<circle class="step o-as_expected" cx="301.5" cy="665.0" r="5"><title>synth-r2-logistic step-5 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="310.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-6 (run): cat pyproject.toml &amp;&amp; uv run python - &lt;&lt;&#x27;PY&#x27; import os os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from sklearn.linear_model import LogisticRegression from sklearn.model_selection import St
+<rect class="step k-run" x="310.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-6 (run): cat pyproject.toml &amp;&amp; uv run python - &lt;&lt;&#x27;PY&#x27; import os os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from sklearn.linear_model import LogisticRegression from sklearn.model_selection import St
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="327.5" cy="573.0" r="5"><title>synth-r2-logistic step-7 (observation): as expected
+<circle class="step o-as_expected" cx="327.5" cy="665.0" r="5"><title>synth-r2-logistic step-7 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="336.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-8 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
+<rect class="step k-run" x="336.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-8 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-failed" cx="353.5" cy="573.0" r="5"><title>synth-r2-logistic step-9 (observation): failed: exit code 1
+<circle class="step o-failed" cx="353.5" cy="665.0" r="5"><title>synth-r2-logistic step-9 (observation): failed: exit code 1
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="362.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-10 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
+<rect class="step k-run" x="362.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-10 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-failed" cx="379.5" cy="573.0" r="5"><title>synth-r2-logistic step-11 (observation): failed: exit code 1
+<circle class="step o-failed" cx="379.5" cy="665.0" r="5"><title>synth-r2-logistic step-11 (observation): failed: exit code 1
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="388.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-12 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
+<rect class="step k-run" x="388.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-12 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="405.5" cy="573.0" r="5"><title>synth-r2-logistic step-13 (observation): as expected
+<circle class="step o-as_expected" cx="405.5" cy="665.0" r="5"><title>synth-r2-logistic step-13 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<rect class="step k-run" x="414.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-14 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
+<rect class="step k-run" x="414.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-14 (run): uv run python - &lt;&lt;&#x27;PY&#x27; import os, time os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;1&quot; import numpy as np from scipy.optimize import minimize from sklearn.metrics import roc_auc_score from sklearn.model_selection
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="431.5" cy="573.0" r="5"><title>synth-r2-logistic step-15 (observation): as expected
+<circle class="step o-as_expected" cx="431.5" cy="665.0" r="5"><title>synth-r2-logistic step-15 (observation): as expected
 written by runner:notebook/0.1</title></circle>
-<path class="step k-note" d="M444.5,568.0 L449.5,577.0 L439.5,577.0Z"><title>synth-r2-logistic step-16 (note): Read the project map at revision 1, with 5 other trail heads
+<path class="step k-note" d="M444.5,660.0 L449.5,669.0 L439.5,669.0Z"><title>synth-r2-logistic step-16 (note): Read the project map at revision 1, with 5 other trail heads
 written by runner:notebook/0.1</title></path>
-<path class="step k-plan" d="M457.5,567.0 L462.5,573.0 L457.5,579.0 L452.5,573.0Z"><title>synth-r2-logistic step-17 (plan): Pilot-only nested-CV run of kernel logistic regression, writing cv_auc alone (logistic-cv milestone)
+<path class="step k-plan" d="M457.5,659.0 L462.5,665.0 L457.5,671.0 L452.5,665.0Z"><title>synth-r2-logistic step-17 (plan): Pilot-only nested-CV run of kernel logistic regression, writing cv_auc alone (logistic-cv milestone)
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="466.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-18 (run): uv run python analysis.py &amp;&amp; cat out/metrics.json
+<rect class="step k-run" x="466.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-18 (run): uv run python analysis.py &amp;&amp; cat out/metrics.json
 written by runner:notebook/0.1</title></rect>
-<circle class="step o-as_expected" cx="483.5" cy="573.0" r="5"><title>synth-r2-logistic step-19 (observation): as expected
+<circle class="step o-as_expected" cx="483.5" cy="665.0" r="5"><title>synth-r2-logistic step-19 (observation): as expected
 cv_auc 0.8678
 written by runner:notebook/0.1</title></circle>
-<path class="step k-plan" d="M496.5,567.0 L501.5,573.0 L496.5,579.0 L491.5,573.0Z"><title>synth-r2-logistic step-20 (plan): Final run: score data/heldout.csv once with the tuned kernel logistic, write cv_auc, holdout_auc, gap
+<path class="step k-plan" d="M496.5,659.0 L501.5,665.0 L496.5,671.0 L491.5,665.0Z"><title>synth-r2-logistic step-20 (plan): Final run: score data/heldout.csv once with the tuned kernel logistic, write cv_auc, holdout_auc, gap
 written by agent:pi/zai-org/GLM-5.3-Flash</title></path>
-<rect class="step k-run" x="505.5" y="569.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-21 (run): uv run python analysis.py --final &amp;&amp; cat out/metrics.json
+<rect class="step k-run" x="505.5" y="661.0" width="8" height="8" rx="1"><title>synth-r2-logistic step-21 (run): uv run python analysis.py --final &amp;&amp; cat out/metrics.json
 opened a sealed input (read)
 written by runner:notebook/0.1</title></rect>
-<circle class="sealed-read" cx="509.5" cy="573.0" r="7.5"/>
-<circle class="step o-as_expected" cx="522.5" cy="573.0" r="5"><title>synth-r2-logistic step-22 (observation): as expected
+<circle class="sealed-read" cx="509.5" cy="665.0" r="7.5"/>
+<circle class="step o-as_expected" cx="522.5" cy="665.0" r="5"><title>synth-r2-logistic step-22 (observation): as expected
 cv_auc 0.8678, holdout_auc 0.8667, gap 0.0011
 written by runner:notebook/0.1</title></circle>
-<circle class="newest" cx="522.5" cy="573.0" r="9"/>
-<path class="arc about" d="M262.5,403.0 C232.5,431.0 292.5,409.0 262.5,437.0"><title>synth-r1-boost step-2 about probe:synth-r1-forest@sha256:867bdeb768efe43900a02343aaeaea706d3b9608cc419e12ccbb0d63fbffb0c7 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,403.0 C232.5,431.0 279.5,443.0 249.5,471.0"><title>synth-r1-boost step-2 about probe:synth-r1-pairs@sha256:854acd123fc079868b27a01e5a39a993cb5ff426c4e59d482ee7d333d0c72310 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,403.0 C310.5,431.0 331.5,409.0 301.5,437.0"><title>synth-r1-boost step-8 about probe:synth-r1-forest@sha256:b2f77451194503549e0af5ca307007511f842dca8d3414ea06f6aec061a0a54f (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,403.0 C310.5,431.0 331.5,443.0 301.5,471.0"><title>synth-r1-boost step-8 about probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M353.5,403.0 C323.5,431.0 331.5,409.0 301.5,437.0"><title>synth-r1-boost step-9 builds_on probe:synth-r1-forest@sha256:b2f77451194503549e0af5ca307007511f842dca8d3414ea06f6aec061a0a54f#step-5 (the agent says so)</title></path>
-<path class="arc suggested" d="M353.5,403.0 C323.5,431.0 331.5,443.0 301.5,471.0"><title>synth-r1-boost step-9 builds_on probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8#step-5 (the agent says so)</title></path>
-<path class="arc about" d="M431.5,403.0 C401.5,431.0 422.5,409.0 392.5,437.0"><title>synth-r1-boost step-15 about probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M431.5,403.0 C401.5,431.0 474.5,443.0 444.5,471.0"><title>synth-r1-boost step-15 about probe:synth-r1-pairs@sha256:f4d8b517336e318d3bb74e70c5654dbd935d2f03367bd5250211b468620c9fba (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M444.5,403.0 C414.5,431.0 422.5,409.0 392.5,437.0"><title>synth-r1-boost step-16 about probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M444.5,403.0 C414.5,431.0 500.5,443.0 470.5,471.0"><title>synth-r1-boost step-16 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M457.5,403.0 C427.5,431.0 448.5,443.0 418.5,471.0"><title>synth-r1-boost step-17 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
-<path class="arc suggested" d="M496.5,403.0 C466.5,431.0 448.5,443.0 418.5,471.0"><title>synth-r1-boost step-20 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
-<path class="arc about" d="M262.5,437.0 C232.5,409.0 279.5,431.0 249.5,403.0"><title>synth-r1-forest step-2 about probe:synth-r1-boost@sha256:cf8af039666ce3252d456b84f44fa67703daeff9e86b7e370f1272082b39453c (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,437.0 C232.5,465.0 279.5,443.0 249.5,471.0"><title>synth-r1-forest step-2 about probe:synth-r1-pairs@sha256:854acd123fc079868b27a01e5a39a993cb5ff426c4e59d482ee7d333d0c72310 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M327.5,437.0 C297.5,409.0 396.5,431.0 366.5,403.0"><title>synth-r1-forest step-7 about probe:synth-r1-boost@sha256:e4d00eedc1174a78c5a73e2f83509823560b73bfb20717ebfee848459f216702 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M327.5,437.0 C297.5,465.0 331.5,443.0 301.5,471.0"><title>synth-r1-forest step-7 about probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M379.5,437.0 C349.5,409.0 435.5,431.0 405.5,403.0"><title>synth-r1-forest step-11 about probe:synth-r1-boost@sha256:726af7c8439dc88e69586f231fd10c63a1ceae62c0f8ebd4f73c2a073354e274 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M379.5,437.0 C349.5,465.0 344.5,443.0 314.5,471.0"><title>synth-r1-forest step-11 about probe:synth-r1-pairs@sha256:c21210ef0c598a2f2dc8dd453f29c424315d711dab717609fc18f59405f8fea2 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M431.5,437.0 C401.5,409.0 526.5,431.0 496.5,403.0"><title>synth-r1-forest step-15 about probe:synth-r1-boost@sha256:d5d9ac33217c8f4710868d3aa9c9018f0f7d8074a0d217b0acae9f84fbe70126 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M431.5,437.0 C401.5,465.0 500.5,443.0 470.5,471.0"><title>synth-r1-forest step-15 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M444.5,437.0 C414.5,465.0 448.5,443.0 418.5,471.0"><title>synth-r1-forest step-16 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
-<path class="arc suggested" d="M444.5,437.0 C414.5,409.0 513.5,431.0 483.5,403.0"><title>synth-r1-forest step-16 builds_on probe:synth-r1-boost@sha256:d5d9ac33217c8f4710868d3aa9c9018f0f7d8074a0d217b0acae9f84fbe70126#step-19 (the agent says so)</title></path>
-<path class="arc about" d="M457.5,437.0 C427.5,409.0 552.5,431.0 522.5,403.0"><title>synth-r1-forest step-17 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M457.5,437.0 C427.5,465.0 500.5,443.0 470.5,471.0"><title>synth-r1-forest step-17 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,471.0 C232.5,443.0 292.5,431.0 262.5,403.0"><title>synth-r1-pairs step-2 about probe:synth-r1-boost@sha256:3212fc7dc792e138e8952284f86b5065775d5bd8520f5edfe03ac4c84e9e5585 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,471.0 C232.5,443.0 292.5,465.0 262.5,437.0"><title>synth-r1-pairs step-2 about probe:synth-r1-forest@sha256:867bdeb768efe43900a02343aaeaea706d3b9608cc419e12ccbb0d63fbffb0c7 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M314.5,471.0 C284.5,443.0 422.5,431.0 392.5,403.0"><title>synth-r1-pairs step-6 about probe:synth-r1-boost@sha256:23a03179828e4e3d4fb56d199d2ac385ea0309b244540c4db11cdd775875ad77 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M314.5,471.0 C284.5,443.0 383.5,465.0 353.5,437.0"><title>synth-r1-pairs step-6 about probe:synth-r1-forest@sha256:4c94353d7a92e11a77abc00d67586de6a451e85eafd7a97f1fd1f4c3a6bc0be5 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M327.5,471.0 C297.5,443.0 409.5,431.0 379.5,403.0"><title>synth-r1-pairs step-7 builds_on probe:synth-r1-boost@sha256:23a03179828e4e3d4fb56d199d2ac385ea0309b244540c4db11cdd775875ad77#step-11 (the agent says so)</title></path>
-<path class="arc suggested" d="M327.5,471.0 C297.5,443.0 383.5,465.0 353.5,437.0"><title>synth-r1-pairs step-7 builds_on probe:synth-r1-forest@sha256:4c94353d7a92e11a77abc00d67586de6a451e85eafd7a97f1fd1f4c3a6bc0be5#step-9 (the agent says so)</title></path>
-<path class="arc about" d="M470.5,471.0 C440.5,443.0 461.5,431.0 431.5,403.0"><title>synth-r1-pairs step-18 about probe:synth-r1-boost@sha256:bb0267eabcb58d200448508e87451835f9faf70f53ad2c364db65aff14f75ae5 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M470.5,471.0 C440.5,443.0 422.5,465.0 392.5,437.0"><title>synth-r1-pairs step-18 about probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2 (the runner or a person wrote it)</title></path>
-<path class="arc" d="M236.5,505.0 C206.5,477.0 383.5,499.0 353.5,471.0"><title>synth-r2-knn step-0 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,505.0 C232.5,477.0 552.5,431.0 522.5,403.0"><title>synth-r2-knn step-2 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,505.0 C232.5,477.0 591.5,465.0 561.5,437.0"><title>synth-r2-knn step-2 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,505.0 C232.5,477.0 500.5,499.0 470.5,471.0"><title>synth-r2-knn step-2 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,505.0 C232.5,533.0 279.5,511.0 249.5,539.0"><title>synth-r2-knn step-2 about probe:synth-r2-l1@sha256:884e32103729e59e36beb619bdf7d85f3879688b88ac9cb0a3e9e2be55c3a991 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,505.0 C232.5,533.0 279.5,545.0 249.5,573.0"><title>synth-r2-knn step-2 about probe:synth-r2-logistic@sha256:cb051618914a3a49fa878505114f0f1b3d693011784d38e46f74492882728f91 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M314.5,505.0 C284.5,477.0 448.5,499.0 418.5,471.0"><title>synth-r2-knn step-6 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
-<path class="arc about" d="M327.5,505.0 C297.5,477.0 552.5,431.0 522.5,403.0"><title>synth-r2-knn step-7 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M327.5,505.0 C297.5,477.0 591.5,465.0 561.5,437.0"><title>synth-r2-knn step-7 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M327.5,505.0 C297.5,477.0 500.5,499.0 470.5,471.0"><title>synth-r2-knn step-7 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M327.5,505.0 C297.5,533.0 383.5,511.0 353.5,539.0"><title>synth-r2-knn step-7 about probe:synth-r2-l1@sha256:957e5d4d106c5ef246f07b4789e30ea3e9c181b9928ef9a5d383cd1713b3ddbb (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M327.5,505.0 C297.5,533.0 331.5,545.0 301.5,573.0"><title>synth-r2-knn step-7 about probe:synth-r2-logistic@sha256:9a5adb3a3376e2fe81b706844290d488069c194a6ae46dcb2876a704248fa556 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M366.5,505.0 C336.5,477.0 552.5,431.0 522.5,403.0"><title>synth-r2-knn step-10 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M366.5,505.0 C336.5,477.0 591.5,465.0 561.5,437.0"><title>synth-r2-knn step-10 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M366.5,505.0 C336.5,477.0 500.5,499.0 470.5,471.0"><title>synth-r2-knn step-10 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M366.5,505.0 C336.5,533.0 448.5,511.0 418.5,539.0"><title>synth-r2-knn step-10 about probe:synth-r2-l1@sha256:d2ad5c946d4cb48e3a645131f812bb3f0f81f9a00bb9dc7536a61c63c7927921 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M366.5,505.0 C336.5,533.0 357.5,545.0 327.5,573.0"><title>synth-r2-knn step-10 about probe:synth-r2-logistic@sha256:843373db3e31b77960fcf83e0c09e9223d37c5f3d9ec42917e076254312afa91 (the runner or a person wrote it)</title></path>
-<path class="arc" d="M236.5,539.0 C206.5,511.0 383.5,499.0 353.5,471.0"><title>synth-r2-l1 step-0 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,539.0 C232.5,511.0 552.5,431.0 522.5,403.0"><title>synth-r2-l1 step-2 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,539.0 C232.5,511.0 591.5,465.0 561.5,437.0"><title>synth-r2-l1 step-2 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,539.0 C232.5,511.0 500.5,499.0 470.5,471.0"><title>synth-r2-l1 step-2 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,539.0 C232.5,511.0 292.5,533.0 262.5,505.0"><title>synth-r2-l1 step-2 about probe:synth-r2-knn@sha256:5cb06f754080ebd8e4ee8618f104253214ff3be65d93bb4af802ec4afbe98801 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,539.0 C232.5,567.0 292.5,545.0 262.5,573.0"><title>synth-r2-l1 step-2 about probe:synth-r2-logistic@sha256:623d3b7db5dd83aae34b2ab86a01d3152ca9492c76a3f1ad595429fce2f98061 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,539.0 C310.5,511.0 552.5,431.0 522.5,403.0"><title>synth-r2-l1 step-8 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,539.0 C310.5,511.0 591.5,465.0 561.5,437.0"><title>synth-r2-l1 step-8 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,539.0 C310.5,511.0 500.5,499.0 470.5,471.0"><title>synth-r2-l1 step-8 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,539.0 C310.5,511.0 331.5,533.0 301.5,505.0"><title>synth-r2-l1 step-8 about probe:synth-r2-knn@sha256:2ad63b15d43916e6994c0fdf99c7532f1bb86021e05b632d8486a11401723b7d (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M340.5,539.0 C310.5,567.0 292.5,545.0 262.5,573.0"><title>synth-r2-l1 step-8 about probe:synth-r2-logistic@sha256:623d3b7db5dd83aae34b2ab86a01d3152ca9492c76a3f1ad595429fce2f98061 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M353.5,539.0 C323.5,511.0 448.5,499.0 418.5,471.0"><title>synth-r2-l1 step-9 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
-<path class="arc about" d="M392.5,539.0 C362.5,511.0 552.5,431.0 522.5,403.0"><title>synth-r2-l1 step-12 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M392.5,539.0 C362.5,511.0 591.5,465.0 561.5,437.0"><title>synth-r2-l1 step-12 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M392.5,539.0 C362.5,511.0 500.5,499.0 470.5,471.0"><title>synth-r2-l1 step-12 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M392.5,539.0 C362.5,511.0 370.5,533.0 340.5,505.0"><title>synth-r2-l1 step-12 about probe:synth-r2-knn@sha256:5adec30a525ca346b08d167193a26edbc95d7c289ef6559c6154733b0ceea5cc (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M392.5,539.0 C362.5,567.0 357.5,545.0 327.5,573.0"><title>synth-r2-l1 step-12 about probe:synth-r2-logistic@sha256:843373db3e31b77960fcf83e0c09e9223d37c5f3d9ec42917e076254312afa91 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M483.5,539.0 C453.5,511.0 552.5,431.0 522.5,403.0"><title>synth-r2-l1 step-19 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M483.5,539.0 C453.5,511.0 591.5,465.0 561.5,437.0"><title>synth-r2-l1 step-19 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M483.5,539.0 C453.5,511.0 500.5,499.0 470.5,471.0"><title>synth-r2-l1 step-19 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M483.5,539.0 C453.5,511.0 396.5,533.0 366.5,505.0"><title>synth-r2-l1 step-19 about probe:synth-r2-knn@sha256:fc4bd7f8c33b6bc6a0ecddb3fb4b9fe4f22eb12493a863b08dd95b3c72714b63 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M483.5,539.0 C453.5,567.0 370.5,545.0 340.5,573.0"><title>synth-r2-l1 step-19 about probe:synth-r2-logistic@sha256:31538446db24ea95a646e5edfe8be5e634785a5fb0d904bce2f6629e021ef80a (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M574.5,539.0 C544.5,511.0 552.5,431.0 522.5,403.0"><title>synth-r2-l1 step-26 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M574.5,539.0 C544.5,511.0 591.5,465.0 561.5,437.0"><title>synth-r2-l1 step-26 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M574.5,539.0 C544.5,511.0 500.5,499.0 470.5,471.0"><title>synth-r2-l1 step-26 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M574.5,539.0 C544.5,511.0 422.5,533.0 392.5,505.0"><title>synth-r2-l1 step-26 about probe:synth-r2-knn@sha256:054a009d6c43f036ae56648a6eeb4ec890482053093b75d732f4eea4f47ca592 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M574.5,539.0 C544.5,567.0 422.5,545.0 392.5,573.0"><title>synth-r2-l1 step-26 about probe:synth-r2-logistic@sha256:375d574fbaa4e0ee79e49f982f7b60a74823dd6ca81675a1a7d96602b24e8e9c (the runner or a person wrote it)</title></path>
-<path class="arc" d="M236.5,573.0 C206.5,545.0 383.5,499.0 353.5,471.0"><title>synth-r2-logistic step-0 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,573.0 C232.5,545.0 552.5,431.0 522.5,403.0"><title>synth-r2-logistic step-2 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,573.0 C232.5,545.0 591.5,465.0 561.5,437.0"><title>synth-r2-logistic step-2 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,573.0 C232.5,545.0 500.5,499.0 470.5,471.0"><title>synth-r2-logistic step-2 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,573.0 C232.5,545.0 292.5,533.0 262.5,505.0"><title>synth-r2-logistic step-2 about probe:synth-r2-knn@sha256:5cb06f754080ebd8e4ee8618f104253214ff3be65d93bb4af802ec4afbe98801 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M262.5,573.0 C232.5,545.0 279.5,567.0 249.5,539.0"><title>synth-r2-logistic step-2 about probe:synth-r2-l1@sha256:884e32103729e59e36beb619bdf7d85f3879688b88ac9cb0a3e9e2be55c3a991 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M275.5,573.0 C245.5,545.0 383.5,499.0 353.5,471.0"><title>synth-r2-logistic step-3 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the agent says so)</title></path>
-<path class="arc about" d="M444.5,573.0 C414.5,545.0 552.5,431.0 522.5,403.0"><title>synth-r2-logistic step-16 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M444.5,573.0 C414.5,545.0 591.5,465.0 561.5,437.0"><title>synth-r2-logistic step-16 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M444.5,573.0 C414.5,545.0 500.5,499.0 470.5,471.0"><title>synth-r2-logistic step-16 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M444.5,573.0 C414.5,545.0 604.5,567.0 574.5,539.0"><title>synth-r2-logistic step-16 about probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424 (the runner or a person wrote it)</title></path>
-<path class="arc about" d="M444.5,573.0 C414.5,545.0 474.5,533.0 444.5,505.0"><title>synth-r2-logistic step-16 about probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953 (the runner or a person wrote it)</title></path>
-<path class="arc suggested" d="M457.5,573.0 C427.5,545.0 383.5,499.0 353.5,471.0"><title>synth-r2-logistic step-17 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the agent says so)</title></path>
-<path class="arc suggested" d="M496.5,573.0 C466.5,545.0 383.5,499.0 353.5,471.0"><title>synth-r2-logistic step-20 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the agent says so)</title></path>
-</svg></div><ul class="legend"><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="station reached" cx="11" cy="8" r="6"/></svg>milestone reached (✓)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="station refuted" cx="11" cy="8" r="6"/></svg>refuted (✕)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="station" cx="11" cy="8" r="5"/></svg>open</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="provisional" cx="11" cy="8" r="6"/></svg>met in a trail, not yet sealed</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect class="station" x="6" y="1" width="10" height="14" rx="5"/></svg>on several routes</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="line" stroke="var(--ink2)" d="M2,8 L20,8"/></svg>route, in its goal&#x27;s colour</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="line blocked" stroke="var(--ink2)" d="M2,8 L20,8"/></svg>blocked route</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="step k-plan" d="M11,2 L16,8 L11,14 L6,8Z"/></svg>plan</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect class="step k-run" x="7" y="4" width="8" height="8"/></svg>run</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-as_expected" cx="11" cy="8" r="5"/></svg>observation as expected</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-contradicted" cx="11" cy="8" r="5"/></svg>contradicted</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-failed" cx="11" cy="8" r="5"/></svg>failed</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-inconclusive" cx="11" cy="8" r="5"/></svg>inconclusive or withheld</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="sealed-read" cx="11" cy="8" r="6"/></svg>opened a sealed input (traced)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="sealed-read re" cx="11" cy="8" r="6"/></svg>… on re-execution</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="sealed-read names" cx="11" cy="8" r="6"/></svg>… named on its command line</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect class="step k-run unsettled" x="7" y="4" width="8" height="8"/></svg>run with no observation</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="judged" cx="11" cy="8" r="4"/></svg>credit that stands on an excused read</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="arc" d="M2,8 L18,8"/></svg>builds on another trail&#x27;s step (a person or the runner)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="arc suggested" d="M2,8 L18,8"/></svg>… as the agent says</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="arc about" style="opacity:.6" d="M2,8 L18,8"/></svg>read the map while that trail stood here</li></ul><h2>Routes</h2><div class='wrap'><table><tr><th>Route</th><th>Goal</th><th>State</th><th>Path</th><th>Method</th></tr><tr><td>logistic</td><td>floor</td><td>open</td><td>baseline → logistic-cv → logistic-holdout</td><td>a logistic regression on the features as given, tuned on pilot data alone</td></tr><tr><td>l1</td><td>floor</td><td>done</td><td>baseline → l1-cv → l1-holdout</td><td>an L1-penalised logistic regression, with its penalty tuned inside cross-validation</td></tr><tr><td>knn</td><td>floor</td><td>done</td><td>baseline → knn-cv → knn-holdout</td><td>k-nearest neighbours, with k and any feature screen chosen inside cross-validation</td></tr><tr><td>forest</td><td>floor</td><td>done</td><td>baseline → forest-cv → forest-holdout</td><td>a random forest, tuned on pilot data alone</td></tr><tr><td>boost</td><td>floor</td><td>done</td><td>baseline → boost-cv → boost-holdout</td><td>gradient boosting (scikit-learn&#x27;s HistGradientBoostingClassifier), tuned on pilot data alone</td></tr><tr><td>pairs</td><td>floor</td><td>done</td><td>baseline → pairs-cv → pairs-holdout</td><td>a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation</td></tr></table></div><h2>What resolved each milestone</h2><div class='wrap'><table><tr><th>Milestone</th><th>State</th><th>Resolution</th><th></th><th>Cites</th><th>Observation</th></tr><tr><td>baseline</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-boost step-11</td><td>as expected</td></tr><tr><td>baseline</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-forest step-9</td><td>as expected</td></tr><tr><td>baseline</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-pairs step-9</td><td>as expected</td></tr><tr><td>logistic-cv</td><td>open</td><td>provisional</td><td>reached</td><td>probe:synth-r2-logistic step-19</td><td>as expected</td></tr><tr><td>logistic-holdout</td><td>open</td><td>provisional</td><td>reached</td><td>probe:synth-r2-logistic step-22</td><td>as expected</td></tr><tr><td>l1-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-l1 step-11</td><td>as expected</td></tr><tr><td>l1-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-l1 step-22</td><td>as expected</td></tr><tr><td>knn-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-knn step-9</td><td>as expected</td></tr><tr><td>knn-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-knn step-13</td><td>as expected</td></tr><tr><td>forest-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-forest step-13</td><td>as expected</td></tr><tr><td>forest-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-forest step-22</td><td>as expected</td></tr><tr><td>boost-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-boost step-19</td><td>as expected</td></tr><tr><td>boost-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-boost step-22</td><td>as expected</td></tr><tr><td>pairs-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-pairs step-14</td><td>as expected</td></tr><tr><td>pairs-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-pairs step-17</td><td>as expected</td></tr></table></div><h2>Trails</h2><div class='wrap'><table><tr><th>Trail</th><th>Route</th><th>Agent</th><th>Steps</th><th>Since last step</th><th>Check</th></tr><tr><td>synth-r1-boost</td><td>boost</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>23</td><td class='num'>1426 s</td><td>ok</td></tr><tr><td>synth-r1-forest</td><td>forest</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>26</td><td class='num'>1126 s</td><td>ok</td></tr><tr><td>synth-r1-pairs</td><td>pairs</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>19</td><td class='num'>1580 s</td><td>ok</td></tr><tr><td>synth-r2-knn</td><td>knn</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>17</td><td class='num'>576 s</td><td>ok</td></tr><tr><td>synth-r2-l1</td><td>l1</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>27</td><td class='num'>591 s</td><td>ok</td></tr><tr><td>synth-r2-logistic</td><td>logistic</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>23</td><td class='num'>115 s</td><td>ok</td></tr></table></div><h2>Revisions</h2><div class='wrap'><table><tr><th>Rev</th><th>Sealed</th><th>By</th><th>Version</th><th>Resolutions sealed</th><th>Dropped</th><th>Reason</th></tr><tr><td class='num'>0</td><td>2026-11-17T08:34:17Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>0</td><td class='num'>0</td><td>The declared map of the second project (spec 12), written before any run toward it. The data are synthetic (demo2/make_data.py), so a replication sample of 50,000 rows, which no agent or forecaster reads, measures how each analysis truly do…</td></tr><tr><td class='num'>1</td><td>2026-11-17T09:10:12Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>9</td><td class='num'>0</td><td>Round 1: three agents on the routes Kimi K3.1 Pro chose (pairs, boost, forest; oversight/round-1.json), at once, in the sandbox and under the file trace (live/synth-r1-*). All three finished inside the 40-minute wall clock and every trail c…</td></tr><tr><td class='num'>2</td><td>2026-11-17T09:27:04Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>4</td><td class='num'>0</td><td>Round 2: three agents on the routes Kimi K3.1 Pro chose (logistic, l1, knn; oversight/round-2.json), the only open ones, at once, in the sandbox and under the file trace (live/synth-r2-*). All three finished inside the 40-minute wall clock;…</td></tr></table></div></main></body></html>
+<path class="arc about" d="M262.5,495.0 C232.5,523.0 292.5,501.0 262.5,529.0"><title>synth-r1-boost step-2 about probe:synth-r1-forest@sha256:867bdeb768efe43900a02343aaeaea706d3b9608cc419e12ccbb0d63fbffb0c7 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,495.0 C232.5,523.0 279.5,535.0 249.5,563.0"><title>synth-r1-boost step-2 about probe:synth-r1-pairs@sha256:854acd123fc079868b27a01e5a39a993cb5ff426c4e59d482ee7d333d0c72310 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,495.0 C310.5,523.0 331.5,501.0 301.5,529.0"><title>synth-r1-boost step-8 about probe:synth-r1-forest@sha256:b2f77451194503549e0af5ca307007511f842dca8d3414ea06f6aec061a0a54f (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,495.0 C310.5,523.0 331.5,535.0 301.5,563.0"><title>synth-r1-boost step-8 about probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M353.5,495.0 C323.5,523.0 331.5,501.0 301.5,529.0"><title>synth-r1-boost step-9 builds_on probe:synth-r1-forest@sha256:b2f77451194503549e0af5ca307007511f842dca8d3414ea06f6aec061a0a54f#step-5 (the agent says so)</title></path>
+<path class="arc suggested" d="M353.5,495.0 C323.5,523.0 331.5,535.0 301.5,563.0"><title>synth-r1-boost step-9 builds_on probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8#step-5 (the agent says so)</title></path>
+<path class="arc about" d="M431.5,495.0 C401.5,523.0 422.5,501.0 392.5,529.0"><title>synth-r1-boost step-15 about probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M431.5,495.0 C401.5,523.0 474.5,535.0 444.5,563.0"><title>synth-r1-boost step-15 about probe:synth-r1-pairs@sha256:f4d8b517336e318d3bb74e70c5654dbd935d2f03367bd5250211b468620c9fba (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M444.5,495.0 C414.5,523.0 422.5,501.0 392.5,529.0"><title>synth-r1-boost step-16 about probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M444.5,495.0 C414.5,523.0 500.5,535.0 470.5,563.0"><title>synth-r1-boost step-16 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M457.5,495.0 C427.5,523.0 448.5,535.0 418.5,563.0"><title>synth-r1-boost step-17 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
+<path class="arc suggested" d="M496.5,495.0 C466.5,523.0 448.5,535.0 418.5,563.0"><title>synth-r1-boost step-20 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
+<path class="arc about" d="M262.5,529.0 C232.5,501.0 279.5,523.0 249.5,495.0"><title>synth-r1-forest step-2 about probe:synth-r1-boost@sha256:cf8af039666ce3252d456b84f44fa67703daeff9e86b7e370f1272082b39453c (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,529.0 C232.5,557.0 279.5,535.0 249.5,563.0"><title>synth-r1-forest step-2 about probe:synth-r1-pairs@sha256:854acd123fc079868b27a01e5a39a993cb5ff426c4e59d482ee7d333d0c72310 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M327.5,529.0 C297.5,501.0 396.5,523.0 366.5,495.0"><title>synth-r1-forest step-7 about probe:synth-r1-boost@sha256:e4d00eedc1174a78c5a73e2f83509823560b73bfb20717ebfee848459f216702 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M327.5,529.0 C297.5,557.0 331.5,535.0 301.5,563.0"><title>synth-r1-forest step-7 about probe:synth-r1-pairs@sha256:5a04ea584dbe0911e3951f8c6ecd898d0f3bce447c2c89a53e1268ec9a94e1e8 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M379.5,529.0 C349.5,501.0 435.5,523.0 405.5,495.0"><title>synth-r1-forest step-11 about probe:synth-r1-boost@sha256:726af7c8439dc88e69586f231fd10c63a1ceae62c0f8ebd4f73c2a073354e274 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M379.5,529.0 C349.5,557.0 344.5,535.0 314.5,563.0"><title>synth-r1-forest step-11 about probe:synth-r1-pairs@sha256:c21210ef0c598a2f2dc8dd453f29c424315d711dab717609fc18f59405f8fea2 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M431.5,529.0 C401.5,501.0 526.5,523.0 496.5,495.0"><title>synth-r1-forest step-15 about probe:synth-r1-boost@sha256:d5d9ac33217c8f4710868d3aa9c9018f0f7d8074a0d217b0acae9f84fbe70126 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M431.5,529.0 C401.5,557.0 500.5,535.0 470.5,563.0"><title>synth-r1-forest step-15 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M444.5,529.0 C414.5,557.0 448.5,535.0 418.5,563.0"><title>synth-r1-forest step-16 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
+<path class="arc suggested" d="M444.5,529.0 C414.5,501.0 513.5,523.0 483.5,495.0"><title>synth-r1-forest step-16 builds_on probe:synth-r1-boost@sha256:d5d9ac33217c8f4710868d3aa9c9018f0f7d8074a0d217b0acae9f84fbe70126#step-19 (the agent says so)</title></path>
+<path class="arc about" d="M457.5,529.0 C427.5,501.0 552.5,523.0 522.5,495.0"><title>synth-r1-forest step-17 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M457.5,529.0 C427.5,557.0 500.5,535.0 470.5,563.0"><title>synth-r1-forest step-17 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,563.0 C232.5,535.0 292.5,523.0 262.5,495.0"><title>synth-r1-pairs step-2 about probe:synth-r1-boost@sha256:3212fc7dc792e138e8952284f86b5065775d5bd8520f5edfe03ac4c84e9e5585 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,563.0 C232.5,535.0 292.5,557.0 262.5,529.0"><title>synth-r1-pairs step-2 about probe:synth-r1-forest@sha256:867bdeb768efe43900a02343aaeaea706d3b9608cc419e12ccbb0d63fbffb0c7 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M314.5,563.0 C284.5,535.0 422.5,523.0 392.5,495.0"><title>synth-r1-pairs step-6 about probe:synth-r1-boost@sha256:23a03179828e4e3d4fb56d199d2ac385ea0309b244540c4db11cdd775875ad77 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M314.5,563.0 C284.5,535.0 383.5,557.0 353.5,529.0"><title>synth-r1-pairs step-6 about probe:synth-r1-forest@sha256:4c94353d7a92e11a77abc00d67586de6a451e85eafd7a97f1fd1f4c3a6bc0be5 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M327.5,563.0 C297.5,535.0 409.5,523.0 379.5,495.0"><title>synth-r1-pairs step-7 builds_on probe:synth-r1-boost@sha256:23a03179828e4e3d4fb56d199d2ac385ea0309b244540c4db11cdd775875ad77#step-11 (the agent says so)</title></path>
+<path class="arc suggested" d="M327.5,563.0 C297.5,535.0 383.5,557.0 353.5,529.0"><title>synth-r1-pairs step-7 builds_on probe:synth-r1-forest@sha256:4c94353d7a92e11a77abc00d67586de6a451e85eafd7a97f1fd1f4c3a6bc0be5#step-9 (the agent says so)</title></path>
+<path class="arc about" d="M470.5,563.0 C440.5,535.0 461.5,523.0 431.5,495.0"><title>synth-r1-pairs step-18 about probe:synth-r1-boost@sha256:bb0267eabcb58d200448508e87451835f9faf70f53ad2c364db65aff14f75ae5 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M470.5,563.0 C440.5,535.0 422.5,557.0 392.5,529.0"><title>synth-r1-pairs step-18 about probe:synth-r1-forest@sha256:46bcff939f590e8acf7f5879e70cedefab9c1faa220797eb332e4b24ea379bd2 (the runner or a person wrote it)</title></path>
+<path class="arc" d="M236.5,597.0 C206.5,569.0 383.5,591.0 353.5,563.0"><title>synth-r2-knn step-0 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,597.0 C232.5,569.0 552.5,523.0 522.5,495.0"><title>synth-r2-knn step-2 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,597.0 C232.5,569.0 591.5,557.0 561.5,529.0"><title>synth-r2-knn step-2 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,597.0 C232.5,569.0 500.5,591.0 470.5,563.0"><title>synth-r2-knn step-2 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,597.0 C232.5,625.0 279.5,603.0 249.5,631.0"><title>synth-r2-knn step-2 about probe:synth-r2-l1@sha256:884e32103729e59e36beb619bdf7d85f3879688b88ac9cb0a3e9e2be55c3a991 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,597.0 C232.5,625.0 279.5,637.0 249.5,665.0"><title>synth-r2-knn step-2 about probe:synth-r2-logistic@sha256:cb051618914a3a49fa878505114f0f1b3d693011784d38e46f74492882728f91 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M314.5,597.0 C284.5,569.0 448.5,591.0 418.5,563.0"><title>synth-r2-knn step-6 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
+<path class="arc about" d="M327.5,597.0 C297.5,569.0 552.5,523.0 522.5,495.0"><title>synth-r2-knn step-7 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M327.5,597.0 C297.5,569.0 591.5,557.0 561.5,529.0"><title>synth-r2-knn step-7 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M327.5,597.0 C297.5,569.0 500.5,591.0 470.5,563.0"><title>synth-r2-knn step-7 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M327.5,597.0 C297.5,625.0 383.5,603.0 353.5,631.0"><title>synth-r2-knn step-7 about probe:synth-r2-l1@sha256:957e5d4d106c5ef246f07b4789e30ea3e9c181b9928ef9a5d383cd1713b3ddbb (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M327.5,597.0 C297.5,625.0 331.5,637.0 301.5,665.0"><title>synth-r2-knn step-7 about probe:synth-r2-logistic@sha256:9a5adb3a3376e2fe81b706844290d488069c194a6ae46dcb2876a704248fa556 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M366.5,597.0 C336.5,569.0 552.5,523.0 522.5,495.0"><title>synth-r2-knn step-10 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M366.5,597.0 C336.5,569.0 591.5,557.0 561.5,529.0"><title>synth-r2-knn step-10 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M366.5,597.0 C336.5,569.0 500.5,591.0 470.5,563.0"><title>synth-r2-knn step-10 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M366.5,597.0 C336.5,625.0 448.5,603.0 418.5,631.0"><title>synth-r2-knn step-10 about probe:synth-r2-l1@sha256:d2ad5c946d4cb48e3a645131f812bb3f0f81f9a00bb9dc7536a61c63c7927921 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M366.5,597.0 C336.5,625.0 357.5,637.0 327.5,665.0"><title>synth-r2-knn step-10 about probe:synth-r2-logistic@sha256:843373db3e31b77960fcf83e0c09e9223d37c5f3d9ec42917e076254312afa91 (the runner or a person wrote it)</title></path>
+<path class="arc" d="M236.5,631.0 C206.5,603.0 383.5,591.0 353.5,563.0"><title>synth-r2-l1 step-0 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,631.0 C232.5,603.0 552.5,523.0 522.5,495.0"><title>synth-r2-l1 step-2 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,631.0 C232.5,603.0 591.5,557.0 561.5,529.0"><title>synth-r2-l1 step-2 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,631.0 C232.5,603.0 500.5,591.0 470.5,563.0"><title>synth-r2-l1 step-2 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,631.0 C232.5,603.0 292.5,625.0 262.5,597.0"><title>synth-r2-l1 step-2 about probe:synth-r2-knn@sha256:5cb06f754080ebd8e4ee8618f104253214ff3be65d93bb4af802ec4afbe98801 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,631.0 C232.5,659.0 292.5,637.0 262.5,665.0"><title>synth-r2-l1 step-2 about probe:synth-r2-logistic@sha256:623d3b7db5dd83aae34b2ab86a01d3152ca9492c76a3f1ad595429fce2f98061 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,631.0 C310.5,603.0 552.5,523.0 522.5,495.0"><title>synth-r2-l1 step-8 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,631.0 C310.5,603.0 591.5,557.0 561.5,529.0"><title>synth-r2-l1 step-8 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,631.0 C310.5,603.0 500.5,591.0 470.5,563.0"><title>synth-r2-l1 step-8 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,631.0 C310.5,603.0 331.5,625.0 301.5,597.0"><title>synth-r2-l1 step-8 about probe:synth-r2-knn@sha256:2ad63b15d43916e6994c0fdf99c7532f1bb86021e05b632d8486a11401723b7d (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M340.5,631.0 C310.5,659.0 292.5,637.0 262.5,665.0"><title>synth-r2-l1 step-8 about probe:synth-r2-logistic@sha256:623d3b7db5dd83aae34b2ab86a01d3152ca9492c76a3f1ad595429fce2f98061 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M353.5,631.0 C323.5,603.0 448.5,591.0 418.5,563.0"><title>synth-r2-l1 step-9 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14 (the agent says so)</title></path>
+<path class="arc about" d="M392.5,631.0 C362.5,603.0 552.5,523.0 522.5,495.0"><title>synth-r2-l1 step-12 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M392.5,631.0 C362.5,603.0 591.5,557.0 561.5,529.0"><title>synth-r2-l1 step-12 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M392.5,631.0 C362.5,603.0 500.5,591.0 470.5,563.0"><title>synth-r2-l1 step-12 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M392.5,631.0 C362.5,603.0 370.5,625.0 340.5,597.0"><title>synth-r2-l1 step-12 about probe:synth-r2-knn@sha256:5adec30a525ca346b08d167193a26edbc95d7c289ef6559c6154733b0ceea5cc (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M392.5,631.0 C362.5,659.0 357.5,637.0 327.5,665.0"><title>synth-r2-l1 step-12 about probe:synth-r2-logistic@sha256:843373db3e31b77960fcf83e0c09e9223d37c5f3d9ec42917e076254312afa91 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M483.5,631.0 C453.5,603.0 552.5,523.0 522.5,495.0"><title>synth-r2-l1 step-19 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M483.5,631.0 C453.5,603.0 591.5,557.0 561.5,529.0"><title>synth-r2-l1 step-19 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M483.5,631.0 C453.5,603.0 500.5,591.0 470.5,563.0"><title>synth-r2-l1 step-19 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M483.5,631.0 C453.5,603.0 396.5,625.0 366.5,597.0"><title>synth-r2-l1 step-19 about probe:synth-r2-knn@sha256:fc4bd7f8c33b6bc6a0ecddb3fb4b9fe4f22eb12493a863b08dd95b3c72714b63 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M483.5,631.0 C453.5,659.0 370.5,637.0 340.5,665.0"><title>synth-r2-l1 step-19 about probe:synth-r2-logistic@sha256:31538446db24ea95a646e5edfe8be5e634785a5fb0d904bce2f6629e021ef80a (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M574.5,631.0 C544.5,603.0 552.5,523.0 522.5,495.0"><title>synth-r2-l1 step-26 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M574.5,631.0 C544.5,603.0 591.5,557.0 561.5,529.0"><title>synth-r2-l1 step-26 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M574.5,631.0 C544.5,603.0 500.5,591.0 470.5,563.0"><title>synth-r2-l1 step-26 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M574.5,631.0 C544.5,603.0 422.5,625.0 392.5,597.0"><title>synth-r2-l1 step-26 about probe:synth-r2-knn@sha256:054a009d6c43f036ae56648a6eeb4ec890482053093b75d732f4eea4f47ca592 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M574.5,631.0 C544.5,659.0 422.5,637.0 392.5,665.0"><title>synth-r2-l1 step-26 about probe:synth-r2-logistic@sha256:375d574fbaa4e0ee79e49f982f7b60a74823dd6ca81675a1a7d96602b24e8e9c (the runner or a person wrote it)</title></path>
+<path class="arc" d="M236.5,665.0 C206.5,637.0 383.5,591.0 353.5,563.0"><title>synth-r2-logistic step-0 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,665.0 C232.5,637.0 552.5,523.0 522.5,495.0"><title>synth-r2-logistic step-2 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,665.0 C232.5,637.0 591.5,557.0 561.5,529.0"><title>synth-r2-logistic step-2 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,665.0 C232.5,637.0 500.5,591.0 470.5,563.0"><title>synth-r2-logistic step-2 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,665.0 C232.5,637.0 292.5,625.0 262.5,597.0"><title>synth-r2-logistic step-2 about probe:synth-r2-knn@sha256:5cb06f754080ebd8e4ee8618f104253214ff3be65d93bb4af802ec4afbe98801 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M262.5,665.0 C232.5,637.0 279.5,659.0 249.5,631.0"><title>synth-r2-logistic step-2 about probe:synth-r2-l1@sha256:884e32103729e59e36beb619bdf7d85f3879688b88ac9cb0a3e9e2be55c3a991 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M275.5,665.0 C245.5,637.0 383.5,591.0 353.5,563.0"><title>synth-r2-logistic step-3 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the agent says so)</title></path>
+<path class="arc about" d="M444.5,665.0 C414.5,637.0 552.5,523.0 522.5,495.0"><title>synth-r2-logistic step-16 about probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M444.5,665.0 C414.5,637.0 591.5,557.0 561.5,529.0"><title>synth-r2-logistic step-16 about probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M444.5,665.0 C414.5,637.0 500.5,591.0 470.5,563.0"><title>synth-r2-logistic step-16 about probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M444.5,665.0 C414.5,637.0 604.5,659.0 574.5,631.0"><title>synth-r2-logistic step-16 about probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424 (the runner or a person wrote it)</title></path>
+<path class="arc about" d="M444.5,665.0 C414.5,637.0 474.5,625.0 444.5,597.0"><title>synth-r2-logistic step-16 about probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953 (the runner or a person wrote it)</title></path>
+<path class="arc suggested" d="M457.5,665.0 C427.5,637.0 383.5,591.0 353.5,563.0"><title>synth-r2-logistic step-17 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the agent says so)</title></path>
+<path class="arc suggested" d="M496.5,665.0 C466.5,637.0 383.5,591.0 353.5,563.0"><title>synth-r2-logistic step-20 builds_on probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (the agent says so)</title></path>
+</svg></div><ul class="legend"><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="station reached" cx="11" cy="8" r="6"/></svg>milestone reached (✓)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="station refuted" cx="11" cy="8" r="6"/></svg>refuted (✕)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="station" cx="11" cy="8" r="5"/></svg>open</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="provisional" cx="11" cy="8" r="6"/></svg>met in a trail, not yet sealed</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect class="station" x="6" y="1" width="10" height="14" rx="5"/></svg>on several routes</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="line" stroke="var(--ink2)" d="M2,8 L20,8"/></svg>route, in its goal&#x27;s colour</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="line blocked" stroke="var(--ink2)" d="M2,8 L20,8"/></svg>blocked route</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="step k-plan" d="M11,2 L16,8 L11,14 L6,8Z"/></svg>plan</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect class="step k-run" x="7" y="4" width="8" height="8"/></svg>run</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-as_expected" cx="11" cy="8" r="5"/></svg>observation as expected</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-contradicted" cx="11" cy="8" r="5"/></svg>contradicted</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-failed" cx="11" cy="8" r="5"/></svg>failed</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="step o-inconclusive" cx="11" cy="8" r="5"/></svg>inconclusive or withheld</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="sealed-read" cx="11" cy="8" r="6"/></svg>opened a sealed input (traced)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="sealed-read re" cx="11" cy="8" r="6"/></svg>… on re-execution</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="sealed-read names" cx="11" cy="8" r="6"/></svg>… named on its command line</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect class="step k-run unsettled" x="7" y="4" width="8" height="8"/></svg>run with no observation</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><circle class="judged" cx="11" cy="8" r="4"/></svg>credit that stands on an excused read</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="arc" d="M2,8 L18,8"/></svg>builds on another trail&#x27;s step (a person or the runner)</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="arc suggested" d="M2,8 L18,8"/></svg>… as the agent says</li><li><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path class="arc about" style="opacity:.6" d="M2,8 L18,8"/></svg>read the map while that trail stood here</li></ul><h2>Routes</h2><div class='wrap'><table><tr><th>Route</th><th>Goal</th><th>State</th><th>Path</th><th>Method</th></tr><tr><td>logistic</td><td>floor</td><td>open</td><td>baseline → logistic-cv → logistic-holdout</td><td>a logistic regression on the features as given, tuned on pilot data alone</td></tr><tr><td>l1</td><td>floor</td><td>done</td><td>baseline → l1-cv → l1-holdout</td><td>an L1-penalised logistic regression, with its penalty tuned inside cross-validation</td></tr><tr><td>knn</td><td>floor</td><td>done</td><td>baseline → knn-cv → knn-holdout</td><td>k-nearest neighbours, with k and any feature screen chosen inside cross-validation</td></tr><tr><td>forest</td><td>floor</td><td>done</td><td>baseline → forest-cv → forest-holdout</td><td>a random forest, tuned on pilot data alone</td></tr><tr><td>boost</td><td>floor</td><td>done</td><td>baseline → boost-cv → boost-holdout</td><td>gradient boosting (scikit-learn&#x27;s HistGradientBoostingClassifier), tuned on pilot data alone</td></tr><tr><td>pairs</td><td>floor</td><td>done</td><td>baseline → pairs-cv → pairs-holdout</td><td>a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation</td></tr><tr><td>forest-raw</td><td>floor</td><td>open</td><td>baseline → forest-raw-cv → forest-raw-holdout</td><td>a random forest on the twelve features as given, at scikit-learn&#x27;s default settings (only the number of trees and the seed may change); no products, kernels, feature selection or other constructed features</td></tr><tr><td>knn-raw</td><td>floor</td><td>open</td><td>baseline → knn-raw-cv → knn-raw-holdout</td><td>k-nearest neighbours on the twelve standardised features as given, with only k (and its weighting) tuned inside cross-validation; no products, kernels, feature selection or other constructed features</td></tr></table></div><h2>What resolved each milestone</h2><div class='wrap'><table><tr><th>Milestone</th><th>State</th><th>Resolution</th><th></th><th>Cites</th><th>Observation</th></tr><tr><td>baseline</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-boost step-11</td><td>as expected</td></tr><tr><td>baseline</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-forest step-9</td><td>as expected</td></tr><tr><td>baseline</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-pairs step-9</td><td>as expected</td></tr><tr><td>logistic-cv</td><td>open</td><td>provisional</td><td>reached</td><td>probe:synth-r2-logistic step-19</td><td>as expected</td></tr><tr><td>logistic-holdout</td><td>open</td><td>provisional</td><td>reached</td><td>probe:synth-r2-logistic step-22</td><td>as expected</td></tr><tr><td>l1-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-l1 step-11</td><td>as expected</td></tr><tr><td>l1-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-l1 step-22</td><td>as expected</td></tr><tr><td>knn-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-knn step-9</td><td>as expected</td></tr><tr><td>knn-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r2-knn step-13</td><td>as expected</td></tr><tr><td>forest-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-forest step-13</td><td>as expected</td></tr><tr><td>forest-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-forest step-22</td><td>as expected</td></tr><tr><td>boost-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-boost step-19</td><td>as expected</td></tr><tr><td>boost-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-boost step-22</td><td>as expected</td></tr><tr><td>pairs-cv</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-pairs step-14</td><td>as expected</td></tr><tr><td>pairs-holdout</td><td>reached</td><td>sealed</td><td>reached</td><td>probe:synth-r1-pairs step-17</td><td>as expected</td></tr></table></div><h2>Trails</h2><div class='wrap'><table><tr><th>Trail</th><th>Route</th><th>Agent</th><th>Steps</th><th>Since last step</th><th>Check</th></tr><tr><td>synth-r1-boost</td><td>boost</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>23</td><td class='num'>14160 s</td><td>ok</td></tr><tr><td>synth-r1-forest</td><td>forest</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>26</td><td class='num'>13859 s</td><td>ok</td></tr><tr><td>synth-r1-pairs</td><td>pairs</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>19</td><td class='num'>14313 s</td><td>ok</td></tr><tr><td>synth-r2-knn</td><td>knn</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>17</td><td class='num'>13310 s</td><td>ok</td></tr><tr><td>synth-r2-l1</td><td>l1</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>27</td><td class='num'>13324 s</td><td>ok</td></tr><tr><td>synth-r2-logistic</td><td>logistic</td><td>berget/zai-org/GLM-5.3-Flash</td><td class='num'>23</td><td class='num'>12849 s</td><td>ok</td></tr></table></div><h2>Revisions</h2><div class='wrap'><table><tr><th>Rev</th><th>Sealed</th><th>By</th><th>Version</th><th>Resolutions sealed</th><th>Dropped</th><th>Reason</th></tr><tr><td class='num'>0</td><td>2026-11-17T08:34:17Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>0</td><td class='num'>0</td><td>The declared map of the second project (spec 12), written before any run toward it. The data are synthetic (demo2/make_data.py), so a replication sample of 50,000 rows, which no agent or forecaster reads, measures how each analysis truly do…</td></tr><tr><td class='num'>1</td><td>2026-11-17T09:10:12Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>9</td><td class='num'>0</td><td>Round 1: three agents on the routes Kimi K3.1 Pro chose (pairs, boost, forest; oversight/round-1.json), at once, in the sandbox and under the file trace (live/synth-r1-*). All three finished inside the 40-minute wall clock and every trail c…</td></tr><tr><td class='num'>2</td><td>2026-11-17T09:27:04Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>4</td><td class='num'>0</td><td>Round 2: three agents on the routes Kimi K3.1 Pro chose (logistic, l1, knn; oversight/round-2.json), the only open ones, at once, in the sandbox and under the file trace (live/synth-r2-*). All three finished inside the 40-minute wall clock;…</td></tr><tr><td class='num'>3</td><td>2026-11-17T12:51:53Z</td><td>agent:claude-code/claude-opus-5-5</td><td class='num'>2</td><td class='num'>0</td><td class='num'>0</td><td>Round 3 (spec 13): two routes on the twelve raw features, added so that outcomes land near the floor. In rounds 1 and 2 every route reached the floor, because agents read each other&#x27;s results and built the interaction into every method, so …</td></tr></table></div></main></body></html>

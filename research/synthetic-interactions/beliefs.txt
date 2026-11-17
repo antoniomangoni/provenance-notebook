@@ -1,4 +1,4 @@
-Beliefs over synthetic-interactions, revision 2 (2026-11-17T09:27:04Z, agent:claude-code/claude-opus-5-5).
+Beliefs over synthetic-interactions, revision 3 (2026-11-17T12:51:53Z, agent:claude-code/claude-opus-5-5).
 Advisory: nothing here changes a ✓ or ✗. P is a probability under the assumptions below.
 
 Assumptions:
@@ -30,6 +30,18 @@ Runs that opened data/heldout.csv: 8 in 6 trails. Each is a look at what the mar
   synth-r1-boost 1, synth-r1-forest 2, synth-r1-pairs 2, synth-r2-knn 1, synth-r2-l1 1, synth-r2-logistic 1
 
 Open milestones, their Markov blanket, and P(reached) from the blanket alone and from the whole map:
+  ○ forest-raw-cv: next on forest-raw
+      before it: baseline ✓
+      leading to the same place: nothing
+      after it: forest-raw-holdout ○
+      P(reached) 0.67: Laplace rate of the blanket: 1 of 1 resolved milestones hold
+      from the whole map, P(reached) 0.93: the base rate of the revision's resolutions
+  ○ knn-raw-cv: next on knn-raw
+      before it: baseline ✓
+      leading to the same place: nothing
+      after it: knn-raw-holdout ○
+      P(reached) 0.67: Laplace rate of the blanket: 1 of 1 resolved milestones hold
+      from the whole map, P(reached) 0.93: the base rate of the revision's resolutions
   ○ logistic-cv: next on logistic
       before it: baseline ✓
       leading to the same place: nothing
@@ -40,5 +52,7 @@ Open milestones, their Markov blanket, and P(reached) from the blanket alone and
 Which open milestone tells most about its goal, in bits (an upper bound: routes taken as independent,
 and one run taken to settle the milestone). Beside it, the order project.py next gives, the most shared first:
   P(some route, credited or not, truly meets the goal), open routes at their P(reached): floor 1.00
-  logistic-cv: 0.000 bits (0.000 about floor); P(reached) 0.67; next gives it 1
+  forest-raw-cv: 0.000 bits (0.000 about floor); P(reached) 0.67; next gives it 1
+  knn-raw-cv: 0.000 bits (0.000 about floor); P(reached) 0.67; next gives it 2
+  logistic-cv: 0.000 bits (0.000 about floor); P(reached) 0.67; next gives it 3
   Every value is under 0.05 bits: no open milestone tells much about its goal. The order is next's.

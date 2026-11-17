@@ -1,4 +1,4 @@
-Forecasts over synthetic-interactions, scored against revision 2 and the trails.
+Forecasts over synthetic-interactions, scored against revision 3 and the trails.
 Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.
 Each forecaster is compared with code-only forecasters on the same questions: code:even, 0.5 every time;
 code:base-rate, the Laplace rate of what was settled before the question was asked; code:blanket, the
@@ -43,6 +43,14 @@ kimi-round-2.json: by agent:pi/moonshotai/Kimi-K3.1-Pro at 2026-11-17T09:15:11Z
       held  l1-holdout at rev-1: p 0.55; base-rate 0.91, blanket 1.00, pooled 1.00
   pending logistic-cv at rev-1: p 0.10; code:blanket 0.67, code:pooled 0.91
   pending logistic-holdout at rev-1: p 0.20; code:blanket 1.00, code:pooled 1.00
+
+kimi-round-3.json: by agent:pi/moonshotai/Kimi-K3.1-Pro at 2026-11-17T13:00:09Z
+  pending forest-raw-cv at rev-3: p 0.65; code:blanket 0.67, code:pooled 0.93
+  pending forest-raw-holdout at rev-3: p 0.80; code:blanket 0.99, code:pooled 0.99
+  pending knn-raw-cv at rev-3: p 0.18; code:blanket 0.67, code:pooled 0.93
+  pending knn-raw-holdout at rev-3: p 0.45; code:blanket 0.99, code:pooled 0.99
+  pending logistic-cv at rev-3: p 0.15; code:blanket 0.67, code:pooled 0.93
+  pending logistic-holdout at rev-3: p 0.30; code:blanket 0.99, code:pooled 0.99
 
 Against the replication sample (50,000 rows, sha256:5ebf670308e5…), each cited run re-run on it:
   ✓ boost-holdout (step-21): recorded holdout_auc 0.8538; replicated holdout_auc 0.8627 meets 0.8; true margin +7.74 SE
