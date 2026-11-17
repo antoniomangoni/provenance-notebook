@@ -83,8 +83,8 @@ was written by AI coding agents from specs in `docs/specs/`.
 
 ## Video, under three minutes
 
-One take of a browser and a terminal, with no voice. The words are subtitles, a scripted dialogue
-shown in a caption strip recorded with the screen: Person 1 asks as a reviewer who was not there,
+One take of a browser and a terminal, with no voice. The words are subtitles burned in afterwards,
+a scripted dialogue: Person 1 asks as a reviewer who was not there,
 and Person 2 answers from the pages. No cold reader was recorded. Build the pages first with
 `scripts/site.sh site`, and start `uv run python project.py serve research/madelon-reanalysis/map --live live`.
 
