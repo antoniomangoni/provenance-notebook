@@ -25,20 +25,36 @@ def inputs():
     return revs, trails, project.live_state(revs, trails)
 
 
-def test_every_excused_read_abandoned_route_and_reason_is_on_the_page():
+def test_each_excuse_once_and_every_abandoned_route_and_reason_is_on_the_page():
     revs, _, live = inputs()
     body = countersign.page(live, revs, "research/madelon-reanalysis/map", "live")
-    for node in live["nodes"]:
-        for res in node["resolutions"]:
-            for read in res["reads"]:
-                if read["why"]:
-                    assert mapview.e(read["why"]) in body
+    found = countersign.excuses(live)
+    assert found and body.count('data-kind="excuse"') == len(found)
+    for x in found:
+        assert body.count(f"<p class='why'>{mapview.e(x['why'])}</p>") >= 1
+        assert f'data-key="excuse|{x["trail"]}#{x["step"]}"' in body
+    whys = [mapview.e(x["why"]) for x in found]
+    for why in set(whys):  # one card per excuse, not one per credit it props up
+        assert body.count(f"<p class='why'>{why}</p>") == whys.count(why)
     for route in live["routes"]:
         if route["status"] == "abandoned":
-            assert f'id="route-{route["id"]}"' in body and mapview.e(route["why"]) in body
-    assert body.count('<article class="card" id="rev-') == len(revs)
+            assert mapview.e(route["why"]) in body
+    assert body.count('data-kind="revision"') == len(revs)
     assert f"Countersign revision {len(revs)}" in body
     assert ("none by a person" in body) == (not any(r["by"].startswith("human:") for r in revs))
+
+
+def test_disputing_an_excuse_withdraws_every_credit_on_it_and_seals():
+    revs, trails, live = inputs()
+    x = max(countersign.excuses(live), key=lambda x: len(x["credits"]))
+    draft = countersign.draft(revs) | {"reason": "I dispute one excuse."}
+    keys = {countersign.credit_key(node, res) for node, res in x["credits"] if res["holds"]}
+    gone = [r for r in draft["resolutions"] if f"{r['node']}|{project.unpinned(r['cites'])}" in keys]
+    assert len(gone) == len(keys) > 0
+    draft["resolutions"] = [r for r in draft["resolutions"] if r not in gone]
+    draft["withdrawn"] = [{"node": r["node"], "cites": r["cites"], "why": "The excuse does not hold."} for r in gone]
+    revision, errors = project.seal(revs, draft, "human:tester", AT, trails)
+    assert errors == [] and len(revision["resolutions"]) == len(revs[-1]["resolutions"]) - len(gone)
 
 
 def test_every_step_box_links_to_a_step_on_its_trail():

@@ -45,6 +45,16 @@ textarea{width:100%;min-height:180px;padding:8px;border:1px solid var(--axis);bo
 button{padding:6px 14px;border-radius:6px;border:1px solid var(--ink);background:var(--ink);color:var(--surface);font:inherit;cursor:pointer}
 code.cmd{display:block;white-space:pre-wrap;background:var(--surface);border:1px solid var(--ring);border-radius:6px;padding:8px;margin:8px 0;font-size:12px}
 #problem{color:var(--critical)}
+nav.steps{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:6px;padding:8px 0;margin:0 0 8px;background:var(--plane);border-bottom:1px solid var(--grid)}
+nav.steps a{padding:3px 10px;border:1px solid var(--ring);border-radius:12px;text-decoration:none;font-size:13px;background:var(--surface)}
+nav.steps .n{color:var(--ink2);font-variant-numeric:tabular-nums}
+section{scroll-margin-top:48px}details.ev{scroll-margin-top:48px}
+.chip{display:inline-block;margin:2px 6px 2px 0;padding:1px 8px;border:1px solid var(--ring);border-radius:10px;font-size:12px;text-decoration:none;background:var(--plane)}
+details.ev{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:6px 12px;margin:0 0 6px}
+details.ev[open]{padding-bottom:10px}details.ev summary{color:var(--ink)}
+.item{border-top:1px solid var(--grid);padding:4px 0}.item:first-of-type{border-top:0}
+.amber{color:var(--serious)}
+button.quiet{background:transparent;color:var(--ink)}
 """
 
 
@@ -140,86 +150,136 @@ def graph(res: dict, lanes: dict[str, dict], cited_trail: str) -> str:
     return "".join(out + feeds) + "</svg>"
 
 
-def measured(node: dict, step: dict | None) -> str:
-    if not step or not step.get("measures"):
-        return ""
-    rows = []
-    for criterion in node["criteria"]:
-        name = criterion.split(" ")[0]
-        value = step["measures"].get(name)
-        if value is None:
-            rows.append(f"<tr><td>{e(criterion)}</td><td>not measured</td></tr>")
-            continue
-        op, bound = criterion.split(" ")[1], float(criterion.split(" ")[2])
-        holds = value >= bound if op == ">=" else value <= bound if op == "<=" else value == bound
-        rows.append(f"<tr><td>{e(criterion)}</td><td class='{'ok' if holds else 'no'}'>{value:g} {'✓' if holds else '✗'}</td></tr>")
-    return "<table class='measures'><tr><th>Criterion</th><th>Measured</th></tr>" + "".join(rows) + "</table>"
-
-
-def rule(kind: str, key: str, dispute: str) -> str:
+def rule(kind: str, key: str, title: str, placeholder: str, step: int | None = None, credits: list[str] = ()) -> str:
+    """One ruling: Confirm or Dispute and a note. `step` counts it toward that step's progress; an
+    excuse names the credits a dispute withdraws."""
     return (
-        f'<div class="rule" data-kind="{e(kind)}" data-key="{e(key)}">'
-        f'<label><input type="radio" name="{e(key)}" value="confirm"> Confirm</label>'
+        f'<div class="rule" data-kind="{e(kind)}" data-key="{e(key)}" data-title="{e(title)}"'
+        + (f' data-step="{step}"' if step else "")
+        + (f' data-credits="{e(json.dumps(list(credits)))}"' if credits else "")
+        + f'><label><input type="radio" name="{e(key)}" value="confirm"> Confirm</label>'
         f'<label><input type="radio" name="{e(key)}" value="dispute"> Dispute</label>'
-        f'<input type="text" placeholder="{e(dispute)}" aria-label="Note"></div>'
+        f'<input type="text" placeholder="{e(placeholder)}" aria-label="Note"></div>'
     )
 
 
-def resolution_card(node: dict, res: dict, lanes: dict[str, dict]) -> str:
+def credit_key(node: dict, res: dict) -> str:
+    return f"{node['id']}|{project.unpinned(res['cites'])}"
+
+
+def anchor(node: dict, res: dict) -> str:
+    return f"ev-{node['id']}-{trail_of(res['probe'] or res['cites'])}-{res['step']}"
+
+
+def excuses(live: dict) -> list[dict]:
+    """Each distinct excused read, once, with the credits that stand on it."""
+    found: dict[tuple[str, str], dict] = {}
+    for node in live["nodes"]:
+        for res in node["resolutions"]:
+            cited = trail_of(res["probe"] or res["cites"])
+            for read in res.get("reads", []):
+                if not read["why"]:
+                    continue
+                name = trail_of(read["run"]) if "#" in read["run"] else cited
+                item = found.setdefault(
+                    (name, read["run"].split("#")[-1]),
+                    {"trail": name, "step": read["run"].split("#")[-1], "why": read["why"], "how": read["how"], "credits": []},
+                )
+                item["credits"].append((node, res))
+    return sorted(found.values(), key=lambda x: (x["trail"], seq(x["step"])))
+
+
+def compact(node: dict, step: dict | None) -> str:
+    """The measures against the criteria, on one line."""
+    if not step or not step.get("measures"):
+        return "<span class='sub'>no measures</span>"
+    by_name: dict[str, list[tuple[str, bool]]] = {}
+    for criterion in node["criteria"]:
+        name, op, bound = criterion.split(" ")[0], criterion.split(" ")[1], float(criterion.split(" ")[2])
+        value = step["measures"].get(name)
+        if value is not None:
+            holds = value >= bound if op == ">=" else value <= bound if op == "<=" else value == bound
+            by_name.setdefault(name, []).append((criterion, holds))
+    bits = []
+    for name, checks in by_name.items():
+        holds = all(h for _, h in checks)
+        title = "; ".join(c for c, _ in checks)
+        bits.append(
+            f"<span class='{'ok' if holds else 'no'}' title='{e(title)}'>{e(name)} {step['measures'][name]:g} {'✓' if holds else '✗'}</span>"
+        )
+    return " · ".join(bits)
+
+
+def evidence(node: dict, res: dict, lanes: dict[str, dict]) -> str:
+    """One credit or refutation, folded to a line; open, its graph and a dispute for the credit itself."""
     name = trail_of(res["probe"] or res["cites"])
     step = next((s for s in lanes[name]["steps"] if s["id"] == res["step"]), None) if name in lanes else None
-    excused = [r for r in res.get("reads", []) if r["why"]]
-    head = f"{node['id']}: {'reached' if res['holds'] else 'refuted'} by {name} {res['step']}"
-    parts = [
-        f'<article class="card" id="res-{e(node["id"])}-{e(name)}-{e(res["step"])}"><h3>{"✓" if res["holds"] else "✗"} {e(head)}</h3>',
-        f"<p class='sub'>{e(node['statement'])}</p>",
-    ]
+    n = sum(1 for r in res.get("reads", []) if r["why"])
+    mark = "✓" if res["holds"] else "✗"
+    title = f"{node['id']} {mark} {name} {res['step']}"
+    inside = [f"<p class='sub'>{e(node['statement'])}</p>"]
     if step and step.get("plan"):
-        parts.append(f"<p>The plan it tested: {e(step['plan'])}</p>")
-    parts.append(measured(node, step))
-    for read in excused:
-        parts.append(
-            f"<p class='why'><a href='/trail/{e(trail_of(read['run']) if '#' in read['run'] else name)}#{e(read['run'].split('#')[-1])}'>"
-            f"{e(read['run'])}</a> opened data/heldout.csv ({e(read['how'])}). Excused by the revision: {e(read['why'])}</p>"
-        )
-    others = [r for r in res.get("reads", []) if not r["why"]]
-    if others:
-        parts.append(
-            "<p class='sub'>Reads found only on re-execution, a lead and not proof: "
-            + ", ".join(f"{e(r['run'])} ({e(r['how'])})" for r in others)
-            + "</p>"
-        )
+        inside.append(f"<p>The plan it tested: {e(step['plan'])}</p>")
     if res.get("rests_on"):
-        parts.append(f"<p class='sub'>Rests on: {e(', '.join(res['rests_on']))}</p>")
+        inside.append(f"<p class='sub'>Rests on: {e(', '.join(res['rests_on']))}</p>")
     if name in lanes:
-        parts.append(f"<div class='graph'>{graph(res, lanes, name)}</div>")
-    key = f"res|{node['id']}|{project.unpinned(res['cites'])}"
-    question = "Why you dispute this credit (it becomes the withdrawal's why)" if res["holds"] else "A note on this refutation"
-    parts.append(rule("resolution", key, question) + "</article>")
-    return "".join(parts)
+        inside.append(f"<div class='graph'>{graph(res, lanes, name)}</div>")
+    if res["holds"]:
+        inside.append(
+            rule(
+                "credit",
+                f"credit|{credit_key(node, res)}",
+                title,
+                "Only if the credit itself is wrong: why (it becomes the withdrawal's why)",
+            )
+        )
+    return (
+        f'<details class="ev" id="{e(anchor(node, res))}"><summary><b class="{"ok" if res["holds"] else "no"}">{mark}</b> '
+        f"<b>{e(node['id'])}</b> <a href='/trail/{e(name)}#{e(res['step'])}'>{e(name)} {e(res['step'])}</a> · {compact(node, step)}"
+        + (f" · <span class='amber'>{n} excused read{'s' if n > 1 else ''}</span>" if n else "")
+        + f"</summary>{''.join(inside)}</details>"
+    )
 
 
 SCRIPT = """<script>
 const draft = JSON.parse(document.getElementById("draft").textContent);
 const rev = Number(document.body.dataset.next);
+const KINDS = { excuse: "excused reads", route: "abandoned routes", withdrawn: "withdrawals", revision: "revision reasons" };
 function rulings() {
   return [...document.querySelectorAll(".rule")].map(div => ({
-    kind: div.dataset.kind, key: div.dataset.key,
-    title: div.closest("article").querySelector("h3").textContent.trim(),
+    kind: div.dataset.kind, key: div.dataset.key, title: div.dataset.title, step: div.dataset.step || null,
+    credits: div.dataset.credits ? JSON.parse(div.dataset.credits) : [],
     choice: (div.querySelector("input[type=radio]:checked") || {}).value || null,
     note: div.querySelector("input[type=text]").value.trim(),
   }));
 }
+function required() { return rulings().filter(r => r.step); }
+function progress() {
+  for (const a of document.querySelectorAll("nav.steps a[data-step]")) {
+    const mine = required().filter(r => r.step === a.dataset.step);
+    a.querySelector(".n").textContent = mine.length ? `${mine.filter(r => r.choice).length}/${mine.length}` : "";
+  }
+  const left = required().filter(r => !r.choice).length, all = required().length;
+  document.getElementById("unruled").textContent = left ? `${left} of ${all} judgments not ruled.` : `All ${all} judgments ruled.`;
+  document.getElementById("confirm-all").hidden = !left;
+}
 function compose() {
   const all = rulings(), lines = [];
-  const confirmed = all.filter(r => r.choice === "confirm"), disputed = all.filter(r => r.choice === "dispute");
-  lines.push(`I reviewed the map at revision ${rev - 1} on the review page, following each credit's steps to the trails. I re-ran nothing.`);
-  if (confirmed.length) lines.push(`I confirm: ${confirmed.map(r => r.title + (r.note ? ` (${r.note})` : "")).join("; ")}.`);
-  if (disputed.length) lines.push(`I dispute: ${disputed.map(r => r.title + (r.note ? `: ${r.note}` : "")).join("; ")}.`);
-  const open = all.filter(r => !r.choice).length;
-  if (open) lines.push(`${open} item(s) I did not rule on.`);
+  lines.push(`I reviewed the map at revision ${rev - 1} on the review page, following the credits' steps to the trails. I re-ran nothing.`);
+  const parts = [];
+  for (const [kind, label] of Object.entries(KINDS)) {
+    const mine = all.filter(r => r.kind === kind), yes = mine.filter(r => r.choice === "confirm").length;
+    if (yes) parts.push(yes === mine.length ? `all ${mine.length} ${label}` : `${yes} of ${mine.length} ${label}`);
+  }
+  if (parts.length) lines.push(`I confirm ${parts.join(", ")}.`);
+  const disputed = all.filter(r => r.choice === "dispute");
+  if (disputed.length) lines.push("I dispute: " + disputed.map(r => r.title + (r.note ? `: ${r.note}` : "")).join("; ") + ".");
+  const notes = all.filter(r => r.choice === "confirm" && r.note);
+  if (notes.length) lines.push("Notes: " + notes.map(r => `${r.title}: ${r.note}`).join("; ") + ".");
+  const left = required().filter(r => !r.choice).length;
+  if (left) lines.push(`${left} judgment(s) I did not rule on.`);
   document.getElementById("reason").value = lines.join("\\n\\n");
-  count();
+  count(); progress();
 }
 function count() {
   const n = document.getElementById("reason").value.length;
@@ -227,12 +287,16 @@ function count() {
 }
 function build() {
   const out = JSON.parse(JSON.stringify(draft)), withdrawn = [], problems = [];
-  for (const r of rulings()) {
-    if (r.kind !== "resolution" || r.choice !== "dispute") continue;
-    const [, node, cites] = r.key.split("|");
-    if (!r.note) { problems.push(`say why you dispute ${node}`); continue; }
+  const drop = (key, why) => {
+    const [node, cites] = key.split("|");
     const i = out.resolutions.findIndex(x => x.node === node && x.cites.replace(/@[^#]*#/, "#") === cites);
-    if (i >= 0) { withdrawn.push({ node, cites: out.resolutions[i].cites, why: r.note.slice(0, 1000) }); out.resolutions.splice(i, 1); }
+    if (i >= 0) { withdrawn.push({ node, cites: out.resolutions[i].cites, why: why.slice(0, 1000) }); out.resolutions.splice(i, 1); }
+  };
+  for (const r of rulings()) {
+    if (r.choice !== "dispute" || !(r.kind === "credit" || r.kind === "excuse")) continue;
+    if (!r.note) { problems.push(`say why you dispute ${r.title}`); continue; }
+    if (r.kind === "credit") drop(r.key.slice("credit|".length), r.note);
+    else for (const c of r.credits) drop(c, `${r.title} is disputed: ${r.note}`);
   }
   if (withdrawn.length) out.withdrawn = withdrawn;
   out.reason = document.getElementById("reason").value.trim();
@@ -254,7 +318,9 @@ async function seal() {
   if (!/^[A-Za-z0-9._@-]{1,100}$/.test(who)) problems.push("give your name");
   say.textContent = problems.length ? "Not yet: " + problems.join("; ") + "." : "";
   if (problems.length) return;
-  if (!confirm(`Seal revision ${rev} as human:${who}? It is written to the map and cannot be unsealed, only followed by another revision.`)) return;
+  const left = required().filter(r => !r.choice).length;
+  const warn = left ? `\\n\\n${left} judgment(s) are not ruled on, and the reason will say so.` : "";
+  if (!confirm(`Seal revision ${rev} as human:${who}? It is written to the map and cannot be unsealed, only followed by another revision.${warn}`)) return;
   const button = document.getElementById("seal");
   button.disabled = true;
   say.textContent = "Sealing…";
@@ -266,11 +332,10 @@ async function seal() {
     const result = await reply.json();
     if (result.ok) {
       say.textContent = "";
-      document.getElementById("sealed").innerHTML = "";
       const p = document.createElement("p");
       p.className = "ok";
       p.textContent = `Sealed: ${result.path}. ${result.check}`;
-      document.getElementById("sealed").append(p);
+      document.getElementById("sealed").replaceChildren(p);
     } else {
       say.textContent = "Not sealed: " + (result.errors || ["unknown error"]).join("; ");
       button.disabled = false;
@@ -281,49 +346,95 @@ function command() {
   const name = document.getElementById("who").value.trim() || "NAME";
   document.getElementById("cmd").textContent = document.getElementById("cmd").dataset.template.replace("NAME", name);
 }
+function confirmAll() {
+  for (const div of document.querySelectorAll(".rule[data-step]"))
+    if (!div.querySelector("input[type=radio]:checked")) div.querySelector("input[value=confirm]").checked = true;
+  compose();
+}
+function reveal() {
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  if (target && target.tagName === "DETAILS") target.open = true;
+}
 document.addEventListener("change", ev => { if (ev.target.closest(".rule")) compose(); });
 document.addEventListener("input", ev => { if (ev.target.closest(".rule")) compose(); });
 document.getElementById("reason").addEventListener("input", count);
 document.getElementById("who").addEventListener("input", command);
 document.getElementById("download").addEventListener("click", download);
+document.getElementById("confirm-all").addEventListener("click", confirmAll);
 if (document.getElementById("seal")) document.getElementById("seal").addEventListener("click", seal);
-compose(); command();
+window.addEventListener("hashchange", reveal);
+reveal(); compose(); command();
 </script>"""
 
 
 def page(live: dict, revs: list[dict], map_dir: str, live_dir: str | None, token: str | None = None) -> str:
-    """The review page for the map's next revision: every judgment, with the steps under it, and a draft to download."""
+    """The review page for the map's next revision, in four steps: the excused reads, the other
+    judgments, the evidence (nothing to rule), and the reason and seal."""
     lanes = {lane["trail"]: lane for lane in live["trails"]}
     nxt = live["rev"] + 1
-    excused, refuted, plain = [], [], []
-    for node in live["nodes"]:
-        for res in node["resolutions"]:
-            card = resolution_card(node, res, lanes)
-            (excused if any(r["why"] for r in res.get("reads", [])) else plain if res["holds"] else refuted).append(card)
-    abandoned = [
-        f'<article class="card" id="route-{e(r["id"])}"><h3>Route {e(r["id"])} abandoned</h3>'
-        f"<p class='sub'>{e(r['method'])}</p><p class='why'>{e(r['why'])}</p>"
-        + rule("route", f"route|{r['id']}", "A note (to reverse it, the draft's route needs editing by hand)")
+    every = [(node, res) for node in live["nodes"] for res in node["resolutions"]]
+
+    reads = []
+    for x in excuses(live):
+        title = f"the excused read {x['trail']} {x['step']}"
+        chips = "".join(
+            f"<a class='chip' href='#{e(anchor(node, res))}'>{'✓' if res['holds'] else '✗'} {e(node['id'])} · {e(trail_of(res['probe'] or res['cites']))} {e(res['step'])}</a>"
+            for node, res in x["credits"]
+        )
+        credits = [credit_key(node, res) for node, res in x["credits"] if res["holds"]]
+        reads.append(
+            f"<article class='card'><h3><a href='/trail/{e(x['trail'])}#{e(x['step'])}'>{e(x['trail'])} {e(x['step'])}</a> opened data/heldout.csv</h3>"
+            f"<p class='why'>{e(x['why'])}</p><p class='sub'>{len(x['credits'])} credit{'s' if len(x['credits']) > 1 else ''} stand on it:</p><p>{chips}</p>"
+            + rule(
+                "excuse",
+                f"excuse|{x['trail']}#{x['step']}",
+                title,
+                "Why you dispute it (each credit on it is withdrawn with this)",
+                1,
+                credits,
+            )
+            + "</article>"
+        )
+
+    others = [
+        f"<article class='card'><h3>Route {e(r['id'])} abandoned</h3><p class='sub'>{e(r['method'])}</p><p class='why'>{e(r['why'])}</p>"
+        + rule(
+            "route", f"route|{r['id']}", f"the abandonment of route {r['id']}", "A note (reversing it means editing the draft by hand)", 2
+        )
         + "</article>"
         for r in live["routes"]
         if r["status"] == "abandoned"
     ]
-    withdrawn = [
-        f'<article class="card"><h3>{e(h["node"])}: a credit withdrawn at rev-{h["dropped"]}</h3>'
-        f"<p class='sub'>{e(h['cites'])}, stood rev-{h['from']} to rev-{h['dropped']}</p>"
-        f"<p class='why'>{e(h['why'] or 'No reason recorded in the data; see that revision.')}</p>"
-        + rule("withdrawn", f"withdrawn|{h['node']}|{h['cites']}", "A note")
-        + "</article>"
-        for h in live["withdrawn"]
-    ]
-    reasons = [
-        f'<article class="card" id="rev-{r["rev"]}"><h3>Revision {r["rev"]}, sealed by {e(r["by"])}</h3>'
-        f"<p class='sub'>{e(r['at'])}: {r['sealed']} resolutions sealed, {r['dropped']} dropped</p>"
-        f"<details{' open' if r['rev'] == live['rev'] else ''}><summary>The reason</summary><pre class='reason'>{e(r['reason'])}</pre></details>"
-        + rule("revision", f"rev|{r['rev']}", "A note on this revision's judgment")
-        + "</article>"
-        for r in reversed(live["revisions"])
-    ]
+    for h in live["withdrawn"]:
+        others.append(
+            f"<article class='card'><h3>{e(h['node'])}: a credit withdrawn at rev-{h['dropped']}</h3>"
+            f"<p class='sub'>{e(h['cites'])}, stood rev-{h['from']} to rev-{h['dropped']}</p>"
+            f"<p class='why'>{e(h['why'] or 'No reason recorded in the data; see that revision.')}</p>"
+            + rule("withdrawn", f"withdrawn|{h['node']}|{h['cites']}", f"the withdrawal of {h['node']} at rev-{h['dropped']}", "A note", 2)
+            + "</article>"
+        )
+    groups, last_by = [], None
+    for r in reversed(live["revisions"]):
+        if r["by"] != last_by:
+            groups.append((r["by"], []))
+            last_by = r["by"]
+        groups[-1][1].append(r)
+    for by, group in groups:
+        span = f"rev-{group[-1]['rev']} to rev-{group[0]['rev']}" if len(group) > 1 else f"rev-{group[0]['rev']}"
+        items = "".join(
+            f"<div class='item'><details{' open' if r['rev'] == live['rev'] else ''}><summary><b>Revision {r['rev']}</b> · {e(r['at'])} · "
+            f"{r['sealed']} sealed, {r['dropped']} dropped</summary><pre class='reason'>{e(r['reason'])}</pre></details>"
+            + rule("revision", f"rev|{r['rev']}", f"revision {r['rev']}'s reason", "A note on this revision's judgment", 2)
+            + "</div>"
+            for r in group
+        )
+        others.append(f"<article class='card'><h3>Sealed by {e(by)}: {span}</h3>{items}</article>")
+
+    leads = sorted({r["run"] for _, res in every for r in res.get("reads", []) if not r["why"]})
+    excused_read = {id(res) for _, res in every if any(r["why"] for r in res.get("reads", []))}
+    ordered = sorted(every, key=lambda p: (id(p[1]) not in excused_read, p[1]["holds"], p[0]["id"]))
+    evidence_html = "".join(evidence(node, res, lanes) for node, res in ordered)
+
     by = sorted({r["by"] for r in live["revisions"]})
     people = [b for b in by if b.startswith("human:")]
     blob = json.dumps(draft(revs), ensure_ascii=False).replace("<", "\\u003c")
@@ -331,42 +442,48 @@ def page(live: dict, revs: list[dict], map_dir: str, live_dir: str | None, token
     template = f"uv run python project.py seal {map_dir} ~/Downloads/rev-{nxt}-draft.json --by human:NAME{flags}\n" + (
         f"uv run python project.py check {map_dir}{flags}"
     )
+    steps = [(1, "Excused reads"), (2, "Other judgments"), (3, "Evidence"), (4, "Reason and seal")]
+    nav = (
+        "<nav class='steps'>"
+        + "".join(f"<a href='#step-{n}' data-step='{n if n < 3 else ''}'><b>{n}</b> {e(t)} <span class='n'></span></a>" for n, t in steps)
+        + "</nav>"
+    )
 
-    def section(title: str, intro: str, cards: list[str], folded: bool = False) -> str:
-        if not cards:
-            return ""
-        body = "".join(cards)
-        if folded:
-            body = f"<details><summary>Show {len(cards)}</summary>{body}</details>"
-        return f"<h2>{e(title)} ({len(cards)})</h2><p class='sub'>{e(intro)}</p>{body}"
+    def section(n: int, title: str, intro: str, body: str) -> str:
+        return f"<section id='step-{n}'><h2>{n}. {e(title)}</h2><p class='sub'>{intro}</p>{body}</section>"
 
     main = (
         f"<h1>Countersign revision {nxt} of {e(live['project'])}</h1>"
-        f"<p class='sub'><a href='/'>← the map</a>. Revision {live['rev']} is the map now. Its {len(live['revisions'])} revisions were sealed by "
-        f"{e(', '.join(by))}{'' if people else ', none by a person'}. Rule on each judgment below. Each box in a graph is a step: "
-        "click it to read the step on its trail's page. An amber outline is a run that opened data/heldout.csv (dashed: found only on re-execution).</p>"
+        f"<p class='sub'><a href='/'>← the map</a>. Revision {live['rev']} is the map now, sealed by {e(', '.join(by))}"
+        f"{'' if people else ', none by a person'}. Rule on the judgments in steps 1 and 2; step 3 is the evidence, to open as you need it.</p>"
+        + nav
         + section(
-            "Credits that stand on an excused read",
-            "A revision judged that these reads of the held-out file reached no design, so the credit stands.",
-            excused,
+            1,
+            "Excused reads",
+            f"A revision judged that each of these {len(reads)} reads of the held-out file reached no design, so the credits on it stand. "
+            "Click a credit to open its steps below: an amber box is a run that opened the file (dashed: found only on re-execution).",
+            "".join(reads) or "<p>None.</p>",
         )
         + section(
-            "Refutations", "Measured against the milestone's criteria by check; no judgment is needed, but you may note one.", refuted
+            2,
+            "Other judgments",
+            "Abandoned routes, withdrawals, and each revision's reason: the judgments the map has no field for are in these.",
+            "".join(others),
         )
-        + section("Abandoned routes", "Judgments: an agent ended these routes.", abandoned)
-        + section("Withdrawn credits", "Judgments: a revision dropped these credits.", withdrawn)
         + section(
-            "Every revision's reason",
-            "The judgments the map has no field for (second looks not credited, a held-out look not recorded) are in these.",
-            reasons,
+            3,
+            "Evidence",
+            "Every credit and refutation, checked from the measures. Nothing to rule unless a credit itself is wrong."
+            + (f" Reads found only on re-execution, leads and not proof: {e(', '.join(leads))}." if leads else ""),
+            evidence_html,
         )
-        + section("The other credits", "Reached with no sealed read excused.", plain, folded=True)
-        + "<section class='seal'><h2>Your reason</h2>"
-        "<p class='sub'>Composed from your rulings; edit it freely. A disputed credit is moved to withdrawn, with your note as why.</p>"
+        + "<section id='step-4' class='seal'><h2>4. Reason and seal</h2>"
+        "<p class='sub'>Composed from your rulings; edit it freely. A disputed excuse or credit is moved to withdrawn, with your note as why.</p>"
+        "<p><span id='unruled' class='amber'></span> <button id='confirm-all' type='button' class='quiet'>Confirm all remaining</button></p>"
         "<textarea id='reason' aria-label='Reason'></textarea><p class='sub' id='count'></p>"
         "<p><label>Your name: human:<input id='who' value='' placeholder='name'></label> "
         + ("<button id='seal' type='button'>Seal revision " + str(nxt) + "</button> " if token else "")
-        + "<button id='download' type='button'>Download the draft</button> <span id='problem'></span></p><div id='sealed'></div>"
+        + "<button id='download' type='button' class='quiet'>Download the draft</button> <span id='problem'></span></p><div id='sealed'></div>"
         + (
             "<p class='sub'>Seal writes the revision to the map after the same check as <code>project.py seal</code>; "
             "commit it afterwards. Or download the draft and seal it yourself:</p>"
