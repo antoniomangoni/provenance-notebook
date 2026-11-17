@@ -12,10 +12,12 @@ revision is escaped. The static page has no script; the served one polls `/frame
 docs/specs/07-live-map.md is the specification.
 """
 
+import hmac
 import html
 import http.server
 import json
 import os
+import secrets
 import socketserver
 from datetime import UTC, datetime
 from pathlib import Path
@@ -467,6 +469,8 @@ class State:
     def __init__(self, directory: Path, live_dir: str | None, paths: list[Path], retraced: list[Path]):
         self.directory, self.live_dir, self.paths, self.retraced = directory, live_dir, paths, retraced
         self.seen, self.live, self.inputs = None, None, None
+        # Only the review page carries it: another site's page cannot read it, so it cannot ask for a seal.
+        self.token = secrets.token_urlsafe(24)
 
     def fingerprint(self) -> tuple:
         revs = sorted((p.name, p.stat().st_mtime_ns) for p in self.directory.glob("rev-*.json"))
@@ -551,7 +555,7 @@ def handler(state: State):
                 import countersign
 
                 revs, _ = state.inputs
-                self.send(200, countersign.page(live, revs, str(state.directory), state.live_dir))
+                self.send(200, countersign.page(live, revs, str(state.directory), state.live_dir, state.token))
             elif path == "/state.json":
                 self.send(200, json.dumps(live, ensure_ascii=False), "application/json")
             elif path.startswith("/trail/") and (found := state.trail_page(path.removeprefix("/trail/"))):
@@ -560,6 +564,34 @@ def handler(state: State):
                 self.send(200, page(then, clock, served=True))
             else:
                 self.send(404, "<p>not found</p>")
+
+        def do_POST(self):
+            """Only /seal, from the review page of this server: its host, its origin, JSON, and its token."""
+            port = self.server.server_address[1]
+            hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
+            origin = self.headers.get("Origin")
+            if (
+                unquote(self.path.split("?")[0]) != "/seal"
+                or self.headers.get("Host") not in hosts
+                or (origin is not None and origin not in {f"http://{h}" for h in hosts})
+                or (self.headers.get("Content-Type") or "").split(";")[0].strip() != "application/json"
+            ):
+                self.send(403, json.dumps({"ok": False, "errors": ["refused"]}), "application/json")
+                return
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                payload = json.loads(self.rfile.read(length)) if 0 < length <= 1_000_000 else None
+            except ValueError:
+                payload = None
+            if not isinstance(payload, dict) or not hmac.compare_digest(str(payload.get("token", "")), state.token):
+                self.send(403, json.dumps({"ok": False, "errors": ["refused: reload the review page"]}), "application/json")
+                return
+            import countersign
+
+            state.now()
+            revs, trails = state.inputs
+            code, result = countersign.seal(state.directory, revs, trails, payload)
+            self.send(code, json.dumps(result, ensure_ascii=False), "application/json")
 
     return Handler
 
