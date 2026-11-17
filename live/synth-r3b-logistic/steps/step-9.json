@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:21:34.824Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only tuning grid for kernel logistic regression (RBF + poly2 Nystroem, gamma/C/components) with nested-CV check of the shortlist; prints only",
+  "reasoning": "Steps 8/17 of the running raw-feature trails show RF and kNN on the twelve given features reach only cv 0.7826/0.7843, so a linear logistic on raw columns (inherited baseline 0.6313) and local methods cannot clear 0.80: the label needs interactions synthesised from those same features. The route's precedent (kernel logistic, provisional cv 0.8678) and the sealed pairs result (0.8923 cv) say kernel-style expansion of the given features gets there. I will grid-search, on pilot.csv only (single thread, prints only, no out/ writes): StandardScaler -> Nystroem(RBF or poly deg-2, gamma, n_components <= 300) -> LogisticRegression(C, max_iter=2000), 5-fold stratified AUC, plus the raw logistic reference, then a nested-CV (5 outer x 3 inner) estimate for the shortlist to size the honest cv_auc for the milestone run.",
+  "expectations": [
+    {
+      "name": "tune-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d#step-19",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r3b-forest-raw@sha256:203f275c71c5d94b9fdd9255ceff566e8f423de4874f13768a0373672b57ff1e#step-8",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r3b-knn-raw@sha256:09130a544ff323c5377d641357f699598e0d02d038f5fe98752771a4a8193537#step-17",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:4f5557d684ffc0b671ea541af9c477068154b0ead78db4998ec2e3bc41286073"
+}

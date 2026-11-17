@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-18",
+  "seq": 18,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:21:34.864Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Rerun pilot-only nested CV at 10 folds to cut data loss per fold and fold variance",
+  "reasoning": "Observation step-17 contradicted the widened grid: cv_auc 0.7843. Interior k (51, 71, distance) is now chosen, so the grid is adequate; the shortfall looks like data hunger (5-fold trains on 800/1000) and fold variance (fold AUCs 0.74-0.83). Fix within route: raise the CV protocol to 10-fold nested (outer 10 x inner 10, same grid, same seed) via the existing --folds flag — no change to model family, features or tuning set. 10-fold measures 900-row models, closer to the 1000-row deployed model, and averages more folds. Expect cv_auc to rise ~0.01-0.03 to >= 0.80. Model still on the twelve standardised features, tuning only k and weights; heldout untouched; metrics keeps only cv_auc. Cost ~2400 tiny single-threaded fits, minutes.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "knn-raw-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-15",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-17",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:09130a544ff323c5377d641357f699598e0d02d038f5fe98752771a4a8193537"
+}

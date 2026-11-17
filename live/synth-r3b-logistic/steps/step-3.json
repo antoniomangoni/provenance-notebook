@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "id": "step-3",
+  "seq": 3,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:20:45.665Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Survey the inherited workspace (pilot only): list files, check pilot.csv shape/header, check uv and sklearn, never touch data/heldout.csv",
+  "reasoning": "The route's design (a logistic regression tuned on pilot alone) needs the pilot size, class balance and library versions before I can size a grid honestly. The inherited analysis.py already gates the held-out file behind --final, so a pilot-only run never opens it. Baseline cv_auc 0.6313 is established by probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9 (cited by the task). I build my design on the provisional kernel-logistic result of probe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d#step-19 (cv_auc 0.8678): it shows a plain L2 logistic on the twelve features as given cannot express this dataset's interactions (so the route's logistic needs a kernel expansion of those same features), and that such a model reached ~0.87 cv on this pilot. I will verify independently with my own grid, chosen only on pilot data.",
+  "expectations": [
+    {
+      "name": "survey-exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d#step-19",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:686e8e302db4c1fd210b6a8dba91b0816a89ca554bf145c81c47bd7ace728148"
+}

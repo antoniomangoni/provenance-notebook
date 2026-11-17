@@ -205,6 +205,8 @@ other half:
   reason. It changed nothing here, because every route was run.
 
 The near-threshold half, that nothing beats a coin flip there, is still tested only by Madelon.
+[Spec 13](13-third-round.md) ran a third round to test it, and reports the verdicts again with
+its results.
 
 **Limits.**
 - **The settled forecasts are too few to rank forecasters.** There are 15, all held, 4 of them

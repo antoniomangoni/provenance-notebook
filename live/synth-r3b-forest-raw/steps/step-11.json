@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "synth-r3b-forest-raw",
+  "at": "2026-11-17T13:22:17.105Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "export OMP_NUM_THREADS=1 && uv run python diagnose.py",
+  "command": {
+    "shown": "export OMP_NUM_THREADS=1 && uv run python diagnose.py",
+    "digest": "sha256:ab1f65232cd8712792308077c3e709828837dc7a5ba8102a28f1665b9268bea7"
+  },
+  "code": {
+    "ref": "commit:cd786d641cfee668b1b3bd85f921e10a4cd7be70"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-10",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a68a614984d5c27fda81b372c2e197759402958edb1ab0ec97e46c7710b0fc6c"
+}

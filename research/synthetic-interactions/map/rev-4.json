@@ -1,0 +1,619 @@
+{
+  "version": 2,
+  "project": "synthetic-interactions",
+  "reason": "Round 3 (spec 13): three agents on the routes Kimi K3.1 Pro chose (logistic, forest-raw, knn-raw; oversight/round-3.json), the only open ones, in the sandbox and under the file trace. The first launch (live/synth-r3-*) ran nothing: Berget's gateway refused every request with a server error. The same routes ran again as live/synth-r3b-* once it answered, and all three agents finished inside the 40-minute wall clock; every trail checks. forest-raw is refuted at both milestones: a random forest with every setting at scikit-learn's default but the number of trees (1000) and the seed, on the twelve features as given (cv 0.7878 and holdout_auc 0.788 at step-15; the held-out file opened once, in that run). The route stops at its first miss, so propose drafts only forest-raw-cv; forest-raw-holdout is refuted by the same observation, whose holdout_auc misses the floor. knn-raw-cv is refuted: k-nearest neighbours on the twelve standardised features, with only k and its weighting chosen in nested cross-validation (cv 0.7919 at step-27). The agent stopped there, at a plateau, without scoring the held-out file, so knn-raw-holdout stays open. Both code snapshots were read against their route's rule and follow it. logistic is not credited, by judgment, as in rev-2: its agent again left a logistic regression on the features as given, for one on a degree-2 polynomial Nystroem kernel (cv 0.8854 at step-18, holdout_auc 0.8906 at step-21), and the two round 2 candidates are declined again with it. logistic-cv and logistic-holdout stay open. These are the map's first refutations. Before them, through what the agents read on the map, stand round 1's two row counts (forest step-4, pairs step-4); a refutation takes no excuse, and those reads stay excused for the credits, as in rev-1.",
+  "triggered_by": [
+    "probe:synth-r3b-forest-raw@sha256:85edf28a9efe5a41f8364440902985c9d1717cbdf3a17a5332bd2f4f6471cb79#step-15",
+    "probe:synth-r3b-knn-raw@sha256:c4cb492fb4b4acf2832f9601f27063447e05fec9d145e24acdd39a9bce0a9c8c#step-27"
+  ],
+  "goals": [
+    {
+      "id": "floor",
+      "statement": "An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "baseline",
+      "statement": "The inherited analysis runs, and its cross-validated AUC is above chance",
+      "criteria": [
+        {
+          "name": "above-chance",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.6
+        }
+      ]
+    },
+    {
+      "id": "logistic-cv",
+      "statement": "A logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "logistic-holdout",
+      "statement": "A logistic regression clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "l1-cv",
+      "statement": "An L1-penalised logistic regression, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "l1-holdout",
+      "statement": "An L1-penalised logistic regression clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "knn-cv",
+      "statement": "k-nearest neighbours, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "knn-holdout",
+      "statement": "k-nearest neighbours clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "forest-cv",
+      "statement": "A random forest, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "forest-holdout",
+      "statement": "A random forest clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "boost-cv",
+      "statement": "Gradient boosting, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "boost-holdout",
+      "statement": "Gradient boosting clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "pairs-cv",
+      "statement": "A logistic regression on the pairwise products, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "pairs-holdout",
+      "statement": "A logistic regression on the pairwise products clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "forest-raw-cv",
+      "statement": "A random forest at default settings on the twelve features as given, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "forest-raw-holdout",
+      "statement": "A default random forest on the twelve features as given clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    },
+    {
+      "id": "knn-raw-cv",
+      "statement": "k-nearest neighbours on the twelve standardised features as given, chosen on pilot data alone, has a cross-validated AUC of at least 0.80 on the pilot sample",
+      "criteria": [
+        {
+          "name": "pilot-estimate",
+          "measure": "cv_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "id": "knn-raw-holdout",
+      "statement": "k-nearest neighbours on the twelve features as given clears the held-out floor of 0.80, and its estimate agrees",
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8
+        },
+        {
+          "name": "gap-upper",
+          "measure": "gap",
+          "comparison": "le",
+          "threshold": 0.05
+        },
+        {
+          "name": "gap-lower",
+          "measure": "gap",
+          "comparison": "ge",
+          "threshold": -0.05
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "logistic",
+      "goal": "floor",
+      "method": "a logistic regression on the features as given, tuned on pilot data alone",
+      "path": [
+        "baseline",
+        "logistic-cv",
+        "logistic-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "l1",
+      "goal": "floor",
+      "method": "an L1-penalised logistic regression, with its penalty tuned inside cross-validation",
+      "path": [
+        "baseline",
+        "l1-cv",
+        "l1-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "knn",
+      "goal": "floor",
+      "method": "k-nearest neighbours, with k and any feature screen chosen inside cross-validation",
+      "path": [
+        "baseline",
+        "knn-cv",
+        "knn-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "forest",
+      "goal": "floor",
+      "method": "a random forest, tuned on pilot data alone",
+      "path": [
+        "baseline",
+        "forest-cv",
+        "forest-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "boost",
+      "goal": "floor",
+      "method": "gradient boosting (scikit-learn's HistGradientBoostingClassifier), tuned on pilot data alone",
+      "path": [
+        "baseline",
+        "boost-cv",
+        "boost-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "pairs",
+      "goal": "floor",
+      "method": "a logistic regression on the features and their pairwise products, with its penalty tuned inside cross-validation",
+      "path": [
+        "baseline",
+        "pairs-cv",
+        "pairs-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "forest-raw",
+      "goal": "floor",
+      "method": "a random forest on the twelve features as given, at scikit-learn's default settings (only the number of trees and the seed may change); no products, kernels, feature selection or other constructed features",
+      "path": [
+        "baseline",
+        "forest-raw-cv",
+        "forest-raw-holdout"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "knn-raw",
+      "goal": "floor",
+      "method": "k-nearest neighbours on the twelve standardised features as given, with only k (and its weighting) tuned inside cross-validation; no products, kernels, feature selection or other constructed features",
+      "path": [
+        "baseline",
+        "knn-raw-cv",
+        "knn-raw-holdout"
+      ],
+      "status": "open"
+    }
+  ],
+  "resolutions": [
+    {
+      "node": "baseline",
+      "cites": "probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785#step-11",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "boost-cv",
+      "cites": "probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785#step-19",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "boost-holdout",
+      "cites": "probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785#step-22",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "baseline",
+      "cites": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466#step-9",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "forest-cv",
+      "cites": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466#step-13",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "forest-holdout",
+      "cites": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466#step-22",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "baseline",
+      "cites": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "pairs-cv",
+      "cites": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-14",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "pairs-holdout",
+      "cites": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-17",
+      "holds": true,
+      "excused": [
+        {
+          "run": "step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "knn-cv",
+      "cites": "probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953#step-9",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "knn-holdout",
+      "cites": "probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953#step-13",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "l1-cv",
+      "cites": "probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424#step-11",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "l1-holdout",
+      "cites": "probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424#step-22",
+      "holds": true,
+      "excused": [
+        {
+          "run": "synth-r1-forest#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        },
+        {
+          "run": "synth-r1-pairs#step-4",
+          "why": "wc -l data/pilot.csv data/heldout.csv counted both files' rows while looking around, before any design; no value of the held-out file was printed."
+        }
+      ]
+    },
+    {
+      "node": "forest-raw-cv",
+      "cites": "probe:synth-r3b-forest-raw@sha256:85edf28a9efe5a41f8364440902985c9d1717cbdf3a17a5332bd2f4f6471cb79#step-15",
+      "holds": false
+    },
+    {
+      "node": "forest-raw-holdout",
+      "cites": "probe:synth-r3b-forest-raw@sha256:85edf28a9efe5a41f8364440902985c9d1717cbdf3a17a5332bd2f4f6471cb79#step-15",
+      "holds": false
+    },
+    {
+      "node": "knn-raw-cv",
+      "cites": "probe:synth-r3b-knn-raw@sha256:c4cb492fb4b4acf2832f9601f27063447e05fec9d145e24acdd39a9bce0a9c8c#step-27",
+      "holds": false
+    }
+  ],
+  "sealed_inputs": [
+    "data/heldout.csv"
+  ],
+  "instructions": "Choose every part of the analysis, the features, the model and its settings, on data/pilot.csv alone. data/heldout.csv is read only by the final analysis, which scores it once: do not use it to diagnose, compare or tune.",
+  "rev": 4,
+  "at": "2026-11-17T13:33:08Z",
+  "by": "agent:claude-code/claude-opus-5-5",
+  "prev": "sha256:1978c393dd7560c22c9e68ca392ed671fd5cdd1ad1f87ba9115a774def329dd2"
+}

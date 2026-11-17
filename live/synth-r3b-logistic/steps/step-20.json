@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:23:38.187Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "OMP_NUM_THREADS=1 uv run python analysis.py --final && echo --- && cat out/metrics.json && echo --- && uv run python -c \"import json; m=json.load(open('out/metrics.json')); print('flat:', isinstance(m",
+  "command": {
+    "shown": "OMP_NUM_THREADS=1 uv run python analysis.py --final && echo --- && cat out/metrics.json && echo --- && uv run python -c \"import json; m=json.load(open('out/metrics.json')); print('flat:', isinstance(m, dict) and all(isinstance(v,(int,float)) for v in m.values()), 'keys:', sorted(m), 'gap==cv-holdout:', m['gap']==round(m['cv_auc']-m['holdout_auc'],4))\"",
+    "digest": "sha256:9b881beae1d9060be75d477e4321829c7763dd9d2dd5126bef61eef9bb34e2c4"
+  },
+  "code": {
+    "ref": "commit:6defa38232cef3a525ed20c27cbe6858b8033f86"
+  },
+  "environment": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-19",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:2a21eeb107efbd2e70e15ec1fc7e06b2c907ef498e617f5646e4ef9dce3ddebe"
+}

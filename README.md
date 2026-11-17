@@ -62,7 +62,7 @@ plan's reasoning quotes one. The page reports the reads and leaves the judgment 
 
 ## What was run, and what it showed
 
-Every live attempt is committed under `live/`: twenty-one trails over two research projects, all by the same model.
+Every live attempt is committed under `live/`: twenty-seven trails over two research projects, all by the same model.
 
 | What | Result | Where |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ Every live attempt is committed under `live/`: twenty-one trails over two resear
 | Two fleets of three agents sharing one map | The first reached nothing. In the second, agents built on each other's steps and two routes reached the goal; one held-out result leaked between agents, and the leak is disclosed and closed | [the map](research/madelon-reanalysis/README.md#agents-sharing-the-map) |
 | One agent in a sandbox | The sandbox held: no command reached outside its workspace, and the held-out file was never opened. The run reached nothing. The file trace slowed its first search thirteen times, and the wall clock ended it there | [the map](research/madelon-reanalysis/README.md#the-sandboxed-run) |
 | Three agents in the sandbox, run to settle forecasts of three open milestones | It settled none. The wall clock stopped each agent inside a run. One scored the held-out file once, at 0.694, but wrote a metrics file capture could not read, so the map holds no measure and refutes nothing | [the map](research/madelon-reanalysis/README.md#fleet-4) |
-| A second research project, with Kimi K3.1 Pro overseeing the beliefs | Synthetic data with a known truth. Kimi forecast every open milestone and chose the routes, before each of two rounds of three agents. Every route was meant to sit far from the floor, and agents that read each other's results put all of them above it. Kimi did no better than a coin flip; the blanket's code forecaster, given sibling scores far from the floor, did | [the project](research/synthetic-interactions/README.md) |
+| A second research project, with Kimi K3.1 Pro overseeing the beliefs | Synthetic data with a known truth. Kimi forecast every open milestone and chose the routes, before each of three rounds of three agents. In two rounds, agents that read each other's results put every route above the floor. A third round, on routes that forbade that, gave the first refutations. Over 18 settled forecasts no forecaster beat a coin flip: reading the siblings won one round, reading the method another | [the project](research/synthetic-interactions/README.md) |
 | How sure the map's marks are, and a second model as forecaster | Every ✓ and ✗ at the floor is within noise of it (below). A second model forecast 22 settled questions from text that code built and scored. On the six that were real forecasts it did worse than a coin flip: four of the 8 milestone outcomes were known when the question's revision was written, and 12 of the 14 plans came after their trail had opened the held-out file | [the map](research/madelon-reanalysis/README.md#how-sure-the-marks-are) |
 
 ### How sure the marks are
@@ -129,26 +129,31 @@ second project tests that ([spec 12](docs/specs/12-second-project.md),
   each credited analysis its true AUC.
 - **Six routes.** One per model family, chosen so that at default settings some sit far below a
   floor of 0.80 and some far above.
-- **Kimi K3.1 Pro oversees the beliefs.** Before each of two rounds of three agents it forecast
+- **Kimi K3.1 Pro oversees the beliefs.** Before each of three rounds of three agents it forecast
   every open milestone and chose the routes. Both were pushed before the agents started.
 
-**It did not go to plan.** In round 2 every agent read the first round's results and built on
-the interaction they had found, so the linear and kNN routes cleared the floor too. Replicated,
-the five credited analyses stand 6 to 14 standard errors above 0.80, and all 15 settled forecasts
-held.
+**Rounds 1 and 2 did not go to plan.** In round 2 every agent read the first round's results
+and built on the interaction they had found, so the linear and kNN routes cleared the floor too.
+All 15 settled forecasts held, so always saying yes would have scored best.
 
-| Forecaster | Round 1 (n 11) | Round 2 (n 4) |
-| --- | --- | --- |
-| Kimi K3.1 Pro | 0.261 | 0.387 |
-| coin flip | 0.250 | 0.250 |
-| blanket (code) | 0.250, nothing resolved yet | **0.056** |
+**Round 3** ([spec 13](docs/specs/13-third-round.md)) added routes on the raw features whose
+method forbade products, kernels and feature selection, so their outcomes would land near the
+floor. They gave the first refutations: a default random forest at 0.788 held-out (0.7945
+replicated, 0.68 standard errors under the floor), and kNN at 0.79 on the pilot sample.
 
-- **Where the blanket's sibling scores sat far from the floor, they carried the information.**
-  The blanket forecaster beat the coin flip by 0.194 ± 0.032.
-- **Kimi forecast from method names and did not foresee the agents adapting.** It was within
-  noise of the coin flip both times.
-- **The project could not test that nothing beats a coin flip near the threshold.** No outcome
-  was near it, and with every outcome held, always saying yes would have scored best.
+| Forecaster | Round 1 (n 11, held) | Round 2 (n 4, held) | Round 3 (n 3, refuted) | All (n 18) |
+| --- | --- | --- | --- | --- |
+| Kimi K3.1 Pro | 0.261 | 0.387 | 0.365 | 0.306 |
+| coin flip | 0.250 | 0.250 | 0.250 | 0.250 |
+| blanket (code) | 0.250, nothing resolved yet | **0.056** | 0.625 | 0.269 |
+
+- **Each round rewarded a different habit.** When agents copied what worked (round 2), sibling
+  scores carried the information, and the blanket beat the coin flip by 0.194 ± 0.032. When the
+  routes forbade copying (round 3), reading the method did: Kimi beat the blanket by
+  0.260 ± 0.120.
+- **No forecaster beat a coin flip over the 18.** Every difference is within noise.
+- **Near the threshold, every forecaster did worse than a coin flip.** Spec 12 predicted level
+  with it. There are two forecasts, both of one analysis, so this is one case, not a rate.
 
 The demo task is constructed: the inherited script was written for this repository to show a
 known pitfall (feature selection outside cross-validation) on public data. No published analysis
@@ -230,8 +235,8 @@ the details, and a scripted provider that replays tool calls with no model.
   sandboxed agent, of four, recorded a held-out score before its wall clock.
 - **That a ✓ would hold again.** The belief report rests on a declared standard error and gives a
   range, because the data cannot say how related the routes are. Of the 22 settled forecasts, 6
-  were real forecasts, all backtests. The second project settled 15 forecasts made before their
-  outcomes, but every outcome held, so they show which forecaster read the map, not skill.
+  were real forecasts, all backtests. The second project settled 18 forecasts made before their
+  outcomes, 3 of them refutations; no forecaster beat a coin flip over them.
 - **Generality.** One task, one model, one agent host. The reader check used models as readers.
 
 ## Layout

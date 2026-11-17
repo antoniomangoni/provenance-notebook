@@ -1,0 +1,103 @@
+{
+  "version": 2,
+  "id": "step-21",
+  "seq": 21,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:23:43.252Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 5059,
+  "outputs": [
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:81f0967c5ca1fd048105776be047472b09a7b97f2e6d2f82cf51c1dcf015900e"
+    }
+  ],
+  "measures_source": {
+    "ref": "file:out/metrics.json",
+    "digest": "sha256:81f0967c5ca1fd048105776be047472b09a7b97f2e6d2f82cf51c1dcf015900e"
+  },
+  "measures": [
+    {
+      "name": "cv_auc",
+      "value": 0.8854
+    },
+    {
+      "name": "holdout_auc",
+      "value": 0.8906
+    },
+    {
+      "name": "gap",
+      "value": -0.0052
+    }
+  ],
+  "reads": [
+    {
+      "ref": "file:analysis.py",
+      "digest": "sha256:73ddddb021c75c756d05ecff5b5408e60476813db7c5455c1296abbed33903a3"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:494d9fb0256b011886f058f885e722963dac275ed7d19f4ec3e565ab5c1ccd34"
+    },
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    },
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:81f0967c5ca1fd048105776be047472b09a7b97f2e6d2f82cf51c1dcf015900e"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:3c45090719dd66a680daf4cc8e0e644e45f50f8d951feff62fe47cd6b17213b9"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:8db32e11a7bb9d6eed253dabd51211f3b8d88e59047585cc9fb70ec1d88ca12a"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "final-run-exit",
+      "held": true
+    },
+    {
+      "expectation": "logistic-cv",
+      "measured": 0.8854,
+      "held": true
+    },
+    {
+      "expectation": "logistic-holdout-floor",
+      "measured": 0.8906,
+      "held": true
+    },
+    {
+      "expectation": "logistic-holdout-gap-upper",
+      "measured": -0.0052,
+      "held": true
+    },
+    {
+      "expectation": "logistic-holdout-gap-lower",
+      "measured": -0.0052,
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-20",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-19",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:cd1c855f5931f397b2e32fb446fe319a4904a82560c676a06660381e98375c1e"
+}

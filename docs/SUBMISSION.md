@@ -38,7 +38,7 @@ from a trail (`view.py`), and a research map over many trails (`project.py`).
   wrote. A replacement plan links to the plan it supersedes and the observation that triggered it.
 - *A timeline to walk back through:* the reviewer's page, and `trail.py why TRAIL STEP`.
 
-**What was run.** Twenty-one live trails by one model on two constructed tasks, all committed,
+**What was run.** Twenty-seven live trails by one model on two constructed tasks, all committed,
 including the ones that reached nothing. On the first, the plan changes at step 14 after a
 held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
 
@@ -59,9 +59,11 @@ held-out AUC of 0.5639 against a floor of 0.71, and `why` says so.
   On the six questions that were real forecasts it did worse than a coin flip. Three agents run
   to settle three open forecasts settled none (`research/…/forecasts/scores.txt`).
 - A second project on synthetic data with a known truth tested that. Kimi K3.1 Pro forecast and
-  chose the routes for two rounds of three agents, pushed before each round. The agents read each
-  other's results and every route cleared the floor. All 15 settled forecasts held: Kimi was within
-  noise of a coin flip, and the blanket's code forecaster beat it by 0.19 ± 0.03 in round 2
+  chose the routes for three rounds of three agents, pushed before each round. In two rounds the
+  agents read each other's results and every route cleared the floor. A third, on routes that
+  forbade that, gave the first refutations, one 0.68 standard errors under the floor. The
+  blanket's code forecaster beat a coin flip by 0.19 ± 0.03 in round 2, and Kimi beat the blanket
+  by 0.26 ± 0.12 in round 3. Over all 18 settled forecasts, none beat a coin flip
   (`research/synthetic-interactions/README.md`).
 
 **What it does not prove.** Who wrote a step, what a read was used for, or that a run used the

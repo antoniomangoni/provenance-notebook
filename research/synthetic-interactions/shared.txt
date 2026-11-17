@@ -2,12 +2,12 @@ Milestones on more than one route, and the trails that reached them:
   baseline: on logistic, l1, knn, forest, boost, pairs, forest-raw, knn-raw; reached by probe:synth-r1-boost#step-11, probe:synth-r1-forest#step-9, probe:synth-r1-pairs#step-9
 
 Files more than one trail used at the same digest:
-  file:data/heldout.csv sha256:494d9fb0256b…: synth-r1-boost, synth-r1-forest, synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic
-  file:data/pilot.csv sha256:fae1182afe12…: synth-r1-boost, synth-r1-forest, synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic
+  file:data/heldout.csv sha256:494d9fb0256b…: synth-r1-boost, synth-r1-forest, synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic, synth-r3b-forest-raw, synth-r3b-knn-raw, synth-r3b-logistic
+  file:data/pilot.csv sha256:fae1182afe12…: synth-r1-boost, synth-r1-forest, synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic, synth-r3b-forest-raw, synth-r3b-knn-raw, synth-r3b-logistic
 
 Code more than one trail ran, by tree (a commit differs between repositories, its tree does not):
   tree 2da7708: synth-r1-boost, synth-r1-forest, synth-r1-pairs
-  tree a2ea227: synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic
+  tree a2ea227: synth-r1-pairs, synth-r2-knn, synth-r2-l1, synth-r2-logistic, synth-r3b-forest-raw, synth-r3b-knn-raw, synth-r3b-logistic
 
 Computation repeated across trails: the same command, code tree and inputs:
   none

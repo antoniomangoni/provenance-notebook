@@ -1,8 +1,8 @@
 {
   "version": 1,
   "project": "synthetic-interactions",
-  "rev": 2,
-  "at": "2026-11-17T09:27:56Z",
+  "rev": 4,
+  "at": "2026-11-17T13:35:47Z",
   "data": {
     "file": "replication.csv",
     "digest": "sha256:5ebf670308e524a0597a8b592a67763201ff95ef9a50e6f6d16d08fdb13d646e",
@@ -51,7 +51,7 @@
         "gap": -0.0051
       },
       "exit": 0,
-      "seconds": 19.8,
+      "seconds": 19.3,
       "measures": {
         "cv_auc": 0.8931,
         "holdout_auc": 0.9003,
@@ -109,7 +109,7 @@
         "gap": 0.0163
       },
       "exit": 0,
-      "seconds": 17.1,
+      "seconds": 17.2,
       "measures": {
         "cv_auc": 0.8568,
         "holdout_auc": 0.8507,
@@ -152,6 +152,35 @@
           "threshold": 0.8,
           "value": 0.9115,
           "holds": true
+        }
+      ]
+    },
+    {
+      "node": "forest-raw-holdout",
+      "cites": "probe:synth-r3b-forest-raw@sha256:85edf28a9efe5a41f8364440902985c9d1717cbdf3a17a5332bd2f4f6471cb79#step-15",
+      "holds": false,
+      "run": "step-14",
+      "commit": "commit:8088a4cc1a5a169422844656b60d736b6a39009b",
+      "recorded": {
+        "cv_auc": 0.7878,
+        "holdout_auc": 0.788,
+        "gap": -0.0002
+      },
+      "exit": 0,
+      "seconds": 102.2,
+      "measures": {
+        "cv_auc": 0.7878,
+        "holdout_auc": 0.7945,
+        "gap": -0.0067
+      },
+      "criteria": [
+        {
+          "name": "floor",
+          "measure": "holdout_auc",
+          "comparison": "ge",
+          "threshold": 0.8,
+          "value": 0.7945,
+          "holds": false
         }
       ]
     }

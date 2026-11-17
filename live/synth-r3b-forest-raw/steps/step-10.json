@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "synth-r3b-forest-raw",
+  "at": "2026-11-17T13:22:12.432Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only ceiling check for default raw RF: repeated 10-fold at 500/1000 trees, seed bounds, baseline reproduction, linear references; no metrics write",
+  "reasoning": "Plan step-6 was contradicted (cv_auc 0.7826 < 0.8 at the default-500-tree forest, matched by knn-raw's independent 0.784-0.786 on raw features — step-17 of probe:synth-r3b-knn-raw). Before conceding the route, this run (diagnose.py, pilot.csv only, never data/heldout.csv, no metrics.json write) must: (a) probe the learning-curve slope with repeated 10-fold x 5 repeats (900-row folds approximate the final 1000-row fit better than 800-row 5-folds) at trees {500, 1000}, the only in-route dials left besides seed; (b) bound model-seed noise (seeds 1, 2 at trees 500, rep5x5); (c) machinery-check the harness by reproducing the established baseline ~0.6313 (probe:synth-r1-pairs#step-9) under my repeated protocol; (d) interpretive references on pilot (per-feature |corr| with label; L2 vs L1 logistic on the same protocol) to say WHY the default forest sits where it does. Pre-committed decision rule: the CV protocol is fixed as repeated 10-fold for statistical fit-size reasons, not post-hoc to cross 0.80; tree count is chosen on pilot CV mean only. If the best honest cv_auc < 0.80, forest-raw-cv is refuted and I will still run the single final scoring to seal the route's endpoint with all three measures; if some configuration clears 0.80, I run the milestone-1 run writing cv_auc alone.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-6",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-8",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r3b-knn-raw@sha256:09130a544ff323c5377d641357f699598e0d02d038f5fe98752771a4a8193537#step-17",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:ae4df57815c638a7ebfa09801cdd3e6e6b0702ebd18fbb12f1faec7b5472710e"
+}

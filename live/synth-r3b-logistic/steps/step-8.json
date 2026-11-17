@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "id": "step-8",
+  "seq": 8,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:21:10.243Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:project_map",
+  "summary": "Read the project map at revision 3, with 11 other trail heads",
+  "text": "project_map showed map revision 3 (sha256:1978c393dd7560c22c9e68ca392ed671fd5cdd1ad1f87ba9115a774def329dd2) and these trails at these heads, as project.py status --for synth-r3b-logistic prints them:\nprobe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785\nprobe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466\nprobe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87\nprobe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d\nprobe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424\nprobe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953\nprobe:synth-r3b-forest-raw@sha256:203f275c71c5d94b9fdd9255ceff566e8f423de4874f13768a0373672b57ff1e\nprobe:synth-r3b-knn-raw@sha256:09130a544ff323c5377d641357f699598e0d02d038f5fe98752771a4a8193537\nprobe:synth-r3-forest-raw@sha256:219c1e74f1fb8a3ee765ace0e19caabcdd55f6967837b4241df27e48c34f8ae6\nprobe:synth-r3-knn-raw@sha256:057062bcead0f8b2e44219dfb3d8831d8f6c97166f70efb4fec59cc6fb2ebf9f\nprobe:synth-r3-logistic@sha256:e5864803f0907f7443953bb17621b1dd24f9e49e0f7683a98375e9bf84a37e00",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-0",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-boost@sha256:ff3a98880d66291499a7b6a2bb2bfddd0f0a2ea57d075f6a37039888e32e6785",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r2-logistic@sha256:386e59ef5a981294198bd6eaac9cdf53ddb0390aeae00d017423c7bb3bf4919d",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r2-l1@sha256:66d42cfe00c65732091a9c6406dc002e76599e57c79deaffdbe988e1bec25424",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r3b-forest-raw@sha256:203f275c71c5d94b9fdd9255ceff566e8f423de4874f13768a0373672b57ff1e",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r3b-knn-raw@sha256:09130a544ff323c5377d641357f699598e0d02d038f5fe98752771a4a8193537",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r3-forest-raw@sha256:219c1e74f1fb8a3ee765ace0e19caabcdd55f6967837b4241df27e48c34f8ae6",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r3-knn-raw@sha256:057062bcead0f8b2e44219dfb3d8831d8f6c97166f70efb4fec59cc6fb2ebf9f",
+      "status": "confirmed"
+    },
+    {
+      "relation": "about",
+      "target": "probe:synth-r3-logistic@sha256:e5864803f0907f7443953bb17621b1dd24f9e49e0f7683a98375e9bf84a37e00",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:ff60591c059b96d73f33be7686f3b4278e510fe6e90b8e5fa29b276c15d482e7"
+}

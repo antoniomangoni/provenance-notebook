@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "synth-r3b-logistic",
+  "at": "2026-11-17T13:20:47.220Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 63,
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:fae1182afe1209ef16c1ab241ebb9ff785812c2310340efe457490dc43075164"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "survey-exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-4",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:306ce9fc9924c3e25ece28e277c32c24d316685dd0febb2b23bc42674d26e1fb"
+}

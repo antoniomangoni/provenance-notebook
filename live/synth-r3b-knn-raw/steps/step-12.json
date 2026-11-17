@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "id": "step-12",
+  "seq": 12,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:20:19.075Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Rewrite analysis.py as nested-CV kNN on the 12 standardised raw features (tune k and weights only), run pilot-only, write cv_auc alone",
+  "reasoning": "Design is pilot-only: pipeline StandardScaler+KNN (n_jobs=1), grid over n_neighbors {3,5,7,9,11,15,21,31,51} x weights {uniform,distance} — only k and weighting, as the route prescribes. cv_auc comes from nested CV: inner 5-fold GridSearchCV per outer 5-fold split, AUC averaged over outer folds (seed fixed, so the final run reproduces it exactly). The earlier knn route (synth-r2-knn#step-9) reached cv_auc 0.8568 with an extra feature screen, so all-raw should be near that; 8 of 12 features likely carry signal, so I expect cv_auc >= 0.8. Data facts used: 1000 pilot rows, 12 features, balanced labels, sklearn 1.9.1. Heldout is not opened; out/metrics.json gets only cv_auc. ~450 small unthreaded KNN fits, minutes at most.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "knn-raw-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r2-knn@sha256:d2f3a73c402ac3452cbd896f10eac1ad29370cd60e0159806a63dda6f6cce953#step-9",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:c8a51372a94196d119cb3a81c928570465dd01eb8d380e88291fea7c8fb194bd"
+}

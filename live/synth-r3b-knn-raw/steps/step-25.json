@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "synth-r3b-knn-raw",
+  "at": "2026-11-17T13:23:44.788Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Last in-route lift: 20 outer folds, 5 inner folds, same grid — then threshold or honest plateau",
+  "reasoning": "Observation step-20 contradicted the 10-fold run (0.7937 < 0.80). Pilot diagnostics (step-23) explain it: 6 noise dims dilute Euclidean distances; no in-route feature lever exists. The remaining honest lever is estimation data-efficiency, already shown to move the estimate (5->10 folds: +0.009): go to 20 outer folds (train on 950/1000, closer to the deployed 1000-row model) with 5 inner folds (180-row inner tests, stabler k selection). Both are protocol choices decided on pilot evidence, not seed shopping; the model family, features and tuning set {k, weights} are untouched. Runtime ~2400 tiny single-threaded fits. If cv_auc >= 0.80, proceed to the single final holdout run; if it misses again, the route's plateau is declared honestly and heldout stays sealed.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "knn-raw-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "supersedes",
+      "target": "step-18",
+      "status": "suggested"
+    },
+    {
+      "relation": "triggered_by",
+      "target": "step-20",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:9b5def61f3e575f096c93fda2b1d9b890b1d612e6514eeeca3295a75c44b4663"
+}

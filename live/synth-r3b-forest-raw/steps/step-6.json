@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-6",
+  "seq": 6,
+  "trail": "synth-r3b-forest-raw",
+  "at": "2026-11-17T13:20:03.510Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Rewrite analysis.py as default RandomForest (raw 12 features), pick trees {100,500} by repeated 5-fold pilot CV, write cv_auc alone",
+  "reasoning": "Forest-raw-cv milestone. I rewrite analysis.py as a RandomForestClassifier at sklearn 1.9.1 defaults (max_features='sqrt', unpruned, bootstrap), varying only n_estimators (100 = default, 500) and the seed; model selection and its CV estimate use pilot.csv only, via repeated stratified 5-fold (5 fold seeds) averaged, n_jobs=1, OMP_NUM_THREADS=1. The script must not open data/heldout.csv in this phase; out/metrics.json gets only cv_auc. I expect the default forest to reach the 0.80 bar on the pilot: the tuned RF route (probe:synth-r1-forest#step-13, cv 0.8931, though with product features) and boost/knn routes (0.83-0.86) show a learnable signal well above the 0.6313 logistic baseline, and a forest picks up interactions by splitting. If cv_auc < 0.80 the plan is contradicted and I reassess within route limits (only tree count and seed may change).",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "cv-pilot",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.8
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-pairs@sha256:8077a7099ae1ee41c19b09eb0444a873eedfb0a2c06a15cf8d4e9dd6d2992f87#step-9",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:synth-r1-forest@sha256:902318b58f402861dce143ae515c08c78d036e3db4bac65d9e7c78c954eb5466#step-13",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:f950558ac0c85d80825c9a4cb56f315110e3fca7648399e89fce3165ecf80dbb"
+}
