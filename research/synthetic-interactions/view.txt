@@ -1,5 +1,5 @@
 Research map of synthetic-interactions, revision 3 (2026-11-17T12:51:53Z, agent:claude-code/claude-opus-5-5).
-6 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
+9 trails. ✓ reached, ✗ refuted, ○ open; * on more than one route.
 
 Goals:
   ✓ floor: An analysis chosen on pilot data alone reaches a held-out AUC of 0.80, and its own estimate agrees to within 0.05
