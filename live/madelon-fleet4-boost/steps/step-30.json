@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-30",
+  "seq": 30,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:34:03.141Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "OMP_NUM_THREADS=1 timeout 1200 uv run python sweep_gbm.py; echo \"exit=$?\"",
+  "command": {
+    "shown": "OMP_NUM_THREADS=1 timeout 1200 uv run python sweep_gbm.py; echo \"exit=$?\"",
+    "digest": "sha256:974a1c7c616f5ea432fd7ead3c78f11462b54312e36995389e604f4b56ef6f54"
+  },
+  "code": {
+    "ref": "commit:eff80f31b04243eef3c80ed98fb369ddf6cde67d"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-29",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:5689c0677b1a156cf71a30726fb2f8c57dd31014b212576a421a357832f2657d"
+}

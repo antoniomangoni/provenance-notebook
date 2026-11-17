@@ -1,19 +1,19 @@
-Forecasts over madelon-reanalysis, scored against revision 11 and the trails.
+Forecasts over madelon-reanalysis, scored against revision 12 and the trails.
 Brier score and log loss in bits: lower is better. Probabilities are clipped to 0.01-0.99 for the log loss.
 Each forecaster is compared with code-only forecasters on the same questions: code:even, 0.5 every time;
 code:base-rate, the Laplace rate of what was settled before the question was asked; code:blanket, the
 milestone's Markov blanket alone; code:pooled, every milestone measured on the same criterion, anywhere on
 the map. A difference in Brier score is given with its standard error, and is within noise under 1.645 of them.
 
-Not asked: 5 milestone and 14 plan questions.
+Not asked: 5 milestone and 20 plan questions.
   floor-l1 at rev-0: its first resolution, in rev-1, was withdrawn later
   floor-forest at rev-0: its first resolution, in rev-1, was withdrawn later
   floor-search at rev-2: it first appeared with its resolution
   floor-selected-forest at rev-2: it first appeared with its resolution
   screen at rev-2: its first resolution, in rev-3, was withdrawn later
   plans: 3 its first run failed
-  plans: 8 its first run inconclusive
-  plans: 3 never run
+  plans: 12 its first run inconclusive
+  plans: 5 never run
 
 gemma-backtest.json: by agent:pi/google/gemma-4-31B-it at 2026-11-16T23:32:34Z
   milestone questions settled: 8 (backtest); held 6

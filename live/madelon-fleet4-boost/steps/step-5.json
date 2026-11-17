@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-5",
+  "seq": 5,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T06:43:37.004Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 91,
+  "reads": [
+    {
+      "ref": "file:.gitignore",
+      "digest": "sha256:bfc24ba4e9a341c55facc18a45423cf796ac8a033d92e553de3779661ca8de84"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-4",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a10955c900ce48717edd678eff3365f9c7efecb838d0c7d3c31fc03fd66c8a3d"
+}

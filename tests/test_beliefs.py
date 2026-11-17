@@ -60,7 +60,8 @@ def test_no_question_shows_the_run_that_settles_it(loaded):
     milestones, excluded = beliefs.milestone_questions(revs, trails)
     plans, _ = beliefs.plan_questions(trails)
     settled = [q for q in milestones + plans if "settled_by" in q]
-    assert len(settled) == 22 and len(milestones) - 8 == len(project.ranked(revs[-1]))
+    # 8 milestones and 16 plans: the 14 a forecaster was asked, and 2 from the fleet run after it.
+    assert len(settled) == 24 and len(milestones) - 8 == len(project.ranked(revs[-1]))
     for question in settled:
         name, step = question["settled_by"].split(":", 1)[1].split("#")
         assert f"{name} {step}" not in question["_text"] and f"{step} observation" not in question["_text"]

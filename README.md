@@ -62,7 +62,7 @@ plan's reasoning quotes one. The page reports the reads and leaves the judgment 
 
 ## What was run, and what it showed
 
-Every live attempt is committed under `live/`: twelve trails, all by the same model.
+Every live attempt is committed under `live/`: fifteen trails, all by the same model.
 
 | What | Result | Where |
 | --- | --- | --- |
@@ -72,7 +72,8 @@ Every live attempt is committed under `live/`: twelve trails, all by the same mo
 | Re-executing five trails under a file trace | Two credits were withdrawn: designs judged "pilot-only" from their command lines had opened the held-out file. 17 of 17 metrics files were reproduced byte for byte | [the map](research/madelon-reanalysis/README.md#checked-not-judged) |
 | Two fleets of three agents sharing one map | The first reached nothing. In the second, agents built on each other's steps and two routes reached the goal; one held-out result leaked between agents, and the leak is disclosed and closed | [the map](research/madelon-reanalysis/README.md#agents-sharing-the-map) |
 | One agent in a sandbox | The sandbox held: no command reached outside its workspace, and the held-out file was never opened. The run reached nothing. The file trace slowed its first search thirteen times, and the wall clock ended it there | [the map](research/madelon-reanalysis/README.md#the-sandboxed-run) |
-| How sure the map's marks are, and a second model as forecaster | Every ✓ and ✗ at the floor is within noise of it (below). A second model forecast 22 settled questions from text code had checked was blind to the outcome, and beat the code-only baselines. On plans, its lead came from text that already held held-out scores | [the map](research/madelon-reanalysis/README.md#how-sure-the-marks-are) |
+| Three agents in the sandbox, run to settle forecasts of three open milestones | It settled none. The wall clock stopped each agent inside a run. One scored the held-out file once, at 0.694, but wrote a metrics file capture could not read, so the map holds no measure and refutes nothing | [the map](research/madelon-reanalysis/README.md#fleet-4) |
+| How sure the map's marks are, and a second model as forecaster | Every ✓ and ✗ at the floor is within noise of it (below). A second model forecast 22 settled questions from text that code built and scored. On the six that were real forecasts it did worse than a coin flip: four of the 8 milestone outcomes were known when the question's revision was written, and 12 of the 14 plans came after their trail had opened the held-out file | [the map](research/madelon-reanalysis/README.md#how-sure-the-marks-are) |
 
 ### How sure the marks are
 
@@ -88,22 +89,34 @@ of 0.71 has a standard error of 0.0109:
 | compact-knn ✗ | 0.7090 | −0.09 SE | 0.46 |
 | compact-forest ✗ | 0.6989 | −1.02 SE | 0.15 |
 
-`compact` was reached by two of four routes scored on the same file. The chance that at least one
-of the two truly clears the floor is 0.80 to 0.92, and neither route's 95% lower bound clears it.
-The probabilities assume a flat prior. The marks stand: `check` decides them, and this report only
-advises.
+`compact` was reached by two of four routes scored on the same file. If each route's true AUC is
+unrelated to the others', the chance that at least one of the two truly clears the floor is 0.80
+to 0.92. But the four scores differ by less than one score's standard error (0.0084 against
+0.0109), so they do not tell the routes apart. If the true values are drawn about a shared mean
+the chance is 0.75, and if the routes share one value it is 0.49. Neither route's 95% lower bound
+clears the floor: `compact-vote` would need 4.0 times the rows. And 32 runs in 12 trails opened
+the held-out file. The marks stand: `check` decides them, and this report only advises.
 
 The map is a small belief network: a route is the AND of its milestones, a goal the OR of its
 routes. A milestone's Markov blanket (the milestone before it, what follows, the other milestones
-leading there) is what bears on it. It is also what a second model, Gemma 4 31B, was shown to
-forecast each milestone, alongside each plan's trail up to the plan. Code built every text,
-recorded its digest and checked that it did not name the run that settled it. Code also did all
-the scoring.
-On 8 milestones the model's Brier score was 0.25, against 0.31 for both code-only forecasters.
-On 14 plans it was 0.18 against 0.29, but 12 of those plans came after their trail had opened the
-held-out file. On the other two, the model did worse than the base rate. These are backtests, and
-22 questions cannot rank forecasters. Four open milestones carry forecasts that a later run will
-settle ([scores](research/madelon-reanalysis/forecasts/scores.txt),
+leading there) is what a second model, Gemma 4 31B, was shown to forecast each milestone,
+alongside each plan's trail up to the plan. Code built every text, recorded its digest and did all
+the scoring, against four code-only forecasters: a coin flip, the base rate, the blanket alone,
+and every score on the same criterion across the map.
+
+Where it counted, the model did worse than the coin flip
+([spec 11](docs/specs/11-beliefs-review.md)). On 8 milestones its Brier score was 0.246 against a
+coin flip's 0.250, but four of those outcomes were known when the question's revision was
+written. On the other four it scored 0.433. On 14 plans it scored 0.180, but 12 came after their
+trail had opened the held-out file. On the other two it scored 0.425. Over all 8 milestones and
+all 14 plans, its difference from the coin flip is within noise.
+
+Four open milestones carried forecasts made before any run toward them. Three agents then ran on
+three of those milestones to settle the forecasts, and settled none: the wall clock stopped each
+agent inside a run. The `forest` agent scored the held-out file once, at 0.694, under the floor.
+The model had given that milestone 0.10 and the blanket 0.75. But the agent's metrics file held a
+nested object, so capture read no measures, and the map refutes nothing. The forecasts stay open
+([scores](research/madelon-reanalysis/forecasts/scores.txt),
 [report](research/madelon-reanalysis/beliefs.txt), [spec 10](docs/specs/10-beliefs.md)).
 
 The demo task is constructed: the inherited script was written for this repository to show a
@@ -181,11 +194,11 @@ the details, and a scripted provider that replays tool calls with no model.
   built, so the committed trails hold absolute paths of the machine they ran on.
 - **A person's judgment.** Every revision of the research map was sealed by an AI agent, named in
   its `by`, and no live trail holds a person's review. No person has yet confirmed or disputed one.
-- **Cheap tracing.** The file trace slowed one multithreaded search from 52 to 701 seconds, and that
-  ended the sandboxed run before it scored anything.
-- **That a ✓ would hold again.** The belief report rests on a declared standard error, a flat
-  prior and routes taken as independent. Where a milestone has fewer than two scored siblings it
-  falls back to a crude rate. The forecasts are 22 backtests.
+- **Cheap tracing.** The file trace slowed one multithreaded search from 52 to 701 seconds. No
+  sandboxed agent, of four, recorded a held-out score before its wall clock.
+- **That a ✓ would hold again.** The belief report rests on a declared standard error and gives a
+  range, because the data cannot say how related the routes are. Of the 22 settled forecasts, 6
+  were real forecasts, all backtests. No forecast made before its outcome has been settled.
 - **Generality.** One task, one model, one agent host. The reader check used models as readers.
 
 ## Layout

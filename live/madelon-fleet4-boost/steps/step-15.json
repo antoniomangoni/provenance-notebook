@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "id": "step-15",
+  "seq": 15,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:24:53.848Z",
+  "kind": "run",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_call",
+  "summary": "cd \"$(pwd)\"; echo \"--- uv ---\"; time timeout 60 uv run python -c \"import numpy, sklearn; print(numpy.__version__, sklearn.__version__)\"; echo \"exit=$?\"",
+  "command": {
+    "shown": "cd \"$(pwd)\"; echo \"--- uv ---\"; time timeout 60 uv run python -c \"import numpy, sklearn; print(numpy.__version__, sklearn.__version__)\"; echo \"exit=$?\"",
+    "digest": "sha256:6a764d0125c22c62d4abe95918c1496e4a3f236cdae797c8c4b65c849be1886b"
+  },
+  "code": {
+    "ref": "commit:c678d295d074c80d1c30e1115700034e2c5c6c27"
+  },
+  "environment": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0",
+  "parameters": [],
+  "inputs": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    }
+  ],
+  "links": [
+    {
+      "relation": "implements",
+      "target": "step-14",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:a3a6b4e5219c163950ff61dd9b79e49c0140f65e4372e5e175c781475a61ecd3"
+}

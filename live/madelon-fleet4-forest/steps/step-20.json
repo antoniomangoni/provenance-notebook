@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-20",
+  "seq": 20,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T07:22:50.860Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "out/metrics.json was not usable for step-19",
+  "text": "The command wrote out/metrics.json, but it is not one object of measure names to finite numbers, so step-19 has no measures.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-19",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:48f33a4ca2b1046d9bdf415e97e7b748308f4b509b804d8d2371b92dd07e9217"
+}

@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "id": "step-19",
+  "seq": 19,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T07:22:50.854Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "inconclusive: no fresh out/metrics.json with holdout_auc, gap",
+  "exit_code": 0,
+  "duration_ms": 1041579,
+  "reads": [
+    {
+      "ref": "file:analysis.py",
+      "digest": "sha256:00ff1962f1ea01846096a26d36c0b962524d087f39bbb0961822f083e392efda"
+    },
+    {
+      "ref": "file:data/heldout.csv",
+      "digest": "sha256:e0b31cbc8eedf1ed84726d9e50066520eccf9ce4f56c182098432fc231784cc1"
+    },
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    },
+    {
+      "ref": "file:out/metrics.json",
+      "digest": "sha256:bb595b3ab200ff9898423e456ae37d78f6b4ef405f7f33b0a190a554611128cd"
+    },
+    {
+      "ref": "file:pyproject.toml",
+      "digest": "sha256:b7a9640fb3b8f2518a0433991d3d3b1f7d6040cd15c9cc14e63750abd96eda39"
+    },
+    {
+      "ref": "file:uv.lock",
+      "digest": "sha256:eb9d3f46fc8cc41dc6ef99c018cccc20bf191424014d7fa729fc48161bf5c0f0"
+    }
+  ],
+  "checks": [],
+  "outcome": "inconclusive",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-18",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-17",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:750964d34ed2aa6a8801d3269ec30024c3de672ac2319d894931a8323927e413"
+}

@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "id": "step-9",
+  "seq": 9,
+  "trail": "madelon-fleet4-l1",
+  "at": "2026-11-17T06:43:32.366Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "as expected",
+  "exit_code": 0,
+  "duration_ms": 76,
+  "reads": [
+    {
+      "ref": "file:data/pilot.csv",
+      "digest": "sha256:11bd022d3a3bd3b394688fb17f5c0c59312f3afdb273d48ad33bbf92ce8d0238"
+    }
+  ],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": true
+    }
+  ],
+  "outcome": "as_expected",
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-8",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-3",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:cee55d5ea1a9f21ea5e1fcf3741eced744f69023967dbe94bc4934af49befd49"
+}

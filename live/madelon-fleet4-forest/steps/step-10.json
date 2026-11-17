@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-10",
+  "seq": 10,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T06:44:00.195Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only RF grid search (max_features/min_samples_leaf/depth) by 3x5 CV to lock a config",
+  "reasoning": "Route floor-forest requires an RF on all 500 features. Pilot is small (400x501, balanced), so config choice must come from repeated CV on pilot only: 21 configs over max_features (sqrt/log2 up to 1.0), min_samples_leaf (1/2/4), depth caps, pooled over 3x5 stratified folds. Expectation: at least one RF-on-all-features config reaches pooled pilot CV AUC >= 0.71, i.e., the route is viable; the top config becomes the locked final analysis. Heldout is not read by this step.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "route-viability",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    }
+  ],
+  "prev": "sha256:fb0e4eef6e0eceb804a14c692261fadf1f614db6155c6bcd33c48db5ba9a4e16"
+}

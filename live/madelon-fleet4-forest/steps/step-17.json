@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "id": "step-17",
+  "seq": 17,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T07:05:27.481Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run corrected RF-on-all-500-features analysis once: nested CV cv_auc + single heldout scoring",
+  "reasoning": "The cited step established the inherited analysis reproduces its CV claim but misses the held-out floor, so the analysis must be corrected. My correction, chosen entirely on pilot data (search_rf.py 21 configs 3x5 CV, search_rf2.py 20 configs 2x5 CV): an RF on all 500 features with max_features high (1.0 family, pooled pilot CV ~0.739-0.742 over 25 folds, ~2 sd above the 0.71 floor) subbagging rejected. analysis.py now trains an RF with no feature screen and tunes hyperparameters inside nested 5-fold CV on pilot (cv_auc), then re-runs the tuning on the full pilot and scores data/heldout.csv exactly once (holdout_auc). Expected: holdout_auc ≈ 0.72-0.74, |gap| <= 0.05, writing cv_auc, holdout_auc, gap to out/metrics.json.",
+  "expectations": [
+    {
+      "name": "floor-forest-clears",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.71
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:24dab6b33fdf8aaded0e9c8a5de9a6ef6a35617c2c6aa0dd46f209098cd2d718"
+}

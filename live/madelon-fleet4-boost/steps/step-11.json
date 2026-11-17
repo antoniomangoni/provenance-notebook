@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "id": "step-11",
+  "seq": 11,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:04:45.678Z",
+  "kind": "observation",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "failed: exit code 1; no fresh out/metrics.json with cv_auc",
+  "exit_code": 1,
+  "duration_ms": 59,
+  "reads": [],
+  "checks": [
+    {
+      "expectation": "exit",
+      "held": false
+    }
+  ],
+  "outcome": "failed",
+  "error": {
+    "class": "exit"
+  },
+  "links": [
+    {
+      "relation": "observes",
+      "target": "step-10",
+      "status": "confirmed"
+    },
+    {
+      "relation": "tests",
+      "target": "step-7",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:8f69ea96f223a69483f2dbc7fb5ed408d5a740d31505e5ef091bc310f6b32a93"
+}

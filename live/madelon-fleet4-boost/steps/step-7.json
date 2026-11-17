@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "id": "step-7",
+  "seq": 7,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T06:44:34.512Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Pilot-only: compare stab05/stab03/top20F screens by honest 2x5 nested CV of HistGradientBoostingClassifier; lock best",
+  "reasoning": "I use the sealed screen result of vote step-22 (stab screen, nested cv 0.73, 20 features) whose code is in this snapshot, and fleet2-boost step-25's runner-measured pilot-only result (stability screen + tuned GBM: cv_auc 0.7645, 10 features) plus stable-forest step-56's GINI-screen precedent (10 features, cv 0.7554) to expect that a F-bootstrap stability screen fed to HistGradientBoostingClassifier reaches nested pilot cv_auc >= 0.70 with <= 50 features. I compare thr=0.5 (~10 feats), thr=0.3 (~20 feats) and top-20 F on pilot only, picks locked by mean nested CV over 2 repeats; the chosen variant's cv_auc and full-pilot n_features are written to out/metrics.json. If no variant reaches 0.70 the plan is contradicted and I will rework the screen (e.g. GINI-importance bootstrap) before locking anything.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "pilot-nested-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.7
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-vote@sha256:416e4a7d686f460a273c7b668dda85cd7bd34e94f9fd545346dbdd9ce015e99c#step-22",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-boost@sha256:346c8e5e3c95bf1b3288c4710b9fa25905b6107a50ab3fadcb76cc612d529340#step-25",
+      "status": "suggested"
+    },
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-fleet2-stable-forest@sha256:2e47ec7e396a4e0936a19812b979247248f90bebb3eb65744e40eb61c67fab9d#step-56",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:5b223418956a0c93b5051c0ca7343773d6758563e1610026a49d1ea1e0b58b4c"
+}

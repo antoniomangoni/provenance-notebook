@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "id": "step-25",
+  "seq": 25,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T07:34:45.370Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Run locked all-500-feature RF (mf=1.0, msl=2, 2000 trees): 3x5 pilot CV then one heldout scoring",
+  "reasoning": "Executing the pre-registered fallback of step-22: since randomized forests did not beat the fixed config (paired diff -0.0002), the locked learner is the pilot-CV ceiling config (gini, max_features=1.0, min_samples_leaf=2), chosen by 46 pilot CV folds across three searches - pilot-only knowledge, no heldout signal involved. The final analysis.py now triggers no tuning: cv_auc is repeated 3x5 CV of the identical deployed forest (T=2000), holdout is scored once by the forest trained on all pilot rows. Building on step-7 of probe:madelon-2026-11-15-2 (established: inherited analysis misses the floor). Based on that step, sibling sealed routes' cv-to-holdout shift of about -0.04, and my own honest tuned run (cv 0.718 / holdout 0.694), I expect holdout_auc 0.69-0.72 - plausibly just below the 0.71 floor - and |gap| <= 0.05 (the estimate should agree once tuning noise is out). Heldout is scored exactly once by this run and never again.",
+  "expectations": [
+    {
+      "name": "holdout-central",
+      "measure": "holdout_auc",
+      "comparison": "ge",
+      "threshold": 0.68
+    },
+    {
+      "name": "gap-upper",
+      "measure": "gap",
+      "comparison": "le",
+      "threshold": 0.05
+    },
+    {
+      "name": "gap-lower",
+      "measure": "gap",
+      "comparison": "ge",
+      "threshold": -0.05
+    }
+  ],
+  "links": [
+    {
+      "relation": "builds_on",
+      "target": "probe:madelon-2026-11-15-2@sha256:35a8d3c4db15cfe4c742ad1a25864cd510c0c7b04dcb0c99c03f7fec7f1596f6#step-7",
+      "status": "suggested"
+    }
+  ],
+  "prev": "sha256:8f29112800106977b1a15fa1f02ecda9b1497f72457d19ce5abfb61029b0c7bc"
+}

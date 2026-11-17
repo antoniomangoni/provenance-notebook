@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "id": "step-14",
+  "seq": 14,
+  "trail": "madelon-fleet4-forest",
+  "at": "2026-11-17T06:54:50.505Z",
+  "kind": "plan",
+  "by": "agent:pi/zai-org/GLM-5.3-Flash",
+  "hook": "pi:propose_plan",
+  "summary": "Focused pilot-only RF search: max_features 0.6-1.0 x max_samples None/0.7/0.5, depth caps; 2x5 CV",
+  "reasoning": "First pilot-only search put max_features=1.0 (all features per split) on top at 0.7387 (3x5 CV), well above sqrt/log2 variants. Builds on that design step (mine): check whether subbagging (max_samples 0.7/0.5) and shallow depth caps improve the all-features RF on pilot CV, and whether any config clearly beats 0.7387 before locking. Everything is chosen on pilot only. Outcome written to out/metrics.json as cv_auc (interim). Expected: best pooled pilot CV AUC >= 0.74 (comfortably above the 0.71 floor), giving the locked config for the final analysis; heldout untouched.",
+  "expectations": [
+    {
+      "name": "exit",
+      "measure": "exit",
+      "comparison": "exit_ok"
+    },
+    {
+      "name": "best-pilot-cv",
+      "measure": "cv_auc",
+      "comparison": "ge",
+      "threshold": 0.74
+    }
+  ],
+  "prev": "sha256:3762d9484ece6c31e6ee6747ad16614317c42672dc382532e50b17127d954928"
+}

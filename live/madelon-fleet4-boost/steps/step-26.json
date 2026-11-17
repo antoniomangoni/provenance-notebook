@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "id": "step-26",
+  "seq": 26,
+  "trail": "madelon-fleet4-boost",
+  "at": "2026-11-17T07:33:22.904Z",
+  "kind": "note",
+  "by": "runner:notebook/0.1",
+  "hook": "pi:tool_result",
+  "summary": "out/metrics.json was not usable for step-25",
+  "text": "The command wrote out/metrics.json, but it is not one object of measure names to finite numbers, so step-25 has no measures.",
+  "links": [
+    {
+      "relation": "about",
+      "target": "step-25",
+      "status": "confirmed"
+    }
+  ],
+  "prev": "sha256:bcdb3396f9f7e2e1ddc5cc6b659d8d7d640dbd24fba84d3f5a3a86e74ea3c7df"
+}
