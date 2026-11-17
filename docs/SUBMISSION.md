@@ -75,8 +75,9 @@ was written by AI coding agents from specs in `docs/specs/`.
 
 ## Links
 
-- Repository: `https://github.com/OWNER/provenance-notebook`
-- Pages, once published: the reviewer's page of the live trail, and the research map
+- Repository: `https://github.com/antoniomangoni/provenance-notebook`
+- Pages: `https://antoniomangoni.github.io/provenance-notebook/`, the reviewer's page of the live
+  trail, both research maps and their belief reports
 - Start at `README.md`
 
 ## Video, under three minutes
@@ -93,9 +94,9 @@ start `uv run python project.py serve research/madelon-reanalysis/map --live liv
 | 1:25 | The timeline: a measured run with its code diff and "Opened" row | Each result names the commit that produced it and the files its run opened. |
 | 1:40 | Terminal: `cat evidence/madelon-2026-11-15-1/tamper.txt` | Changing a number breaks the chain. Re-chaining passes the check but not the stored metrics file. A full rewrite fails against the head that was cited. |
 | 2:00 | `http://127.0.0.1:8077/` | Fifteen trails on the Madelon map. Stations are milestones, lines are routes, and each lane is one agent's trail. |
-| 2:15 | Hover a station with an amber mark; then the "Withdrawn" table; then `/rev/3` | Every credit is recomputed from the step files. A credit that was withdrawn stays on record with its reason, and any past revision can be opened. |
-| 2:35 | `evidence/README.md`, "The check does not show…" | What we did not find: models answered our questions as well from the raw transcript. The page was a tenth of the length. |
-| 2:50 | `README.md`, "What it does not prove" | The limits are in the README. |
+| 2:15 | Hover a station with an amber mark; then the "Withdrawn" table | Every credit is recomputed from the step files. A credit that was withdrawn stays on record with its reason. |
+| 2:30 | `site/synthetic.html`, then `site/synthetic-scores.txt` | A second project with a known truth. A second model forecast every milestone before each round. Reading the siblings won one round, reading the method another, and over 18 forecasts nothing beat a coin flip. |
+| 2:45 | `README.md`, "What it does not prove" | What we did not find: models answered our questions as well from the raw transcript. The other limits are in the README. |
 
 **For the cold reader.** Someone who has not seen the task. Give them only `site/trail.html` and
 the question "why did they change approach at step 14?". Record their answer unprompted, and

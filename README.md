@@ -18,6 +18,23 @@ The notebook has four parts:
 - **A research map.** Many trails toward shared goals, with a checker that recomputes every credit
   from the step files and records every credit that was withdrawn.
 
+## Start here
+
+- **[The pages](https://antoniomangoni.github.io/provenance-notebook/)**: the reviewer's page of a
+  live trail, the two research maps and their belief reports, all generated from the step files.
+- **[The brief's question, answered](#the-briefs-question-answered-from-a-live-trail)** from a
+  live trail, in the terminal.
+- **[What was run, and what it showed](#what-was-run-and-what-it-showed)**: 27 live trails over
+  two research projects.
+
+What we found:
+- **The record answers the brief.** `trail.py why` gives the reason for a change of approach from
+  the step files alone, and says which runs had opened the held-out file before the new plan.
+- **A model reader did as well from the raw transcript.** The page's measured advantage is its
+  length, a tenth of the transcript's.
+- **Forecasting the map was not easier than a coin flip.** On a second project with a known truth,
+  over 18 settled forecasts, neither a second model nor any code forecaster beat a coin flip.
+
 ## The brief's question, answered from a live trail
 
 An agent (GLM-5.3-Flash under Pi) was given an inherited analysis that reports a cross-validated
@@ -170,7 +187,8 @@ Requires [uv](https://docs.astral.sh/uv/). Capture's tests also need Node.js 24,
 uv sync
 uv run pytest
 uv run python trail.py check live/madelon-2026-11-15-1 --store live/store
-uv run python trail.py why   live/madelon-2026-11-15-1 --store live/store
+uv run python trail.py why   live/madelon-2026-11-15-1 step-14 --store live/store \
+  --reads research/madelon-reanalysis/retrace/madelon-2026-11-15-1.json --sealed data/heldout.csv
 uv run python trail.py facts live/madelon-2026-11-15-1 --store live/store
 scripts/site.sh site                             # the pages, then open site/index.html
 uv run python project.py serve research/madelon-reanalysis/map --live live    # http://127.0.0.1:8077/
