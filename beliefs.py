@@ -31,6 +31,7 @@ digest, and scores the forecast against what the trails show and against code-on
 docs/specs/10-beliefs.md is the specification.
 """
 
+import copy
 import json
 import math
 import re
@@ -620,10 +621,25 @@ CHOICE = re.compile(r"^\s*\**routes\**\s*[:=]\s*\**\s*(.+?)\s*\**\s*$", re.IGNOR
 CHOOSE = 3
 
 
+def as_of(trails: project.Trails, at: str) -> project.Trails:
+    """The trails as they stood at a moment: only the steps made by then, and only trails that had one.
+    A text built from them stays the same however the trails grow afterwards."""
+    moment = datetime.fromisoformat(at)
+    kept = copy.copy(trails)
+    kept.steps = {}
+    for probe, steps in trails.steps.items():
+        if early := [s for s in steps if datetime.fromisoformat(s["at"]) <= moment]:
+            kept.steps[probe] = early
+    kept.heads = {probe: trail.heads(steps) for probe, steps in kept.steps.items()}
+    return kept
+
+
 def nominate_prompt(revs: list[dict], trails: project.Trails, sizes: dict) -> str:
     """The text an overseer is shown to choose the routes the next agents run: the map as
-    project.py view prints it, the belief report, and the open routes."""
+    project.py view prints it, the belief report, and the open routes. Only steps made before the
+    revision count, so the text can be rebuilt later and checked against its digest."""
     last = revs[-1]
+    trails = as_of(trails, last["at"])
     now = project.state(last)
     routes = [r for r in last["routes"] if now["routes"][r["id"]]["status"] == "open"]
     lines = [
@@ -861,6 +877,100 @@ def score(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Pat
     return lines, errors
 
 
+def settled(revs: list[dict], trails: project.Trails, sizes: dict, path: Path) -> tuple[str, list[tuple[dict, float, dict]]]:
+    """A forecast file's settled milestone forecasts that score() accepts: each question, the
+    forecast and the code forecasters' values on it."""
+    milestones, _ = milestone_questions(revs, trails)
+    known = {key(q): q for q in milestones}
+    kept, rows = json.loads(path.read_text()), []
+    for forecast in kept["forecasts"]:
+        if forecast["kind"] != "milestone" or forecast["p"] is None:
+            continue
+        question = known.get(key(forecast)) or rebuild_open(forecast, revs, trails)
+        if question is None or question["saw"] != forecast["saw"] or "holds" not in question:
+            continue
+        rows.append((question, forecast["p"], baselines(question, revs, trails, [], sizes)))
+    return kept["by"], rows
+
+
+def true_margins(revision: dict, truth: dict, sizes: dict) -> dict[str, float]:
+    """Each milestone's true margin in standard errors, from the replicated value of its route's
+    held-out criterion: a -holdout milestone's own, and the -cv milestone before it on its route."""
+    margins = {}
+    for row in truth["rows"]:
+        for criterion in row.get("criteria", []):
+            if criterion["measure"] in sizes:
+                at = margin(criterion, criterion["value"], sizes[criterion["measure"]]["se"])
+                margins[row["node"]] = at
+                for route in revision["routes"]:
+                    if row["node"] in route["path"] and route["path"].index(row["node"]):
+                        margins.setdefault(route["path"][route["path"].index(row["node"]) - 1], at)
+    return margins
+
+
+def truth_lines(revs: list[dict], trails: project.Trails, sizes: dict, files: list[Path], truth: dict) -> list[str]:
+    """The three predictions of spec 12, scored against the replication sample."""
+    last = revs[-1]
+    margins = true_margins(last, truth, sizes)
+    lines = [
+        "",
+        f"Against the replication sample ({truth['data']['rows']:,} rows, {truth['data']['digest'][:19]}…), each cited run re-run on it:",
+    ]
+    for row in truth["rows"]:
+        if "criteria" not in row:
+            lines.append(f"  {row['node']} ({row['run']}): not replicated: {row.get('problem', 'no measure')}")
+            continue
+        said = ", ".join(f"{c['measure']} {view.number(c['value'])} {'meets' if c['holds'] else 'misses'} {view.number(c['threshold'])}" for c in row["criteria"])
+        lines.append(f"  {MARKS['reached' if row['holds'] else 'refuted']} {row['node']} ({row['run']}): recorded "
+                     + ", ".join(f"{c['measure']} {view.number(row['recorded'][c['measure']])}" for c in row["criteria"])
+                     + f"; replicated {said}; true margin {margins.get(row['node'], math.nan):+.2f} SE")
+    # P2: the calibration of p_true against the replicated outcomes.
+    nodes = {n["id"]: n for n in last["nodes"]}
+    pairs = []
+    for row in truth["rows"]:
+        if row.get("criteria"):
+            _, step = trails.cite(row["cites"], last["project"])
+            pairs.append((p_true(nodes[row["node"]], step, sizes), all(c["holds"] for c in row["criteria"])))
+    lines.append("")
+    if pairs:
+        ours = [brier(p, hit) for p, hit in pairs]
+        lines.append(
+            f"P2, calibration: P(true value meets it) from each held-out score, against the replicated outcome: "
+            f"Brier {mean(ours):.3f} against the coin flip's 0.250, n {len(pairs)}"
+            + against(ours, [0.25] * len(ours)).replace("the forecaster is", "it is")
+        )
+    else:
+        lines.append("P2, calibration: no replicated resolution")
+    for path in files:
+        by, rows = settled(revs, trails, sizes, path)
+        if not rows:
+            continue
+        lines += ["", f"{path.name}: by {by}"]
+        whos = [by, *rows[0][2]]
+
+        def scores(who: str, chosen: list, by: str = by) -> list[float]:
+            return [brier(row[1] if who == by else row[2][who], row[0]["holds"]) for row in chosen]
+
+        for name, chosen in (
+            ("P1, true margin at least 1.645 SE", [r for r in rows if abs(margins.get(r[0]["node"], 0)) >= Z95]),
+            ("P1, true margin under 1.645 SE", [r for r in rows if r[0]["node"] in margins and abs(margins[r[0]["node"]]) < Z95]),
+        ):
+            lines.append(f"  {name}: n {len(chosen)}")
+            for who in whos:
+                if chosen:
+                    lines.append(f"    {who}: Brier {mean(scores(who, chosen)):.3f}" + ("" if who == "code:even" else against(scores(who, chosen), [0.25] * len(chosen)).replace("the forecaster is", "it is").replace(" from it", " from the coin flip")))
+        after = [
+            r for r in rows
+            if r[0]["node"].endswith("-holdout")
+            and any(x["node"] == r[0]["node"].removesuffix("-holdout") + "-cv" for x in revs[r[0]["rev"]]["resolutions"])
+        ]
+        lines.append(f"  P3, -holdout milestones asked after their -cv milestone was resolved: n {len(after)}")
+        if after:
+            lines.append(f"    {by}: Brier {mean(scores(by, after)):.3f}; code:blanket Brier {mean(scores('code:blanket', after)):.3f}"
+                         + against(scores(by, after), scores("code:blanket", after)).replace(" from it", " from code:blanket"))
+    return lines
+
+
 def rebuild_open(forecast: dict, revs: list[dict], trails: project.Trails) -> dict | None:
     """A milestone question asked at a revision that has since been followed by others: valid while the
     milestone stood unresolved at that revision; settled by its first resolution after it."""
@@ -1028,6 +1138,8 @@ def main(argv: list[str]) -> int:
             if errors:
                 print("\n".join(errors))
                 return 1
+            if "truth" in named:
+                lines += truth_lines(revs, trails, sizes, files, json.loads(Path(named["truth"]).read_text()))
             print("\n".join(lines))
         else:
             raise Usage(f"beliefs.py: unknown command {command}")

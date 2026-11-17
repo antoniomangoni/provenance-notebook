@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "project": "synthetic-interactions",
+  "rev": 1,
+  "by": "agent:pi/moonshotai/Kimi-K3.1-Pro",
+  "at": "2026-11-17T09:15:36Z",
+  "saw": "sha256:367f829ab02cb3410c72dcb7ec83e49ee7961032cc06d440909792935e70ff1b",
+  "routes": [
+    "logistic",
+    "l1",
+    "knn"
+  ],
+  "why": "With the floor already secured, these routes are diagnostic: logistic and l1 test whether additive or sparse linear signal suffices, while knn probes local nonlinear structure, clarifying why interaction and tree models succeeded.",
+  "next": [
+    {
+      "node": "knn-cv",
+      "leads": [
+        "knn"
+      ]
+    },
+    {
+      "node": "l1-cv",
+      "leads": [
+        "l1"
+      ]
+    },
+    {
+      "node": "logistic-cv",
+      "leads": [
+        "logistic"
+      ]
+    }
+  ],
+  "information": {
+    "knn-cv": 0.0,
+    "l1-cv": 0.0,
+    "logistic-cv": 0.0
+  }
+}

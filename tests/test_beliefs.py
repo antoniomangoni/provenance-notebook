@@ -1,6 +1,7 @@
 """Beliefs over the committed Madelon map: the noise arithmetic, the Markov blanket, the blindness of
 what a forecaster is shown, and the scoring. Nothing under research/ or live/ is written."""
 
+import importlib.util
 import json
 import subprocess
 import sys
@@ -235,3 +236,55 @@ def test_an_assumption_that_cannot_be_used_is_refused(tmp_path):
         (tmp_path / "beliefs" / "assumptions.json").write_text(json.dumps({"version": 1, "noise": [entry]}))
         with pytest.raises(beliefs.Usage):
             beliefs.noise(tmp_path / "map")
+
+
+SECOND = ROOT / "research" / "synthetic-interactions" / "map"
+
+
+def test_the_second_project_s_data_are_what_the_generator_gives():
+    pytest.importorskip("numpy")
+    spec = importlib.util.spec_from_file_location("make_data", ROOT / "demo2" / "make_data.py")
+    make_data = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(make_data)
+    built = make_data.build()
+    assert {name: make_data.digest(content) for name, content in built.items()} == make_data.DIGESTS
+    for name in ("pilot.csv", "heldout.csv"):
+        assert (ROOT / "demo2" / "workspace" / "data" / name).read_bytes() == built[name]
+
+
+def test_every_open_milestone_is_asked_and_madelon_s_questions_do_not_change(loaded):
+    revs, trails = beliefs.load(SECOND, str(LIVE))
+    asked = beliefs.open_questions(revs[0], trails)
+    assert len(asked) == 13 and {q["rev"] for q in asked} == {0} and "pairs-holdout" in {q["node"] for q in asked}
+    # A forecast at rev-0 of a milestone still open there is rebuilt from the same text.
+    pairs = next(q for q in asked if q["node"] == "pairs-holdout")
+    assert beliefs.rebuild_open({"kind": "milestone", "node": "pairs-holdout", "rev": 0}, revs, trails)["saw"] == pairs["saw"]
+    madelon, _ = beliefs.milestone_questions(loaded[0], loaded[1])
+    assert len([q for q in madelon if "holds" not in q]) == len(project.ranked(loaded[0][-1]))
+
+
+def test_the_overseer_s_choice_is_checked_against_the_open_routes():
+    revs, trails = beliefs.load(SECOND, str(LIVE))
+    first = revs[:1]
+    sizes = beliefs.noise(SECOND)
+    with pytest.raises(beliefs.Usage, match="nope, which is not an open route"):
+        beliefs.choose(first, trails, sizes, "routes: pairs, nope\nwhy: x", "agent:x", "2026-11-17T00:00:00Z")
+    with pytest.raises(beliefs.Usage, match="it may choose 1 to 3"):
+        beliefs.choose(first, trails, sizes, "routes: pairs, boost, forest, knn\nwhy: x", "agent:x", "2026-11-17T00:00:00Z")
+    with pytest.raises(beliefs.Usage, match="no line of the form"):
+        beliefs.choose(first, trails, sizes, "I would run pairs", "agent:x", "2026-11-17T00:00:00Z")
+    chosen = beliefs.choose(first, trails, sizes, "**routes:** pairs, boost\nwhy: interactions", "agent:x", "2026-11-17T00:00:00Z")
+    assert chosen["routes"] == ["pairs", "boost"] and chosen["why"] == "interactions"
+    assert chosen["saw"] == beliefs.saw(beliefs.nominate_prompt(first, trails, sizes))
+    assert chosen["next"] == [{"node": "baseline", "leads": ["logistic", "l1", "knn", "forest", "boost", "pairs"]}]
+    kept = json.loads((SECOND.parent / "oversight" / "round-1.json").read_text())
+    assert kept["saw"] == chosen["saw"] and kept["routes"] == ["pairs", "boost", "forest"]
+
+
+def test_a_true_margin_is_read_from_the_replicated_held_out_value():
+    revs = project.revisions(SECOND)
+    floor = {"measure": "holdout_auc", "comparison": "ge", "threshold": 0.8}
+    truth = {"rows": [{"node": "pairs-holdout", "criteria": [floor | {"value": 0.8162, "holds": True}]}]}
+    # (0.8162 - 0.80) / 0.0081 = 2.0, for the milestone and for the one before it on its route.
+    margins = beliefs.true_margins(revs[0], truth, {"holdout_auc": {"se": 0.0081}})
+    assert margins == pytest.approx({"pairs-holdout": 2.0, "pairs-cv": 2.0})
