@@ -83,22 +83,21 @@ was written by AI coding agents from specs in `docs/specs/`.
 
 ## Video, under three minutes
 
-One take of a browser and a terminal. Build the pages first with `scripts/site.sh site`, and
-start `uv run python project.py serve research/madelon-reanalysis/map --live live`.
+One take of a browser and a terminal, with no voice. The words are subtitles, a scripted dialogue
+shown in a caption strip recorded with the screen: Person 1 asks as a reviewer who was not there,
+and Person 2 answers from the pages. No cold reader was recorded. Build the pages first with
+`scripts/site.sh site`, and start `uv run python project.py serve research/madelon-reanalysis/map --live live`.
 
-| Time | On screen | Say |
-| --- | --- | --- |
-| 0:00 | `site/index.html` | When an agent iterates on a research task, the reasons disappear. This notebook records them as the work happens, and the agent does not write the record. |
-| 0:15 | `site/trail.html`, the top: task, decision path | This page was generated from 26 step files. A reader who was not there is asked the brief's question. |
-| 0:25 | The card "At step-14 the plan changed" | **The cold reader answers aloud:** why did they change approach at step 14? (The inherited analysis scored 0.5639 on held-out data against a floor of 0.71, so the plan at step 4 was replaced.) |
-| 1:00 | The "Sealed inputs" section, then "Before this plan was proposed" on the card | The new plan promises one held-out scoring. The trail shows five earlier commands had opened the held-out file. The page reports that. It does not judge it. |
-| 1:25 | The timeline: a measured run with its code diff and "Opened" row | Each result names the commit that produced it and the files its run opened. |
-| 1:40 | Terminal: `cat evidence/madelon-2026-11-15-1/tamper.txt` | Changing a number breaks the chain. Re-chaining passes the check but not the stored metrics file. A full rewrite fails against the head that was cited. |
-| 2:00 | `http://127.0.0.1:8077/` | Fifteen trails on the Madelon map. Stations are milestones, lines are routes, and each lane is one agent's trail. |
-| 2:15 | Hover a station with an amber mark; then the "Withdrawn" table | Every credit is recomputed from the step files. A credit that was withdrawn stays on record with its reason. |
-| 2:30 | `site/synthetic.html`, then `site/synthetic-scores.txt` | A second project with a known truth. A second model forecast every milestone before each round. Reading the siblings won one round, reading the method another, and over 18 forecasts nothing beat a coin flip. |
-| 2:45 | `README.md`, "What it does not prove" | What we did not find: models answered our questions as well from the raw transcript. The other limits are in the README. |
-
-**For the cold reader.** Someone who has not seen the task. Give them only `site/trail.html` and
-the question "why did they change approach at step 14?". Record their answer unprompted, and
-keep it whether or not it is right.
+| Time | On screen | Person 1 | Person 2 |
+| --- | --- | --- | --- |
+| 0:00 | `site/index.html` | An agent worked on a research task. Why did it change approach at step 14? | Don't ask the agent. Read the record it couldn't write. |
+| 0:12 | `site/trail.html`, the top | | This page is built from 26 hash-chained step files, written around the agent by hooks, not by the agent. |
+| 0:24 | The card "At step-14 the plan changed" | So why did it change? | The inherited analysis scored 0.5639 on held-out data against a floor of 0.71. So the plan from step 4 was replaced at step 14. |
+| 0:46 | "Sealed inputs", then "Before this plan was proposed" | Had it touched the held-out data before that? | Five earlier commands opened it. The page reports that. It doesn't judge it. |
+| 1:04 | The timeline: a run with its code diff and "Opened" row | | Every result names the commit that produced it and every file its run opened. |
+| 1:18 | Terminal: `cat evidence/madelon-2026-11-15-1/tamper.txt` | Could someone just edit a number? | Then the chain breaks. Re-chain it, and the stored metrics file disagrees. Rewrite it all, and the head cited earlier no longer matches. |
+| 1:40 | `http://127.0.0.1:8077/` | | Fifteen agent trails on one research map. Every ✓ and ✗ is recomputed from the step files, never claimed. |
+| 1:54 | `http://127.0.0.1:8077/review`, one credit's graph | Who decided which reads of the held-out file were harmless? | Agents, in 13 revisions. Then a person countersigned here: one ruling per judgment, with the steps under each. |
+| 2:14 | `site/synthetic.html`, then `site/synthetic-scores.txt` | Can the map predict what will work? | We tested that on a second project with a known truth. A second model forecast every milestone before each round. Over 18 settled forecasts, nothing beat a coin flip. |
+| 2:36 | `README.md`, "What it does not prove" | So is the page better than the transcript? | Not on our questions: models answered as well from the raw transcript. The page is a tenth the length. The limits are in the README. |
+| 2:52 | `site/index.html` | | github.com/antoniomangoni/provenance-notebook |
