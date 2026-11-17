@@ -152,3 +152,47 @@ def test_a_plan_asked_after_its_trail_opened_a_sealed_input_is_marked(loaded):
     assert "step-41" in final["after_sealed"] and "holdout 0.7300-0.7320" in final["_text"]
     first = next(q for q in plans if q["trail"] == "madelon-route-knn" and q["step"] == "step-28")
     assert first["after_sealed"] == []
+
+
+def test_a_milestone_question_whose_outcome_was_known_is_marked(loaded):
+    revs, trails, _ = loaded
+    milestones, _ = beliefs.milestone_questions(revs, trails)
+    known = {q["node"]: q["known"] for q in milestones if "holds" in q}
+    # rev-0 was written the day after the first trail ran, so its three milestones were never forecasts.
+    assert known["reproduce"] == known["miss"] == known["nested"] == ["its run was made before rev-0 was written"]
+    # screen was credited after the milestones that follow it, whose runs had shown its measures.
+    assert known["screen"] == ["compact-forest, compact-knn, after it on a route, already resolved"]
+    assert [node for node, why in known.items() if not why] == ["compact-knn", "compact-forest", "compact-stable-forest", "compact-vote"]
+
+
+def test_marked_questions_are_scored_apart_and_a_coin_flip_is_a_forecaster(loaded):
+    lines, errors = beliefs.score(*loaded, [FORECASTS / "gemma-backtest.json"])
+    assert not errors
+    text = "\n".join(lines)
+    assert "    ‡ 4 of 8: the outcome was known" in text
+    assert "      on the other 4: agent:pi/google/gemma-4-31B-it Brier 0.433; code:even Brier 0.250;" in text
+    assert "    code:base-rate: Brier 0.311, log loss 1.274 bits, n 8; the forecaster is -0.065 ± 0.151 from it, within noise" in text
+
+
+def test_a_difference_in_score_comes_with_its_standard_error():
+    # Differences -0.1 and +0.1: mean 0, standard deviation 0.1414, over the root of 2.
+    assert beliefs.against([0.1, 0.3], [0.2, 0.2]) == "; the forecaster is +0.000 ± 0.100 from it, within noise"
+    assert beliefs.against([0.0, 0.01, 0.0, 0.01], [0.5, 0.5, 0.5, 0.5]) == "; the forecaster is -0.495 ± 0.003 from it"
+    assert beliefs.against([0.1], [0.2]) == ""
+
+
+def test_the_pooled_forecast_reads_the_same_criterion_across_the_map(loaded):
+    revs, trails, sizes = loaded
+    # The floor milestones' blanket holds one score; the map holds five on the same criterion.
+    p, how = beliefs.pooled_predictive(revs[-1], "floor-l1", trails, sizes)
+    assert round(p, 2) == 0.59 and how.startswith("holdout_auc of 5 milestones with the same criterion: mean 0.7122")
+    assert round(beliefs.predictive(revs[-1], "floor-l1", trails, sizes)[0], 2) == 0.75
+    assert beliefs.pooled_predictive(revs[0], "miss", trails, sizes) == (0.5, "the base rate of the revision's resolutions")
+
+
+def test_a_forecast_made_before_its_outcome_is_not_called_a_backtest(loaded, tmp_path):
+    def earlier(kept):
+        kept["at"] = "2026-11-01T00:00:00Z"
+
+    lines, _ = beliefs.score(*loaded, [forecast_file(tmp_path, earlier)])
+    assert "  milestone questions settled: 8 (forecast); held 6" in lines
